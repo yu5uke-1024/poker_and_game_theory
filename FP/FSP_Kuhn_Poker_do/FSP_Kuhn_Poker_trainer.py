@@ -299,21 +299,35 @@ class KuhnTrainer:
     for node, cn in self.N_count.items():
       self.N_count[node] = np.array([1.0 for _ in range(self.NUM_ACTIONS)], dtype=float)
 
+
+    self.Q_value =  [np.zeros((6,2)), np.zeros((6,2))]
+
     for iteration_t in tqdm(range(int(self.train_iterations))):
       eta = 1/(iteration_t+2)
 
-      D = FSP_Kuhn_Poker_generate_data.GenerateData().generate_data(self.avg_strategy, self.best_response_strategy, n, m, eta)
+      if len(self.M_RL[0]) == memory_size or  len(self.M_RL[1]) == memory_size :
+        n, m = 2,1
 
-      self.best_response_strategy = {}
-      self.infoSets_dict = {}
-      for target_player in range(self.NUM_PLAYERS):
-        self.create_infoSets("", target_player, 1.0)
+      #D = FSP_Kuhn_Poker_generate_data.GenerateData().generate_data(self.avg_strategy, self.best_response_strategy, n, m, eta)
+      D = FSP_Kuhn_Poker_generate_data.GenerateData().generate_data1(n, self.avg_strategy)
+
+      #self.best_response_strategy = {}
+      #self.infoSets_dict = {}
+      #for target_player in range(self.NUM_PLAYERS):
+      #  self.create_infoSets("", target_player, 1.0)
+
+      for player_i in range(self.NUM_ACTIONS):
+        #self.M_SL[player_i] = D[player_i]
+        self.M_RL[player_i].extend(D[player_i])
+
+        #self.calc_best_response_value(self.avg_strategy, self.best_response_strategy, player_i, "", 1)
+        FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t)
+
+      D = FSP_Kuhn_Poker_generate_data.GenerateData().generate_data2(m, self.avg_strategy, self.best_response_strategy)
 
       for player_i in range(self.NUM_ACTIONS):
         self.M_SL[player_i] = D[player_i]
         self.M_RL[player_i].extend(D[player_i])
-
-        self.calc_best_response_value(self.avg_strategy, self.best_response_strategy, player_i, "", 1)
         FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
         #FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
 

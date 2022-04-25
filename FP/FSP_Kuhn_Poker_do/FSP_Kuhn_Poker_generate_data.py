@@ -20,6 +20,40 @@ class GenerateData:
   def __init__(self):
     pass
 
+  def generate_data1(self, n, pi_strategy):
+    pi_strategy_player0, pi_strategy_player1 = self.strategy_split_player(pi_strategy)
+    D_history = []
+
+    #SLにはない方がいい
+    for ni in range(n):
+      ni_episode = self.one_episode("", self.strategy_uion(pi_strategy_player0, pi_strategy_player1))
+      D_history.append(ni_episode)
+
+    return [D_history, D_history]
+
+
+  def generate_data2(self, m, pi_strategy, beta_strategy):
+    D_history = []
+    pi_strategy_player0, pi_strategy_player1 = self.strategy_split_player(pi_strategy)
+    beta_strategy_player0, beta_strategy_player1 = self.strategy_split_player(beta_strategy)
+
+    for player_i in range(FSP_Kuhn_Poker_trainer.KuhnTrainer().NUM_PLAYERS):
+      if player_i == 0:
+        D_history_0 = []
+        for mi in range(m):
+          mi_episode = self.one_episode("", self.strategy_uion(beta_strategy_player0, pi_strategy_player1))
+          D_history_0.append(mi_episode)
+        D_history_0 = D_history + D_history_0
+      else:
+        D_history_1 = []
+        for mi in range(m):
+          mi_episode = self.one_episode("", self.strategy_uion(beta_strategy_player1, pi_strategy_player0))
+          D_history_1.append(mi_episode)
+        D_history_1 = D_history + D_history_1
+    return [D_history_0, D_history_1]
+
+
+
   def generate_data(self, pi_strategy, beta_strategy, n, m, eta):
     sigma_strategy = {}
     for infoset in pi_strategy.keys():
