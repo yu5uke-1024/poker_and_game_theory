@@ -23,7 +23,7 @@ import FSP_Kuhn_Poker_generate_data
 
 #train
 
-kuhn_trainer = FSP_Kuhn_Poker_trainer.KuhnTrainer(train_iterations=10**4)
+kuhn_trainer = FSP_Kuhn_Poker_trainer.KuhnTrainer(train_iterations=10**6)
 kuhn_trainer.train(n=10, m=5, memory_size=10**3)
 
 print("")
