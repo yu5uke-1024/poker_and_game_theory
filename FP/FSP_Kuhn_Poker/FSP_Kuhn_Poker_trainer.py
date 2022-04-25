@@ -1,5 +1,4 @@
 #ライブラリ
-print(1)
 
 import numpy as np
 import pandas as pd
@@ -18,7 +17,6 @@ from collections import deque
 import FSP_Kuhn_Poker_supervised_learning
 import FSP_Kuhn_Poker_reinforcement_learning
 import FSP_Kuhn_Poker_generate_data
-
 
 
 
@@ -139,16 +137,6 @@ class KuhnTrainer:
   def if_nonexistant(self, infoSet):
     if infoSet not in self.avg_strategy:
       self.avg_strategy[infoSet] = np.array([1/self.NUM_ACTIONS for _ in range(self.NUM_ACTIONS)], dtype=float)
-
-
-  def show_plot(self, method):
-    plt.scatter(list(self.exploitability_list.keys()), list(self.exploitability_list.values()), label=method)
-    plt.plot(list(self.exploitability_list.keys()), list(self.exploitability_list.values()))
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.xlabel("iterations")
-    plt.ylabel("exploitability")
-    plt.legend()
 
 
   def calc_best_response_value(self, avg_strategy, best_response_strategy, best_response_player, history, prob):
@@ -298,6 +286,15 @@ class KuhnTrainer:
 
       return nodeUtil
 
+  def show_plot(self, method):
+    plt.scatter(list(self.exploitability_list.keys()), list(self.exploitability_list.values()), label=method)
+    plt.plot(list(self.exploitability_list.keys()), list(self.exploitability_list.values()))
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlabel("iterations")
+    plt.ylabel("exploitability")
+    plt.legend()
+    plt.show()
 
 
   #KuhnTrainer main method
@@ -351,4 +348,4 @@ class KuhnTrainer:
         #print(self.avg_strategy)
         #print("")
 
-    #self.show_plot("FSP")
+    self.show_plot("FSP")
