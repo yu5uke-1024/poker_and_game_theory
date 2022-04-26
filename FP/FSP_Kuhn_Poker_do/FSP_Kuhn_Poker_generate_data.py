@@ -24,7 +24,6 @@ class GenerateData:
     pi_strategy_player0, pi_strategy_player1 = self.strategy_split_player(pi_strategy)
     D_history = []
 
-    #SLにはない方がいい
     for ni in range(n):
       ni_episode = self.one_episode("", self.strategy_uion(pi_strategy_player0, pi_strategy_player1))
       D_history.append(ni_episode)

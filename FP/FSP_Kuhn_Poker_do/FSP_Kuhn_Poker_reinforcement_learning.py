@@ -29,7 +29,7 @@ class ReinforcementLearning:
 
 
   def RL_train(self, memory, target_player, update_strategy, q_value, k):
-    self.alpha = 0.05 / (1 + 0.003*k)
+    self.alpha = 0.05 / (1 + 0.003*(k**0.5))
     T = 1 / (1+ 0.02*(k**0.5))
 
     if target_player == 0:
@@ -52,6 +52,7 @@ class ReinforcementLearning:
           r = FSP_Kuhn_Poker_trainer.KuhnTrainer().Return_payoff_for_terminal_states(memory_i, target_player)
           q_value[s][a] = q_value[s][a]  + self.alpha*(r - q_value[s][a])
 
+
       q_value_boltzmann = np.zeros((6,2))
       for si in range(6):
         for ai in range(2):
@@ -60,6 +61,17 @@ class ReinforcementLearning:
       for state, idx in self.player_0_state.items():
         update_strategy[state] = q_value_boltzmann[self.player_0_state[state]] / sum(q_value_boltzmann[self.player_0_state[state]])
 
+      """
+      for state, idx in self.player_0_state.items():
+        if all(q_value[idx] == np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)):
+          pass
+        else:
+          argmax_action = np.argmax(q_value[idx])
+          if argmax_action == 0:
+            update_strategy[state] = np.array([1.0, 0.0], dtype=float)
+          else:
+            update_strategy[state] = np.array([0, 1.0], dtype=float)
+      """
 
     elif target_player == 1:
       for memory_i in memory:
@@ -76,3 +88,15 @@ class ReinforcementLearning:
 
       for state, idx in self.player_1_state.items():
         update_strategy[state] = q_value_boltzmann[self.player_1_state[state]] / sum(q_value_boltzmann[self.player_1_state[state]])
+
+      """
+      for state, idx in self.player_1_state.items():
+        if all(q_value[idx] == np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)):
+          pass
+        else:
+          argmax_action = np.argmax(q_value[idx])
+          if argmax_action == 0:
+            update_strategy[state] = np.array([1.0, 0.0], dtype=float)
+          else:
+            update_strategy[state] = np.array([0, 1.0], dtype=float)
+      """

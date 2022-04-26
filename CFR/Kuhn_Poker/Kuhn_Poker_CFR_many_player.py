@@ -548,7 +548,7 @@ class KuhnTrainer:
     #assert exploitability >= 0
     return exploitability
 
-
+"""
 kuhn_trainer = KuhnTrainer(train_iterations=10**5, num_players=3)
 #kuhn_trainer.train("vanilla_CFR")
 kuhn_trainer.train("chance_sampling_CFR")
@@ -561,7 +561,7 @@ for key, value in sorted(kuhn_trainer.nodeMap.items()):
 df = pd.DataFrame(result_dict.values(), index=result_dict.keys(), columns=['Pass', "Bet"])
 df.index.name = "Node"
 print(df)
-
+"""
 
 # 特定のstrategy_profileのexploitabilityを計算する
 # all fold strategy_profile → 2
@@ -574,7 +574,8 @@ print(df)
 
 # random strategy_profileのexploitability
 #→0.9166666666666665
-kuhn_poker_agent = KuhnTrainer(train_iterations=0, num_players=2)
-print(kuhn_poker_agent.get_exploitability_dfs())
+for i in range(2,6):
+  kuhn_poker_agent = KuhnTrainer(train_iterations=0, num_players=i)
+  print("{}人対戦:".format(i), kuhn_poker_agent.get_exploitability_dfs())
 
 doctest.testmod()
