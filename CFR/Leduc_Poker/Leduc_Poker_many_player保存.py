@@ -79,9 +79,9 @@ class Node:
 
 # Leduc Trainer
 class LeducTrainer:
-  def __init__(self, iterations=10000):
+  def __init__(self, train_iterations=10):
     #f: FOLD, c: CALL , r:RAISE
-    self.iterations = iterations
+    self.train_iterations = train_iterations
     self.NUM_PLAYERS = 2
     self.ACTION_DICT = {0:"f", 1:"c", 2:"r"}
     self.NUM_ACTIONS = 3
@@ -450,7 +450,7 @@ class LeducTrainer:
 
 
     sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=probability)
-    nextHistory = history + self.ACTION_DICT[sampling_action]
+    nextHistory = history + self.ACTION_DICT[ai]
 
 
     if player == target_player_i:
@@ -475,15 +475,38 @@ class LeducTrainer:
 
     return util, p_tail*node.strategy[sampling_action]
 
+
   #KuhnTrainer main method
   def train(self, method):
-    self.eval = False
-    for iteration_t in tqdm(range(int(self.iterations))):
+    self.exploitability_list = {}
+    for iteration_t in tqdm(range(int(self.train_iterations))):
       for target_player_i in range(self.NUM_PLAYERS):
-        self.chance_sampling_CFR("", target_player_i, iteration_t, 1, 1)
-        #pass
+        p_list = np.array([1 for _ in range(self.NUM_PLAYERS)], dtype=float)
 
+        if method == "vanilla_CFR":
+          self.vanilla_CFR("", target_player_i, iteration_t, 1, 1)
+        elif method == "chance_sampling_CFR":
+          self.chance_sampling_CFR("", target_player_i, iteration_t, 1, 1)
+        elif method == "external_sampling_MCCFR":
+          self.external_sampling_MCCFR("", target_player_i)
+        elif method == "outcome_sampling_MCCFR":
+          self.epsilon = 0.6
+          self.outcome_sampling_MCCFR("", target_player_i, iteration_t, 1,1, 1)
 
+      if iteration_t in [int(j)-1 for j in np.logspace(1, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
+        self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
+
+    self.show_plot(method)
+
+  def show_plot(self, method):
+    plt.scatter(list(self.exploitability_list.keys()), list(self.exploitability_list.values()), label=method)
+    plt.plot(list(self.exploitability_list.keys()), list(self.exploitability_list.values()))
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlabel("iterations")
+    plt.ylabel("exploitability")
+    plt.legend(loc = "lower left")
+    plt.show()
 
   # evaluate average strategy
   def eval_strategy(self):
@@ -491,25 +514,156 @@ class LeducTrainer:
     target_player_i = 0
     average_utility = 0
     average_utility = self.vanilla_CFR("", target_player_i, 0, 1, 1)
+    return average_utility
 
-    print("")
-    print("average eval util:", average_utility)
+  def calc_best_response_value(self, best_response_strategy, best_response_player, history, prob):
+      plays = len(history)
+      if len(history) >= 2 and ("J" in history[2:]) or ("Q" in history[2:]) or ("K" in history[2:]):
+        private_cards, history_before, community_card, history_after = self.Split_history(history)
+        plays = len(history_after)
+
+      player = plays % 2
+      opponent = 1 - player
+
+
+      if self.whether_terminal_states(history):
+        return self.Return_payoff_for_terminal_states(history, best_response_player)
+
+      elif self.whether_chance_node(history):
+        if len(history) == 0:
+          cards = np.array(["J","J", "Q","Q", "K", "K"])
+          cards_candicates = [cards_candicate for cards_candicate in itertools.combinations(cards, 3)]
+          utility_sum = 0
+          for cards_i in cards_candicates:
+            self.cards_i = cards_i
+            nextHistory = self.cards_i[0] + self.cards_i[1]
+            utility_sum +=  (1/len(cards_candicates))* self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, prob)
+          return utility_sum
+        else:
+          nextHistory = history + self.cards_i[2]
+          return self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, prob)
+
+
+      infoSet = history[player] + history[2:]
+      node = self.Get_information_set_node_or_create_it_if_nonexistant(infoSet)
+
+
+      if player == best_response_player:
+        if infoSet not in best_response_strategy:
+          action_value = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
+          br_value = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
+
+          for assume_history, po_ in self.infoSets_dict[infoSet]:
+            for ai in node.possible_action:
+              nextHistory = history + self.ACTION_DICT[ai]
+              br_value[ai] = self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, po_)
+              action_value[ai] += br_value[ai] * po_
+
+
+          br_action = 0
+          for ai in node.possible_action:
+            if action_value[ai] > action_value[br_action]:
+              br_action = ai
+          best_response_strategy[infoSet] = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
+          best_response_strategy[infoSet][br_action] = 1.0
+
+
+        node_util = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
+        for ai in node.possible_action:
+          nextHistory = history + self.ACTION_DICT[ai]
+          node_util[ai] = self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, prob)
+        best_response_util = 0
+        for ai in node.possible_action:
+          best_response_util += node_util[ai] * best_response_strategy[infoSet][ai]
+
+        return best_response_util
+
+
+      else:
+        avg_strategy = node.Get_average_information_set_mixed_strategy()
+        nodeUtil = 0
+        action_value_list = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
+        for ai in node.possible_action:
+          nextHistory = history + self.ACTION_DICT[ai]
+          action_value_list[ai] = self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, prob*avg_strategy[ai])
+          nodeUtil += avg_strategy[ai] * action_value_list[ai]
+        return nodeUtil
+
+
+  def create_infoSets(self, history, target_player, po):
+    plays = len(history)
+    if len(history) >= 2 and ("J" in history[2:]) or ("Q" in history[2:]) or ("K" in history[2:]):
+      private_cards, history_before, community_card, history_after = self.Split_history(history)
+      plays = len(history_after)
+
+    player = plays % 2
+    opponent = 1 - player
+
+    if self.whether_terminal_states(history):
+      return
+
+    elif self.whether_chance_node(history):
+      if len(history) == 0:
+        cards = np.array(["J","J", "Q","Q", "K", "K"])
+        cards_candicates = [cards_candicate for cards_candicate in itertools.combinations(cards, 3)]
+        for cards_i in cards_candicates:
+          self.cards_i = cards_i
+          nextHistory = self.cards_i[0] + self.cards_i[1]
+          self.create_infoSets(nextHistory, target_player, po)
+        return
+      else:
+        nextHistory = history + self.cards_i[2]
+        self.create_infoSets(nextHistory, target_player, po)
+        return
+
+    infoSet = history[player] + history[2:]
+    if player == target_player:
+      if self.infoSets_dict.get(infoSet) is None:
+        self.infoSets_dict[infoSet] = []
+      self.infoSets_dict[infoSet].append((history, po))
+
+
+    node = self.Get_information_set_node_or_create_it_if_nonexistant(infoSet)
+    for ai in node.possible_action:
+      nextHistory = history + self.ACTION_DICT[ai]
+      if player == target_player:
+        self.create_infoSets(nextHistory, target_player, po)
+      else:
+        actionProb = node.Get_average_information_set_mixed_strategy()[ai]
+        self.create_infoSets(nextHistory, target_player, po*actionProb)
 
 
 
+  def get_exploitability_dfs(self):
+
+    # 各information setを作成 & reach_probabilityを計算
+    self.infoSets_dict = {}
+    for target_player in range(self.NUM_PLAYERS):
+      self.create_infoSets("", target_player, 1.0)
+
+    exploitability = 0
+    best_response_strategy = {}
+
+    for best_response_player_i in range(self.NUM_PLAYERS):
+        exploitability += self.calc_best_response_value(best_response_strategy, best_response_player_i, "", 1)
+
+    if exploitability < 0:
+      return 1e-7
+    #assert exploitability >= 0
+    return exploitability
 
 #学習
-leduc_trainer = LeducTrainer(iterations=100000)
+#leduc_trainer = LeducTrainer(train_iterations=10**4)
 #leduc_trainer.train("vanilla_CFR")
-leduc_trainer.train("chance_sampling_CFR")
+#leduc_trainer.train("chance_sampling_CFR")
 #leduc_trainer.train("external_sampling_MCCFR")
 #leduc_trainer.train("outcome_sampling_MCCFR")
 
 
-print("avg util:", leduc_trainer.eval_strategy())
+#print("avg util:", leduc_trainer.eval_strategy())
 
 
-
+"""
 pd.set_option('display.max_rows', None)
 result_dict = {}
 for key, value in sorted(leduc_trainer.nodeMap.items()):
@@ -519,8 +673,14 @@ df = pd.DataFrame(result_dict.values(), index=result_dict.keys(), columns=["Fold
 df.index.name = "Node"
 df
 
-print(df)
+#print(df)
+"""
 
-
+print("")
+# random strategy_profileのexploitability
+#→0.9166666666666665
+for i in range(2,3):
+  kuhn_poker_agent = LeducTrainer(train_iterations=0)
+  print("{}人対戦:".format(i), kuhn_poker_agent.get_exploitability_dfs())
 
 doctest.testmod()

@@ -419,7 +419,7 @@ class KuhnTrainer:
       if iteration_t in [int(j)-1 for j in np.logspace(1, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
 
-    self.show_plot(method)
+    #self.show_plot(method)
 
 
   def show_plot(self, method):
@@ -549,11 +549,13 @@ class KuhnTrainer:
     return exploitability
 
 
-kuhn_trainer = KuhnTrainer(train_iterations=10**4, num_players=3)
-#kuhn_trainer.train("vanilla_CFR")
-kuhn_trainer.train("chance_sampling_CFR")
+kuhn_trainer = KuhnTrainer(train_iterations=10**4, num_players=2)
+kuhn_trainer.train("vanilla_CFR")
+#kuhn_trainer.train("chance_sampling_CFR")
 #kuhn_trainer.train("external_sampling_MCCFR")
 #kuhn_trainer.train("outcome_sampling_MCCFR")
+
+print("avg util:", kuhn_trainer.eval_strategy(0))
 
 result_dict = {}
 for key, value in sorted(kuhn_trainer.nodeMap.items()):
@@ -570,12 +572,13 @@ print(df)
 #for node_i, node_main in kuhn_poker_agent.nodeMap.items():
 #  kuhn_poker_agent.nodeMap[node_i].strategySum =  np.array([1, 0], dtype=float)
 #print(kuhn_poker_agent.get_exploitability_dfs())
-
+"""
 print("")
 # random strategy_profileのexploitability
 #→0.9166666666666665
 for i in range(2,6):
   kuhn_poker_agent = KuhnTrainer(train_iterations=0, num_players=i)
   print("{}人対戦:".format(i), kuhn_poker_agent.get_exploitability_dfs())
+"""
 
 doctest.testmod()

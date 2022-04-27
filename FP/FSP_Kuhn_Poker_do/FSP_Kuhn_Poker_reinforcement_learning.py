@@ -58,6 +58,7 @@ class ReinforcementLearning:
         for ai in range(2):
           q_value_boltzmann[si][ai] = math.exp(q_value[si][ai]/T)
 
+      #numpy softmax
       for state, idx in self.player_0_state.items():
         update_strategy[state] = q_value_boltzmann[self.player_0_state[state]] / sum(q_value_boltzmann[self.player_0_state[state]])
 
