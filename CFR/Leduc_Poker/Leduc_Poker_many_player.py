@@ -806,8 +806,8 @@ class LeducTrainer:
 
 
 #学習
-"""
-leduc_trainer = LeducTrainer(train_iterations=10**1, num_players=3)
+
+leduc_trainer = LeducTrainer(train_iterations=10**4, num_players=3)
 #leduc_trainer.train("vanilla_CFR")
 leduc_trainer.train("chance_sampling_CFR")
 #leduc_trainer.train("external_sampling_MCCFR")
@@ -829,10 +829,10 @@ df
 """
 print("")
 # random strategy_profileのexploitability
-#→0.9166666666666665
-for i in range(3,4):
+#4.77
+for i in range(2,3):
   kuhn_poker_agent = LeducTrainer(train_iterations=0, num_players=i)
   print("{}人対戦:".format(i), kuhn_poker_agent.get_exploitability_dfs())
-
+"""
 
 doctest.testmod()
