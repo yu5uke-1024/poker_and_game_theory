@@ -161,6 +161,7 @@ class LeducTrainer:
     #target_player_iのaction 履歴
     player_action_list = [[] for _ in range(self.NUM_PLAYERS)]
     player_money_list_round1 = [1 for _ in range(self.NUM_PLAYERS)]
+
     player_money_list_round2 = [0 for _ in range(self.NUM_PLAYERS)]
 
     f_count, a_count, raise_count = 0, 0, 0
@@ -176,9 +177,9 @@ class LeducTrainer:
         player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] = max(player_money_list_round1)
       elif hi == "r" and raise_count == 0:
         raise_count += 1
-        player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] += 1
+        player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] += 2
       elif hi == "r" and raise_count == 1:
-        player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] += 3
+        player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] += 4
 
       a_count += 1
 
@@ -237,19 +238,19 @@ class LeducTrainer:
   #6 Return payoff for terminal states #if terminal states  return util
   def Return_payoff_for_terminal_states(self, history, target_player_i):
     """return int
-    >>> LeducTrainer().Return_payoff_for_terminal_states("JJccQcc", 0)
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("JJccQcc", 0))
     0
-    >>> LeducTrainer().Return_payoff_for_terminal_states("JQcrcKcrc", 0)
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("JQcrcKcrc", 0))
     -6
-    >>> LeducTrainer().Return_payoff_for_terminal_states("JQcrcKcrc", 1)
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("JQcrcKcrc", 1))
     6
-    >>> LeducTrainer().Return_payoff_for_terminal_states("KQrf", 0)
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("KQrf", 0))
     1
-    >>> LeducTrainer().Return_payoff_for_terminal_states("QKcrf", 0)
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("QKcrf", 0))
     -1
-    >>> LeducTrainer().Return_payoff_for_terminal_states("QKrrcQrrf", 0)
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("QKrrcQrrf", 0))
     -8
-    >>> LeducTrainer().Return_payoff_for_terminal_states("QKrrcQrrc", 0)
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("QKrrcQrrc", 0))
     12
     """
     #round1で終了
@@ -302,7 +303,8 @@ class LeducTrainer:
       return - player_money_list_round1[target_player_i] - player_money_list_round2[target_player_i]
     else:
       win_num = len([idx for idx, card_rank in show_down_player_card.items() if card_rank == max_rank])
-      return int((sum(player_money_list_round1) + sum(player_money_list_round2))/win_num) - player_money_list_round1[target_player_i] - player_money_list_round2[target_player_i]
+
+      return float((sum(player_money_list_round1) + sum(player_money_list_round2))/win_num) - player_money_list_round1[target_player_i] - player_money_list_round2[target_player_i]
 
 
 
@@ -654,10 +656,10 @@ class LeducTrainer:
           self.epsilon = 0.6
           self.outcome_sampling_MCCFR("", target_player_i, iteration_t, p_list, 1)
 
-      #if iteration_t in [int(j)-1 for j in np.logspace(1, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
-      #  self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
+      if iteration_t in [int(j)-1 for j in np.logspace(1, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
+        self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
 
-    #self.show_plot(method)
+    self.show_plot(method)
 
 
   def show_plot(self, method):
@@ -694,7 +696,7 @@ class LeducTrainer:
           cards = self.card_distribution()
           cards_candicates = [cards_candicate for cards_candicate in itertools.permutations(cards, self.NUM_PLAYERS+1)]
           utility_sum = 0
-          for cards_i in tqdm(cards_candicates):
+          for cards_i in cards_candicates:
             self.cards_i = cards_i
             nextHistory = "".join(cards_i[:self.NUM_PLAYERS])
             utility_sum +=  (1/len(cards_candicates))* self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, prob)
@@ -796,7 +798,6 @@ class LeducTrainer:
     exploitability = 0
     best_response_strategy = {}
     for best_response_player_i in range(self.NUM_PLAYERS):
-        print("best_response_player_i:", best_response_player_i)
         exploitability += self.calc_best_response_value(best_response_strategy, best_response_player_i, "", 1)
 
     if exploitability < 0:
@@ -806,8 +807,8 @@ class LeducTrainer:
 
 
 #学習
-
-leduc_trainer = LeducTrainer(train_iterations=10**4, num_players=3)
+"""
+leduc_trainer = LeducTrainer(train_iterations=10**5, num_players=2)
 #leduc_trainer.train("vanilla_CFR")
 leduc_trainer.train("chance_sampling_CFR")
 #leduc_trainer.train("external_sampling_MCCFR")
@@ -825,14 +826,14 @@ df.index.name = "Node"
 df
 
 #print(df)
-
 """
+
 print("")
 # random strategy_profileのexploitability
 #4.77
 for i in range(2,3):
   kuhn_poker_agent = LeducTrainer(train_iterations=0, num_players=i)
   print("{}人対戦:".format(i), kuhn_poker_agent.get_exploitability_dfs())
-"""
 
-doctest.testmod()
+
+#doctest.testmod()
