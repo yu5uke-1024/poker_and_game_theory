@@ -1,7 +1,9 @@
 # Poker and Game theory
 
-introduce poker and game theory by using Python.
+Introduce poker and game theory by using Python.
+
 For example, the alogorithm is CFR,MCCFR and FSP.
+
 The game is RPS, Kuhn Poker and Leduc Poker.
 
 # Demo
