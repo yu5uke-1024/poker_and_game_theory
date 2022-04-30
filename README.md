@@ -20,7 +20,12 @@ I try to introduing the code politely.
 
 And the game and alogorithm I introduce is abundant.
 
+# Target
+
+To people who want to study poker, game theory by using Python.
+
 # Comment
 
 Please tell me if there is something careless.
+
 
