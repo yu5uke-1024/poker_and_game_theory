@@ -299,23 +299,27 @@ class KuhnTrainer:
     for node, cn in self.N_count.items():
       self.N_count[node] = np.array([1.0 for _ in range(self.NUM_ACTIONS)], dtype=float)
 
+    # q_value
+    self.Q_value = [np.zeros((6,2)), np.zeros((6,2))]
+
     for iteration_t in tqdm(range(int(self.train_iterations))):
       eta = 1/(iteration_t+2)
 
       D = FSP_Kuhn_Poker_generate_data.GenerateData().generate_data(self.avg_strategy, self.best_response_strategy, n, m, eta)
 
-      self.best_response_strategy = {}
-      self.infoSets_dict = {}
-      for target_player in range(self.NUM_PLAYERS):
-        self.create_infoSets("", target_player, 1.0)
+      #self.best_response_strategy = {}
+      #self.infoSets_dict = {}
+      #for target_player in range(self.NUM_PLAYERS):
+      #  self.create_infoSets("", target_player, 1.0)
 
       for player_i in range(self.NUM_ACTIONS):
         self.M_SL[player_i] = D[player_i]
         self.M_RL[player_i].extend(D[player_i])
 
-        self.calc_best_response_value(self.avg_strategy, self.best_response_strategy, player_i, "", 1)
-        FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
-        #FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
+        #self.calc_best_response_value(self.avg_strategy, self.best_response_strategy, player_i, "", 1)
+        FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t)
+        #FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
+        FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
 
 
       if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
