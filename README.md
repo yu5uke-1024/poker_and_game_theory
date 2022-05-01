@@ -12,7 +12,7 @@ This graph show the result of decreasing exploitability by iterations.
 
 Game is Kuhn Poker and alogrithm is vanilla CFR, chance sampling CFR, external sampling MCCFR and outcome sampling MCCFR.
 
-![a](https://user-images.githubusercontent.com/63486375/166135851-4d5f9ab6-6d65-4f92-8885-18f80cb7c415.png)
+![a](https://user-images.githubusercontent.com/63486375/166136125-5d15cd43-6eb7-4bbb-988a-fc04e6b0b2ad.png)
 
 # Features
 
