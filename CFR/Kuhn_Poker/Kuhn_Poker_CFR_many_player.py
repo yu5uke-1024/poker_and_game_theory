@@ -11,7 +11,9 @@ import time
 import doctest
 import copy
 import math
+from datetime import datetime
 
+now = datetime.now()
 
 
 #Node Class
@@ -430,7 +432,7 @@ class KuhnTrainer:
     plt.xlabel("iterations")
     plt.ylabel("exploitability")
     plt.legend(loc = "lower left")
-    plt.show()
+    plt.savefig(image_file_path)
 
 
   # evaluate average strategy
@@ -548,14 +550,16 @@ class KuhnTrainer:
     #assert exploitability >= 0
     return exploitability
 
+image_file_path = "/Users/yskamto/Desktop/yu5uke/Poker/Images/kuhn_poker" + now.strftime('%Y%m%d_%H%M%S') + ".png"
 
-kuhn_trainer = KuhnTrainer(train_iterations=10**4, num_players=3)
+
+kuhn_trainer = KuhnTrainer(train_iterations=10**5, num_players=3)
 #kuhn_trainer.train("vanilla_CFR")
 kuhn_trainer.train("chance_sampling_CFR")
 #kuhn_trainer.train("external_sampling_MCCFR")
 #kuhn_trainer.train("outcome_sampling_MCCFR")
 
-print("avg util:", kuhn_trainer.eval_strategy(0))
+print("avg util:", kuhn_trainer.eval_strategy(2))
 
 result_dict = {}
 for key, value in sorted(kuhn_trainer.nodeMap.items()):

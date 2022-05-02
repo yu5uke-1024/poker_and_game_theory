@@ -10,6 +10,11 @@ from tqdm import tqdm
 import time
 import doctest
 
+from datetime import datetime
+now = datetime.now()
+
+import wandb
+wandb.init(project="leduc_poker_project", name="leduc_poker_many_player")
 
 #Node Class
 #information set node class definition
@@ -177,9 +182,9 @@ class LeducTrainer:
         player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] = max(player_money_list_round1)
       elif hi == "r" and raise_count == 0:
         raise_count += 1
-        player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] += 2
+        player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] += 1
       elif hi == "r" and raise_count == 1:
-        player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] += 4
+        player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] += 3
 
       a_count += 1
 
@@ -468,7 +473,7 @@ class LeducTrainer:
         cards = self.card_distribution()
         cards_candicates = [cards_candicate for cards_candicate in itertools.permutations(cards, self.NUM_PLAYERS+1)]
         utility_sum = 0
-        for cards_i in tqdm(cards_candicates):
+        for cards_i in cards_candicates:
           self.cards_i = cards_i
           nextHistory = "".join(cards_i[:self.NUM_PLAYERS])
           utility_sum += (1/len(cards_candicates))* self.vanilla_CFR(nextHistory, target_player_i, iteration_t, p_list)
@@ -592,7 +597,6 @@ class LeducTrainer:
       for ai in node.possible_action:
         probability[ai] = node.strategy[ai]
 
-    #print(node.strategy, probability)
     sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=probability)
     nextHistory = history + self.ACTION_DICT[sampling_action]
 
@@ -658,8 +662,10 @@ class LeducTrainer:
 
       if iteration_t in [int(j)-1 for j in np.logspace(1, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
+        wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
 
     self.show_plot(method)
+    wandb.save()
 
 
   def show_plot(self, method):
@@ -670,7 +676,8 @@ class LeducTrainer:
     plt.xlabel("iterations")
     plt.ylabel("exploitability")
     plt.legend(loc = "lower left")
-    plt.show()
+    #path
+    #plt.savefig(image_file_path)
 
 
   # evaluate average strategy
@@ -760,7 +767,7 @@ class LeducTrainer:
       if len(history) == 0:
         cards = self.card_distribution()
         cards_candicates = [cards_candicate for cards_candicate in itertools.permutations(cards, self.NUM_PLAYERS+1)]
-        for cards_i in tqdm(cards_candicates):
+        for cards_i in cards_candicates:
           self.cards_i = cards_i
           nextHistory = "".join(cards_i[:self.NUM_PLAYERS])
           self.create_infoSets(nextHistory, target_player, po)
@@ -794,7 +801,6 @@ class LeducTrainer:
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
 
-    print(len(self.infoSets_dict))
     exploitability = 0
     best_response_strategy = {}
     for best_response_player_i in range(self.NUM_PLAYERS):
@@ -806,8 +812,11 @@ class LeducTrainer:
     return exploitability
 
 
+
+image_file_path = "/Users/yskamto/Desktop/yu5uke/Poker/Images/kuhn_poker" + now.strftime('%Y%m%d_%H%M%S') + ".png"
+txt_file_path = "/Users/yskamto/Desktop/yu5uke/Poker/Texts/kuhn_poker" + now.strftime('%Y%m%d_%H%M%S') + "txt"
+
 #学習
-"""
 leduc_trainer = LeducTrainer(train_iterations=10**5, num_players=2)
 #leduc_trainer.train("vanilla_CFR")
 leduc_trainer.train("chance_sampling_CFR")
@@ -826,7 +835,7 @@ df.index.name = "Node"
 df
 
 #print(df)
-"""
+
 
 print("")
 # random strategy_profileのexploitability
