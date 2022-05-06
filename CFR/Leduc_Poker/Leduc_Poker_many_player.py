@@ -13,8 +13,8 @@ import doctest
 from datetime import datetime
 now = datetime.now()
 
-import wandb
-wandb.init(project="leduc_poker_project", name="leduc_poker_many_player")
+#import wandb
+#wandb.init(project="leduc_poker_project", name="leduc_poker_many_player")
 
 #Node Class
 #information set node class definition
@@ -662,10 +662,10 @@ class LeducTrainer:
 
       if iteration_t in [int(j)-1 for j in np.logspace(1, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
-        wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
+        #wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
 
     self.show_plot(method)
-    wandb.save()
+    #wandb.save()
 
 
   def show_plot(self, method):

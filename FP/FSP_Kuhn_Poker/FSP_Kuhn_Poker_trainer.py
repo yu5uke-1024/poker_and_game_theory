@@ -14,6 +14,10 @@ import copy
 from sklearn.neural_network import MLPClassifier
 from collections import deque
 
+import wandb
+#wandb.init(project="FSP_project", name="fsp_dfs")
+wandb.init(project="FSP_project", name="fsp_rl")
+
 import FSP_Kuhn_Poker_supervised_learning
 import FSP_Kuhn_Poker_reinforcement_learning
 import FSP_Kuhn_Poker_generate_data
@@ -271,7 +275,6 @@ class KuhnTrainer:
     plt.xlabel("iterations")
     plt.ylabel("exploitability")
     plt.legend()
-    plt.show()
 
 
   #KuhnTrainer main method
@@ -318,14 +321,13 @@ class KuhnTrainer:
 
         #self.calc_best_response_value(self.avg_strategy, self.best_response_strategy, player_i, "", 1)
         FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t)
-        #FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
-        FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
+        FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
+        #FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
 
 
       if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
-        #print(iteration_t, self.exploitability_list[iteration_t])
-        #print(self.avg_strategy)
-        #print("")
+        wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
 
     self.show_plot("FSP")
+    wandb.save()

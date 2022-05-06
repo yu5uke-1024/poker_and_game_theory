@@ -1,0 +1,164 @@
+2022-05-02 22:58:26,192 INFO    MainThread:79592 [wandb_setup.py:_flush():75] Loading settings from /Users/yskamto/.config/wandb/settings
+2022-05-02 22:58:26,193 INFO    MainThread:79592 [wandb_setup.py:_flush():75] Loading settings from /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/settings
+2022-05-02 22:58:26,193 INFO    MainThread:79592 [wandb_setup.py:_flush():75] Loading settings from environment variables: {}
+2022-05-02 22:58:26,193 INFO    MainThread:79592 [wandb_setup.py:_flush():75] Inferring run settings from compute environment: {'program_relpath': 'FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_trainer.py', 'program': '/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_trainer.py'}
+2022-05-02 22:58:26,193 INFO    MainThread:79592 [wandb_init.py:_log_setup():437] Logging user logs to /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_225826-1baop5ey/logs/debug.log
+2022-05-02 22:58:26,193 INFO    MainThread:79592 [wandb_init.py:_log_setup():438] Logging internal logs to /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_225826-1baop5ey/logs/debug-internal.log
+2022-05-02 22:58:26,193 INFO    MainThread:79592 [wandb_init.py:init():471] calling init triggers
+2022-05-02 22:58:26,193 INFO    MainThread:79592 [wandb_init.py:init():474] wandb.init called with sweep_config: {}
+config: {}
+2022-05-02 22:58:26,193 INFO    MainThread:79592 [wandb_init.py:init():524] starting backend
+2022-05-02 22:58:26,193 INFO    MainThread:79592 [backend.py:_multiprocessing_setup():97] multiprocessing start_methods=spawn,fork,forkserver, using: spawn
+2022-05-02 22:58:26,202 INFO    MainThread:79592 [backend.py:ensure_launched():217] starting backend process...
+2022-05-02 22:58:26,210 INFO    MainThread:79592 [backend.py:ensure_launched():222] started backend process with pid: 79612
+2022-05-02 22:58:26,212 INFO    MainThread:79592 [wandb_init.py:init():533] backend started and connected
+2022-05-02 22:58:26,217 INFO    MainThread:79592 [wandb_init.py:init():597] updated telemetry
+2022-05-02 22:58:26,234 INFO    MainThread:79592 [wandb_init.py:init():628] communicating run to backend with 30 second timeout
+2022-05-02 22:58:27,667 INFO    MainThread:79592 [wandb_run.py:_on_init():1923] communicating current version
+2022-05-02 22:58:27,737 INFO    MainThread:79592 [wandb_run.py:_on_init():1927] got version response 
+2022-05-02 22:58:27,737 INFO    MainThread:79592 [wandb_init.py:init():659] starting run threads in backend
+2022-05-02 22:58:30,980 INFO    MainThread:79592 [wandb_run.py:_console_start():1897] atexit reg
+2022-05-02 22:58:30,981 INFO    MainThread:79592 [wandb_run.py:_redirect():1770] redirect: SettingsConsole.REDIRECT
+2022-05-02 22:58:30,981 INFO    MainThread:79592 [wandb_run.py:_redirect():1775] Redirecting console.
+2022-05-02 22:58:30,981 INFO    MainThread:79592 [wandb_run.py:_redirect():1831] Redirects installed.
+2022-05-02 22:58:30,982 INFO    MainThread:79592 [wandb_init.py:init():684] run started, returning control to user process
+2022-05-02 22:58:30,993 INFO    MainThread:79592 [wandb_setup.py:_flush():75] Loading settings from /Users/yskamto/.config/wandb/settings
+2022-05-02 22:58:30,993 INFO    MainThread:79592 [wandb_setup.py:_flush():75] Loading settings from /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/settings
+2022-05-02 22:58:30,993 INFO    MainThread:79592 [wandb_setup.py:_flush():75] Loading settings from environment variables: {}
+2022-05-02 22:58:30,993 INFO    MainThread:79592 [wandb_setup.py:_flush():75] Inferring run settings from compute environment: {'program_relpath': 'FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_trainer.py', 'program': '/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_trainer.py'}
+2022-05-02 22:58:30,993 INFO    MainThread:79592 [wandb_init.py:_log_setup():437] Logging user logs to /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_225830-391p23ta/logs/debug.log
+2022-05-02 22:58:30,993 INFO    MainThread:79592 [wandb_init.py:_log_setup():438] Logging internal logs to /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_225830-391p23ta/logs/debug-internal.log
+2022-05-02 22:58:30,993 INFO    MainThread:79592 [wandb_init.py:init():471] calling init triggers
+2022-05-02 22:58:30,993 INFO    MainThread:79592 [wandb_init.py:init():474] wandb.init called with sweep_config: {}
+config: {}
+2022-05-02 22:58:30,993 INFO    MainThread:79592 [wandb_init.py:init():519] wandb.init() called when a run is still active
+2022-05-02 22:58:30,994 INFO    MainThread:79592 [wandb_run.py:_atexit_cleanup():1866] got exitcode: 0
+2022-05-02 22:58:30,995 INFO    MainThread:79592 [wandb_run.py:_restore():1838] restore
+2022-05-02 22:58:33,514 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: file_counts {
+  wandb_count: 1
+}
+pusher_stats {
+  uploaded_bytes: 809
+  total_bytes: 809
+}
+
+2022-05-02 22:58:36,138 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: file_counts {
+  wandb_count: 1
+}
+pusher_stats {
+  uploaded_bytes: 809
+  total_bytes: 809
+}
+
+2022-05-02 22:58:36,366 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: file_counts {
+  wandb_count: 1
+}
+pusher_stats {
+  uploaded_bytes: 809
+  total_bytes: 809
+}
+
+2022-05-02 22:58:36,742 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 809
+  total_bytes: 10416
+}
+
+2022-05-02 22:58:36,846 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 809
+  total_bytes: 10416
+}
+
+2022-05-02 22:58:36,952 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 809
+  total_bytes: 10416
+}
+
+2022-05-02 22:58:37,055 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 7725
+  total_bytes: 10416
+}
+
+2022-05-02 22:58:37,158 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 7725
+  total_bytes: 10416
+}
+
+2022-05-02 22:58:37,262 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 10416
+  total_bytes: 10416
+}
+
+2022-05-02 22:58:37,365 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 10416
+  total_bytes: 10416
+}
+
+2022-05-02 22:58:37,472 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 10416
+  total_bytes: 10416
+}
+
+2022-05-02 22:58:37,578 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 10416
+  total_bytes: 10416
+}
+
+2022-05-02 22:58:37,684 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 10416
+  total_bytes: 10416
+}
+
+2022-05-02 22:58:38,217 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 10416
+  total_bytes: 10416
+}
+
+2022-05-02 22:58:38,682 INFO    MainThread:79592 [wandb_run.py:_on_finish():1995] got exit ret: done: true
+exit_result {
+}
+file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 10416
+  total_bytes: 10416
+}
+local_info {
+}
+
+2022-05-02 22:58:39,922 INFO    MainThread:79592 [wandb_run.py:_footer_history_summary_info():3102] rendering history
+2022-05-02 22:58:39,923 INFO    MainThread:79592 [wandb_run.py:_footer_history_summary_info():3134] rendering summary
+2022-05-02 22:58:39,924 INFO    MainThread:79592 [wandb_run.py:_footer_sync_info():3057] logging synced files
