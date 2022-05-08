@@ -1,0 +1,79 @@
+q-value [[-0.05      0.0975  ]
+ [-0.05     -0.1     ]
+ [-0.05      0.      ]
+ [-0.142625  0.1     ]
+ [ 0.05      0.1475  ]
+ [-0.05      0.1     ]]
+q-value [[-0.14235504  0.22585357]
+ [-0.14235504 -0.19471585]
+ [-0.04265414  0.04985045]
+ [-0.30122286  0.06260009]
+ [ 0.09735793  0.28022694]
+ [-0.14235504  0.60200568]]
+q-value [[-0.53380261  0.43096928]
+ [-0.75925493 -0.91352306]
+ [ 0.10366279  0.44785626]
+ [-0.73382984 -0.32605319]
+ [ 0.22500753  1.01043904]
+ [-0.36777544  1.62702244]]
+q-value [[-0.97433311 -0.17642094]
+ [-0.99976847 -1.84565832]
+ [ 0.32883651  1.24371305]
+ [-0.99732937 -0.28201102]
+ [ 0.48053273  1.47713956]
+ [-0.81892801  1.9973656 ]]
+q-value [[-0.99999997 -0.50803453]
+ [-1.         -1.99888725]
+ [ 0.57635059  0.88750045]
+ [-1.         -0.5802951 ]
+ [ 0.88960258  1.42503863]
+ [-0.99220016  2.        ]]
+q-value [[-1.         -0.91135818]
+ [-1.         -2.        ]
+ [ 0.40002504  0.87975195]
+ [-1.         -1.42204456]
+ [ 0.99991567  1.38628707]
+ [-0.99999997  2.        ]]
+q-value [[-1.         -1.64854295]
+ [-1.         -2.        ]
+ [ 0.47905032  0.48882881]
+ [-1.         -1.49140437]
+ [ 1.          1.46340654]
+ [-1.          2.        ]]
+q-value [[-1.         -1.33428229]
+ [-1.         -2.        ]
+ [ 0.78393022  0.75064351]
+ [-1.         -1.52078864]
+ [ 1.          1.51815304]
+ [-1.          2.        ]]
+  4%|█████▍                                                                                                                                                     | 350/10000 [00:01<00:41, 233.28it/s]
+q-value [[-1.         -1.23710399]
+ [-1.         -2.        ]
+ [ 0.66775928  0.71037965]
+ [-1.         -1.75798051]
+ [ 1.          1.43597076]
+
+
+
+ 18%|████████████████████████████▎                                                                                                                             | 1837/10000 [00:07<00:34, 236.15it/s]
+q-value [[-1.         -0.92772925]
+ [-1.         -2.        ]
+ [ 0.74002434  0.77806722]
+ [-1.         -1.42310854]
+ [ 1.          1.32102754]
+
+
+
+ 36%|███████████████████████████████████████████████████████▏                                                                                                  | 3587/10000 [00:15<00:27, 234.69it/s]
+Traceback (most recent call last):
+  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_excute.py", line 27, in <module>
+    kuhn_trainer.train(n=10, m=5, memory_size=10**3)
+  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_trainer.py", line 311, in train
+    D = FSP_Kuhn_Poker_generate_data.GenerateData().generate_data(self.avg_strategy, self.best_response_strategy, n, m, eta)
+  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_generate_data.py", line 48, in generate_data
+    mi_episode = self.one_episode("", self.strategy_uion(beta_strategy_player1, sigma_strategy_player0))
+  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_generate_data.py", line 87, in one_episode
+    return self.one_episode(nextHistory, strategy)
+  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_generate_data.py", line 91, in one_episode
+    sampling_action = np.random.choice(list(range(FSP_Kuhn_Poker_trainer.KuhnTrainer().NUM_ACTIONS)), p=strategy[infoSet])
+KeyboardInterrupt

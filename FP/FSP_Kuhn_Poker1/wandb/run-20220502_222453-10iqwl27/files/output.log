@@ -1,0 +1,115 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 43%|██████████████████████████████████████████████████████████████████████▌                                                                                            | 4327/10000 [03:05<04:03, 23.28it/s]
+Traceback (most recent call last):
+  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_excute.py", line 27, in <module>
+    kuhn_trainer.train(n=10, m=5, memory_size=10**2)
+  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_trainer.py", line 330, in train
+    wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/wandb/sdk/wandb_run.py", line 256, in wrapper
+    return func(self, *args, **kwargs)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/wandb/sdk/wandb_run.py", line 222, in wrapper
+    return func(self, *args, **kwargs)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/wandb/sdk/wandb_run.py", line 1548, in log
+    self._log(data=data, step=step, commit=commit)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/wandb/sdk/wandb_run.py", line 1339, in _log
+    self._partial_history_callback(data, step, commit)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/wandb/sdk/wandb_run.py", line 1228, in _partial_history_callback
+    self._backend.interface.publish_partial_history(
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/wandb/sdk/interface/interface.py", line 540, in publish_partial_history
+    self._publish_partial_history(partial_history)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/wandb/sdk/interface/interface_shared.py", line 62, in _publish_partial_history
+    self._publish(rec)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/wandb/sdk/interface/interface_queue.py", line 49, in _publish
+    raise Exception("The wandb backend process has shutdown")
+Exception: The wandb backend process has shutdown

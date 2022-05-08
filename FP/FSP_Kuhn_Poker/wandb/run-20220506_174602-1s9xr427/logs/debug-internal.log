@@ -1,0 +1,230 @@
+2022-05-06 17:46:02,488 INFO    MainThread:95050 [internal.py:wandb_internal():90] W&B internal server running at pid: 95050, started at: 2022-05-06 17:46:02.487394
+2022-05-06 17:46:02,488 INFO    WriterThread:95050 [datastore.py:open_for_write():75] open: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/run-1s9xr427.wandb
+2022-05-06 17:46:02,489 DEBUG   SenderThread:95050 [sender.py:send():232] send: header
+2022-05-06 17:46:02,489 DEBUG   SenderThread:95050 [sender.py:send():232] send: run
+2022-05-06 17:46:04,302 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: check_version
+2022-05-06 17:46:04,307 INFO    SenderThread:95050 [dir_watcher.py:__init__():166] watching files in: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files
+2022-05-06 17:46:04,307 INFO    SenderThread:95050 [sender.py:_start_run_threads():811] run started: 1s9xr427 with start time 1651826762
+2022-05-06 17:46:04,307 DEBUG   SenderThread:95050 [sender.py:send():232] send: summary
+2022-05-06 17:46:04,308 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:04,308 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: check_version
+2022-05-06 17:46:04,353 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: run_start
+2022-05-06 17:46:05,313 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_created():213] file/dir created: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/wandb-summary.json
+2022-05-06 17:46:06,253 DEBUG   HandlerThread:95050 [meta.py:__init__():35] meta init
+2022-05-06 17:46:06,254 DEBUG   HandlerThread:95050 [meta.py:__init__():49] meta init done
+2022-05-06 17:46:06,256 DEBUG   HandlerThread:95050 [meta.py:probe():209] probe
+2022-05-06 17:46:06,263 DEBUG   HandlerThread:95050 [meta.py:_setup_git():199] setup git
+2022-05-06 17:46:06,282 DEBUG   HandlerThread:95050 [meta.py:_setup_git():206] setup git done
+2022-05-06 17:46:06,282 DEBUG   HandlerThread:95050 [meta.py:_save_pip():53] save pip
+2022-05-06 17:46:06,283 DEBUG   HandlerThread:95050 [meta.py:_save_pip():67] save pip done
+2022-05-06 17:46:06,283 DEBUG   HandlerThread:95050 [meta.py:_save_conda():74] save conda
+2022-05-06 17:46:06,317 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_created():213] file/dir created: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/requirements.txt
+2022-05-06 17:46:06,318 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_created():213] file/dir created: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/conda-environment.yaml
+2022-05-06 17:46:07,475 DEBUG   HandlerThread:95050 [meta.py:_save_conda():84] save conda done
+2022-05-06 17:46:07,475 DEBUG   HandlerThread:95050 [meta.py:probe():247] probe done
+2022-05-06 17:46:07,477 DEBUG   SenderThread:95050 [sender.py:send():232] send: telemetry
+2022-05-06 17:46:07,477 DEBUG   SenderThread:95050 [sender.py:send():232] send: files
+2022-05-06 17:46:07,477 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-metadata.json with policy now
+2022-05-06 17:46:07,480 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-06 17:46:07,480 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: stop_status
+2022-05-06 17:46:07,491 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-06 17:46:07,492 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-06 17:46:07,494 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-06 17:46:07,499 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-06 17:46:07,507 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-06 17:46:07,534 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-06 17:46:07,647 DEBUG   SenderThread:95050 [sender.py:send():232] send: telemetry
+2022-05-06 17:46:07,647 DEBUG   SenderThread:95050 [sender.py:send():232] send: history
+2022-05-06 17:46:07,648 DEBUG   SenderThread:95050 [sender.py:send():232] send: summary
+2022-05-06 17:46:07,648 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:07,648 DEBUG   SenderThread:95050 [sender.py:send():232] send: history
+2022-05-06 17:46:07,648 DEBUG   SenderThread:95050 [sender.py:send():232] send: summary
+2022-05-06 17:46:07,648 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:07,648 DEBUG   SenderThread:95050 [sender.py:send():232] send: history
+2022-05-06 17:46:07,649 DEBUG   SenderThread:95050 [sender.py:send():232] send: summary
+2022-05-06 17:46:07,649 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:07,649 DEBUG   SenderThread:95050 [sender.py:send():232] send: history
+2022-05-06 17:46:07,649 DEBUG   SenderThread:95050 [sender.py:send():232] send: summary
+2022-05-06 17:46:07,650 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:07,650 DEBUG   SenderThread:95050 [sender.py:send():232] send: history
+2022-05-06 17:46:07,650 DEBUG   SenderThread:95050 [sender.py:send():232] send: summary
+2022-05-06 17:46:07,650 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:07,650 DEBUG   SenderThread:95050 [sender.py:send():232] send: history
+2022-05-06 17:46:07,650 DEBUG   SenderThread:95050 [sender.py:send():232] send: summary
+2022-05-06 17:46:07,650 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-06 17:46:07,651 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:07,651 DEBUG   SenderThread:95050 [sender.py:send():232] send: history
+2022-05-06 17:46:07,651 DEBUG   SenderThread:95050 [sender.py:send():232] send: summary
+2022-05-06 17:46:07,651 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:07,987 INFO    Thread-11 :95050 [upload_job.py:push():137] Uploaded file /var/folders/ms/jv8hjjsj6b1101s7472gr82h0000gn/T/tmpbo1cjgjxwandb/1rxdluuz-wandb-metadata.json
+2022-05-06 17:46:08,279 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-06 17:46:08,279 DEBUG   SenderThread:95050 [sender.py:send():232] send: history
+2022-05-06 17:46:08,279 DEBUG   SenderThread:95050 [sender.py:send():232] send: summary
+2022-05-06 17:46:08,280 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:08,328 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/conda-environment.yaml
+2022-05-06 17:46:08,328 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/wandb-summary.json
+2022-05-06 17:46:08,328 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_created():213] file/dir created: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:08,328 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_created():213] file/dir created: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/wandb-metadata.json
+2022-05-06 17:46:09,986 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-06 17:46:09,987 DEBUG   SenderThread:95050 [sender.py:send():232] send: history
+2022-05-06 17:46:09,987 DEBUG   SenderThread:95050 [sender.py:send():232] send: summary
+2022-05-06 17:46:09,988 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:10,332 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/wandb-summary.json
+2022-05-06 17:46:10,332 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:12,342 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:13,862 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-06 17:46:13,862 DEBUG   SenderThread:95050 [sender.py:send():232] send: history
+2022-05-06 17:46:13,862 DEBUG   SenderThread:95050 [sender.py:send():232] send: summary
+2022-05-06 17:46:13,862 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:14,352 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/wandb-summary.json
+2022-05-06 17:46:14,352 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:16,356 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:18,366 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:20,377 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:22,383 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:22,715 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-06 17:46:22,716 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: stop_status
+2022-05-06 17:46:22,947 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-06 17:46:22,947 DEBUG   SenderThread:95050 [sender.py:send():232] send: history
+2022-05-06 17:46:22,947 DEBUG   SenderThread:95050 [sender.py:send():232] send: summary
+2022-05-06 17:46:22,947 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:23,388 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/wandb-summary.json
+2022-05-06 17:46:24,393 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:26,403 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:28,414 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:30,423 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:33,435 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:34,439 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/config.yaml
+2022-05-06 17:46:35,444 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:37,454 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:38,060 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-06 17:46:38,061 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: stop_status
+2022-05-06 17:46:39,461 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:41,472 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:43,482 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:44,046 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-06 17:46:44,047 DEBUG   SenderThread:95050 [sender.py:send():232] send: history
+2022-05-06 17:46:44,047 DEBUG   SenderThread:95050 [sender.py:send():232] send: summary
+2022-05-06 17:46:44,047 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:44,126 DEBUG   SenderThread:95050 [sender.py:send():232] send: telemetry
+2022-05-06 17:46:44,488 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/wandb-summary.json
+2022-05-06 17:46:44,489 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:45,493 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:46,182 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-06 17:46:46,182 DEBUG   SenderThread:95050 [sender.py:send():232] send: exit
+2022-05-06 17:46:46,182 INFO    SenderThread:95050 [sender.py:send_exit():368] handling exit code: 0
+2022-05-06 17:46:46,183 INFO    SenderThread:95050 [sender.py:send_exit():370] handling runtime: 41
+2022-05-06 17:46:46,183 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:46,184 INFO    SenderThread:95050 [sender.py:send_exit():376] send defer
+2022-05-06 17:46:46,184 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: poll_exit
+2022-05-06 17:46:46,184 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: defer
+2022-05-06 17:46:46,184 INFO    HandlerThread:95050 [handler.py:handle_request_defer():164] handle defer: 0
+2022-05-06 17:46:46,184 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: defer
+2022-05-06 17:46:46,184 INFO    SenderThread:95050 [sender.py:send_request_defer():385] handle sender defer: 0
+2022-05-06 17:46:46,184 INFO    SenderThread:95050 [sender.py:transition_state():389] send defer: 1
+2022-05-06 17:46:46,185 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: defer
+2022-05-06 17:46:46,185 INFO    HandlerThread:95050 [handler.py:handle_request_defer():164] handle defer: 1
+2022-05-06 17:46:46,502 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/wandb-summary.json
+2022-05-06 17:46:46,503 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:47,974 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-06 17:46:47,974 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: defer
+2022-05-06 17:46:47,974 INFO    SenderThread:95050 [sender.py:send_request_defer():385] handle sender defer: 1
+2022-05-06 17:46:47,974 INFO    SenderThread:95050 [sender.py:transition_state():389] send defer: 2
+2022-05-06 17:46:47,975 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: poll_exit
+2022-05-06 17:46:47,975 DEBUG   SenderThread:95050 [sender.py:send():232] send: stats
+2022-05-06 17:46:47,976 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: defer
+2022-05-06 17:46:47,976 INFO    HandlerThread:95050 [handler.py:handle_request_defer():164] handle defer: 2
+2022-05-06 17:46:47,976 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: defer
+2022-05-06 17:46:47,976 INFO    SenderThread:95050 [sender.py:send_request_defer():385] handle sender defer: 2
+2022-05-06 17:46:47,976 INFO    SenderThread:95050 [sender.py:transition_state():389] send defer: 3
+2022-05-06 17:46:47,977 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: defer
+2022-05-06 17:46:47,977 INFO    HandlerThread:95050 [handler.py:handle_request_defer():164] handle defer: 3
+2022-05-06 17:46:47,977 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: defer
+2022-05-06 17:46:47,977 INFO    SenderThread:95050 [sender.py:send_request_defer():385] handle sender defer: 3
+2022-05-06 17:46:47,977 INFO    SenderThread:95050 [sender.py:transition_state():389] send defer: 4
+2022-05-06 17:46:47,977 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: defer
+2022-05-06 17:46:47,977 INFO    HandlerThread:95050 [handler.py:handle_request_defer():164] handle defer: 4
+2022-05-06 17:46:47,977 DEBUG   SenderThread:95050 [sender.py:send():232] send: summary
+2022-05-06 17:46:47,978 INFO    SenderThread:95050 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-06 17:46:47,978 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: defer
+2022-05-06 17:46:47,978 INFO    SenderThread:95050 [sender.py:send_request_defer():385] handle sender defer: 4
+2022-05-06 17:46:47,978 INFO    SenderThread:95050 [sender.py:transition_state():389] send defer: 5
+2022-05-06 17:46:47,978 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: defer
+2022-05-06 17:46:47,978 INFO    HandlerThread:95050 [handler.py:handle_request_defer():164] handle defer: 5
+2022-05-06 17:46:47,978 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: defer
+2022-05-06 17:46:47,978 INFO    SenderThread:95050 [sender.py:send_request_defer():385] handle sender defer: 5
+2022-05-06 17:46:48,077 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-06 17:46:48,179 INFO    SenderThread:95050 [sender.py:transition_state():389] send defer: 6
+2022-05-06 17:46:48,179 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: poll_exit
+2022-05-06 17:46:48,179 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: defer
+2022-05-06 17:46:48,179 INFO    HandlerThread:95050 [handler.py:handle_request_defer():164] handle defer: 6
+2022-05-06 17:46:48,180 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: defer
+2022-05-06 17:46:48,180 INFO    SenderThread:95050 [sender.py:send_request_defer():385] handle sender defer: 6
+2022-05-06 17:46:48,180 INFO    SenderThread:95050 [dir_watcher.py:finish():279] shutting down directory watcher
+2022-05-06 17:46:48,283 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-06 17:46:48,510 INFO    Thread-7  :95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/config.yaml
+2022-05-06 17:46:48,512 INFO    SenderThread:95050 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/wandb-summary.json
+2022-05-06 17:46:48,513 INFO    SenderThread:95050 [dir_watcher.py:finish():309] scan: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files
+2022-05-06 17:46:48,513 INFO    SenderThread:95050 [dir_watcher.py:finish():323] scan save: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/requirements.txt requirements.txt
+2022-05-06 17:46:48,514 INFO    SenderThread:95050 [dir_watcher.py:finish():323] scan save: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log output.log
+2022-05-06 17:46:48,514 INFO    SenderThread:95050 [dir_watcher.py:finish():323] scan save: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/config.yaml config.yaml
+2022-05-06 17:46:48,522 INFO    SenderThread:95050 [dir_watcher.py:finish():323] scan save: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/wandb-summary.json wandb-summary.json
+2022-05-06 17:46:48,529 INFO    SenderThread:95050 [dir_watcher.py:finish():323] scan save: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/conda-environment.yaml conda-environment.yaml
+2022-05-06 17:46:48,530 INFO    SenderThread:95050 [dir_watcher.py:finish():323] scan save: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/wandb-metadata.json wandb-metadata.json
+2022-05-06 17:46:48,530 INFO    SenderThread:95050 [sender.py:transition_state():389] send defer: 7
+2022-05-06 17:46:48,532 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: poll_exit
+2022-05-06 17:46:48,533 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: defer
+2022-05-06 17:46:48,536 INFO    HandlerThread:95050 [handler.py:handle_request_defer():164] handle defer: 7
+2022-05-06 17:46:48,536 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: defer
+2022-05-06 17:46:48,537 INFO    SenderThread:95050 [sender.py:send_request_defer():385] handle sender defer: 7
+2022-05-06 17:46:48,537 INFO    SenderThread:95050 [file_pusher.py:finish():145] shutting down file pusher
+2022-05-06 17:46:48,635 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-06 17:46:48,635 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: poll_exit
+2022-05-06 17:46:48,739 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-06 17:46:48,739 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: poll_exit
+2022-05-06 17:46:48,841 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-06 17:46:48,842 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: poll_exit
+2022-05-06 17:46:48,945 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-06 17:46:48,946 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: poll_exit
+2022-05-06 17:46:49,050 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-06 17:46:49,051 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: poll_exit
+2022-05-06 17:46:49,082 INFO    Thread-14 :95050 [upload_job.py:push():137] Uploaded file /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/config.yaml
+2022-05-06 17:46:49,084 INFO    Thread-15 :95050 [upload_job.py:push():137] Uploaded file /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/wandb-summary.json
+2022-05-06 17:46:49,098 INFO    Thread-16 :95050 [upload_job.py:push():137] Uploaded file /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/conda-environment.yaml
+2022-05-06 17:46:49,106 INFO    Thread-13 :95050 [upload_job.py:push():137] Uploaded file /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/output.log
+2022-05-06 17:46:49,139 INFO    Thread-12 :95050 [upload_job.py:push():137] Uploaded file /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/files/requirements.txt
+2022-05-06 17:46:49,154 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-06 17:46:49,155 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: poll_exit
+2022-05-06 17:46:49,258 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-06 17:46:49,259 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: poll_exit
+2022-05-06 17:46:49,345 INFO    Thread-6  :95050 [sender.py:transition_state():389] send defer: 8
+2022-05-06 17:46:49,346 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: defer
+2022-05-06 17:46:49,347 INFO    HandlerThread:95050 [handler.py:handle_request_defer():164] handle defer: 8
+2022-05-06 17:46:49,347 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: defer
+2022-05-06 17:46:49,347 INFO    SenderThread:95050 [sender.py:send_request_defer():385] handle sender defer: 8
+2022-05-06 17:46:49,363 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-06 17:46:49,831 INFO    SenderThread:95050 [sender.py:transition_state():389] send defer: 9
+2022-05-06 17:46:49,832 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: poll_exit
+2022-05-06 17:46:49,833 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: defer
+2022-05-06 17:46:49,833 INFO    HandlerThread:95050 [handler.py:handle_request_defer():164] handle defer: 9
+2022-05-06 17:46:49,834 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: defer
+2022-05-06 17:46:49,834 INFO    SenderThread:95050 [sender.py:send_request_defer():385] handle sender defer: 9
+2022-05-06 17:46:49,834 INFO    SenderThread:95050 [sender.py:transition_state():389] send defer: 10
+2022-05-06 17:46:49,835 DEBUG   SenderThread:95050 [sender.py:send():232] send: final
+2022-05-06 17:46:49,835 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: defer
+2022-05-06 17:46:49,835 DEBUG   SenderThread:95050 [sender.py:send():232] send: footer
+2022-05-06 17:46:49,835 INFO    HandlerThread:95050 [handler.py:handle_request_defer():164] handle defer: 10
+2022-05-06 17:46:49,835 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: defer
+2022-05-06 17:46:49,836 INFO    SenderThread:95050 [sender.py:send_request_defer():385] handle sender defer: 10
+2022-05-06 17:46:49,937 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-06 17:46:49,938 DEBUG   SenderThread:95050 [sender.py:send_request():246] send_request: poll_exit
+2022-05-06 17:46:49,938 INFO    SenderThread:95050 [file_pusher.py:join():150] waiting for file pusher
+2022-05-06 17:46:50,413 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: sampled_history
+2022-05-06 17:46:50,413 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: get_summary
+2022-05-06 17:46:50,414 DEBUG   HandlerThread:95050 [handler.py:handle_request():141] handle_request: shutdown
+2022-05-06 17:46:50,414 INFO    HandlerThread:95050 [handler.py:finish():806] shutting down handler
+2022-05-06 17:46:50,840 INFO    WriterThread:95050 [datastore.py:close():279] close: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220506_174602-1s9xr427/run-1s9xr427.wandb
+2022-05-06 17:46:51,316 INFO    SenderThread:95050 [sender.py:finish():1106] shutting down sender
+2022-05-06 17:46:51,317 INFO    SenderThread:95050 [file_pusher.py:finish():145] shutting down file pusher
+2022-05-06 17:46:51,317 INFO    SenderThread:95050 [file_pusher.py:join():150] waiting for file pusher
+2022-05-06 17:46:51,327 INFO    MainThread:95050 [internal.py:handle_exit():80] Internal process exited

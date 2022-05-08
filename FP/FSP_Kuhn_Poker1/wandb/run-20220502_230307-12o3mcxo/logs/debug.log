@@ -1,0 +1,87 @@
+2022-05-02 23:03:07,229 INFO    MainThread:79866 [wandb_setup.py:_flush():75] Loading settings from /Users/yskamto/.config/wandb/settings
+2022-05-02 23:03:07,229 INFO    MainThread:79866 [wandb_setup.py:_flush():75] Loading settings from /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/settings
+2022-05-02 23:03:07,229 INFO    MainThread:79866 [wandb_setup.py:_flush():75] Loading settings from environment variables: {}
+2022-05-02 23:03:07,229 INFO    MainThread:79866 [wandb_setup.py:_flush():75] Inferring run settings from compute environment: {'program_relpath': 'FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_excute.py', 'program': '/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_excute.py'}
+2022-05-02 23:03:07,230 INFO    MainThread:79866 [wandb_init.py:_log_setup():437] Logging user logs to /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230307-12o3mcxo/logs/debug.log
+2022-05-02 23:03:07,230 INFO    MainThread:79866 [wandb_init.py:_log_setup():438] Logging internal logs to /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230307-12o3mcxo/logs/debug-internal.log
+2022-05-02 23:03:07,230 INFO    MainThread:79866 [wandb_init.py:init():471] calling init triggers
+2022-05-02 23:03:07,230 INFO    MainThread:79866 [wandb_init.py:init():474] wandb.init called with sweep_config: {}
+config: {}
+2022-05-02 23:03:07,230 INFO    MainThread:79866 [wandb_init.py:init():524] starting backend
+2022-05-02 23:03:07,230 INFO    MainThread:79866 [backend.py:_multiprocessing_setup():97] multiprocessing start_methods=spawn,fork,forkserver, using: spawn
+2022-05-02 23:03:07,245 INFO    MainThread:79866 [backend.py:ensure_launched():217] starting backend process...
+2022-05-02 23:03:07,251 INFO    MainThread:79866 [backend.py:ensure_launched():222] started backend process with pid: 79888
+2022-05-02 23:03:07,253 INFO    MainThread:79866 [wandb_init.py:init():533] backend started and connected
+2022-05-02 23:03:07,260 INFO    MainThread:79866 [wandb_init.py:init():597] updated telemetry
+2022-05-02 23:03:07,281 INFO    MainThread:79866 [wandb_init.py:init():628] communicating run to backend with 30 second timeout
+2022-05-02 23:03:35,655 ERROR   Thread-1  :79866 [retry.py:__call__():126] Retry attempt failed:
+Traceback (most recent call last):
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/urllib3/connectionpool.py", line 445, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/urllib3/connectionpool.py", line 440, in _make_request
+    httplib_response = conn.getresponse()
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/http/client.py", line 1344, in getresponse
+    response.begin()
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/http/client.py", line 307, in begin
+    version, status, reason = self._read_status()
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/http/client.py", line 268, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/socket.py", line 669, in readinto
+    return self._sock.recv_into(b)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/ssl.py", line 1241, in recv_into
+    return self.read(nbytes, buffer)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/ssl.py", line 1099, in read
+    return self._sslobj.read(len, buffer)
+socket.timeout: The read operation timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/requests/adapters.py", line 439, in send
+    resp = conn.urlopen(
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/urllib3/connectionpool.py", line 755, in urlopen
+    retries = retries.increment(
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/urllib3/util/retry.py", line 532, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/urllib3/packages/six.py", line 770, in reraise
+    raise value
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/urllib3/connectionpool.py", line 699, in urlopen
+    httplib_response = self._make_request(
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/urllib3/connectionpool.py", line 447, in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/urllib3/connectionpool.py", line 336, in _raise_timeout
+    raise ReadTimeoutError(
+urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='api.wandb.ai', port=443): Read timed out. (read timeout=10)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/wandb/sdk/lib/retry.py", line 102, in __call__
+    result = self._call_fn(*args, **kwargs)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/wandb/sdk/internal/internal_api.py", line 140, in execute
+    return self.client.execute(*args, **kwargs)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/client.py", line 52, in execute
+    result = self._get_result(document, *args, **kwargs)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/client.py", line 60, in _get_result
+    return self.transport.execute(document, *args, **kwargs)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/transport/requests.py", line 38, in execute
+    request = requests.post(self.url, **post_args)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/requests/api.py", line 119, in post
+    return request('post', url, data=data, json=json, **kwargs)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/requests/api.py", line 61, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/requests/sessions.py", line 542, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/requests/sessions.py", line 655, in send
+    r = adapter.send(request, **kwargs)
+  File "/Users/yskamto/miniforge3/envs/yskamto/lib/python3.8/site-packages/requests/adapters.py", line 529, in send
+    raise ReadTimeout(e, request=request)
+requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='api.wandb.ai', port=443): Read timed out. (read timeout=10)
+2022-05-02 23:03:37,287 INFO    MainThread:79866 [interface_shared.py:_communicate_run():326] couldn't get run from backend
+2022-05-02 23:03:37,287 ERROR   MainThread:79866 [wandb_init.py:init():633] backend process timed out
+2022-05-02 23:03:37,288 ERROR   MainThread:79866 [wandb_init.py:init():644] encountered error: Error communicating with wandb process
+try: wandb.init(settings=wandb.Settings(start_method='fork'))
+or:  wandb.init(settings=wandb.Settings(start_method='thread'))
+For more info see: https://docs.wandb.ai/library/init#init-start-error
+2022-05-02 23:04:03,799 INFO    MainThread:79866 [wandb_init.py:teardown():285] tearing down wandb.init

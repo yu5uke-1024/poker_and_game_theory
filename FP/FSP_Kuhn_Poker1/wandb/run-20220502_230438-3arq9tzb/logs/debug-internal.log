@@ -1,0 +1,498 @@
+2022-05-02 23:04:38,980 INFO    MainThread:79962 [internal.py:wandb_internal():90] W&B internal server running at pid: 79962, started at: 2022-05-02 23:04:38.979594
+2022-05-02 23:04:38,981 INFO    WriterThread:79962 [datastore.py:open_for_write():75] open: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/run-3arq9tzb.wandb
+2022-05-02 23:04:38,981 DEBUG   SenderThread:79962 [sender.py:send():232] send: header
+2022-05-02 23:04:38,981 DEBUG   SenderThread:79962 [sender.py:send():232] send: run
+2022-05-02 23:04:40,210 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: check_version
+2022-05-02 23:04:40,216 INFO    SenderThread:79962 [dir_watcher.py:__init__():166] watching files in: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files
+2022-05-02 23:04:40,216 INFO    SenderThread:79962 [sender.py:_start_run_threads():811] run started: 3arq9tzb with start time 1651500278
+2022-05-02 23:04:40,216 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:04:40,217 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:04:40,217 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: check_version
+2022-05-02 23:04:40,269 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: run_start
+2022-05-02 23:04:41,224 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_created():213] file/dir created: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-summary.json
+2022-05-02 23:04:42,186 DEBUG   HandlerThread:79962 [meta.py:__init__():35] meta init
+2022-05-02 23:04:42,190 DEBUG   HandlerThread:79962 [meta.py:__init__():49] meta init done
+2022-05-02 23:04:42,190 DEBUG   HandlerThread:79962 [meta.py:probe():209] probe
+2022-05-02 23:04:42,193 DEBUG   HandlerThread:79962 [meta.py:_setup_git():199] setup git
+2022-05-02 23:04:42,215 DEBUG   HandlerThread:79962 [meta.py:_setup_git():206] setup git done
+2022-05-02 23:04:42,216 DEBUG   HandlerThread:79962 [meta.py:_save_pip():53] save pip
+2022-05-02 23:04:42,216 DEBUG   HandlerThread:79962 [meta.py:_save_pip():67] save pip done
+2022-05-02 23:04:42,216 DEBUG   HandlerThread:79962 [meta.py:_save_conda():74] save conda
+2022-05-02 23:04:42,228 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_created():213] file/dir created: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/conda-environment.yaml
+2022-05-02 23:04:42,228 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_created():213] file/dir created: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/requirements.txt
+2022-05-02 23:04:43,442 DEBUG   HandlerThread:79962 [meta.py:_save_conda():84] save conda done
+2022-05-02 23:04:43,442 DEBUG   HandlerThread:79962 [meta.py:probe():247] probe done
+2022-05-02 23:04:43,444 DEBUG   SenderThread:79962 [sender.py:send():232] send: telemetry
+2022-05-02 23:04:43,445 DEBUG   SenderThread:79962 [sender.py:send():232] send: files
+2022-05-02 23:04:43,445 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-metadata.json with policy now
+2022-05-02 23:04:43,447 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:04:43,447 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:04:43,483 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:04:43,484 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:04:43,484 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:04:43,484 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:04:43,548 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:04:43,549 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:04:43,617 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:04:43,762 DEBUG   SenderThread:79962 [sender.py:send():232] send: telemetry
+2022-05-02 23:04:43,762 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:04:43,762 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:04:43,763 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:04:43,763 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:04:43,763 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:04:43,763 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:04:43,764 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:04:43,764 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:04:43,764 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:04:43,764 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:04:43,764 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:04:43,764 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:04:43,764 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:04:43,764 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:04:43,764 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:04:43,764 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:04:43,764 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:04:43,765 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:04:43,765 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:04:43,765 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:04:43,765 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:04:43,840 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:04:43,840 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:04:43,840 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:04:43,840 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:04:44,116 INFO    Thread-11 :79962 [upload_job.py:push():137] Uploaded file /var/folders/ms/jv8hjjsj6b1101s7472gr82h0000gn/T/tmpfkn523ukwandb/8d4po270-wandb-metadata.json
+2022-05-02 23:04:44,165 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:04:44,165 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:04:44,165 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:04:44,165 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:04:44,238 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-summary.json
+2022-05-02 23:04:44,238 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/conda-environment.yaml
+2022-05-02 23:04:44,238 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_created():213] file/dir created: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:04:44,238 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_created():213] file/dir created: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-metadata.json
+2022-05-02 23:04:45,010 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:04:45,010 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:04:45,010 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:04:45,011 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:04:45,239 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-summary.json
+2022-05-02 23:04:46,244 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:04:46,946 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:04:46,946 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:04:46,946 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:04:46,946 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:04:47,249 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-summary.json
+2022-05-02 23:04:48,254 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:04:50,265 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:04:51,350 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:04:51,350 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:04:51,350 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:04:51,350 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:04:52,276 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-summary.json
+2022-05-02 23:04:52,276 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:04:54,286 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:04:56,295 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:04:58,303 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:04:58,787 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:04:58,787 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:05:00,313 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:00,853 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:05:00,854 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:05:00,854 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:05:00,855 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:05:01,315 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-summary.json
+2022-05-02 23:05:02,321 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:04,331 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:06,340 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:08,350 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:10,356 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:10,356 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/config.yaml
+2022-05-02 23:05:12,366 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:14,108 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:05:14,108 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:05:14,377 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:16,387 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:18,394 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:20,403 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:22,407 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:05:22,407 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:05:22,407 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:05:22,407 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:05:22,411 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-summary.json
+2022-05-02 23:05:22,411 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:24,422 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:26,433 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:28,441 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:29,426 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:05:29,426 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:05:30,451 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:32,312 DEBUG   SenderThread:79962 [sender.py:send():232] send: stats
+2022-05-02 23:05:32,462 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:34,473 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:36,474 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:38,484 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:40,492 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:42,503 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:44,512 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:44,743 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:05:44,743 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:05:46,522 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:48,527 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:50,537 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:53,548 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:55,557 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:57,564 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:05:59,568 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:00,033 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:06:00,033 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:06:01,581 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:03,591 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:05,602 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:07,610 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:09,621 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:10,975 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:06:10,975 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:06:10,975 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:06:10,975 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:06:11,624 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-summary.json
+2022-05-02 23:06:11,624 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:13,635 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:15,224 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:06:15,224 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:06:15,640 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:17,647 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:19,658 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:21,668 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:23,673 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:24,646 DEBUG   SenderThread:79962 [sender.py:send():232] send: stats
+2022-05-02 23:06:25,678 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:27,689 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:29,699 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:30,468 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:06:30,469 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:06:31,705 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:33,716 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:35,722 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:37,733 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:39,738 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:41,745 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:43,756 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:45,672 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:06:45,672 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:06:45,763 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:47,769 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:49,779 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:51,790 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:53,796 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:55,804 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:57,814 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:06:59,822 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:00,864 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:07:00,865 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:07:01,833 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:03,841 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:05,851 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:07,861 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:09,869 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:11,874 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:13,884 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:16,076 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:07:16,076 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:07:16,899 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:17,177 DEBUG   SenderThread:79962 [sender.py:send():232] send: stats
+2022-05-02 23:07:18,906 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:20,913 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:22,916 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:24,921 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:26,932 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:28,938 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:30,941 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:31,289 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:07:31,289 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:07:32,952 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:34,955 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:36,962 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:38,971 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:40,977 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:42,987 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:44,994 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:46,544 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:07:46,544 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:07:47,005 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:49,015 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:51,023 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:53,033 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:55,044 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:57,051 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:07:59,061 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:00,384 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: partial_history
+2022-05-02 23:08:00,385 DEBUG   SenderThread:79962 [sender.py:send():232] send: history
+2022-05-02 23:08:00,385 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:08:00,386 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:08:01,069 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-summary.json
+2022-05-02 23:08:01,069 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:01,716 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:08:01,716 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:08:03,077 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:05,085 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:07,095 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:09,106 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:09,506 DEBUG   SenderThread:79962 [sender.py:send():232] send: stats
+2022-05-02 23:08:11,113 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:13,122 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:15,133 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:17,143 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:17,409 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:08:17,410 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:08:19,153 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:21,159 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:23,164 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:25,174 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:27,180 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:29,188 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:31,196 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:32,610 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:08:32,610 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:08:33,204 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:35,213 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:37,220 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:39,224 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:41,235 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:43,244 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:45,256 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:47,262 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:47,780 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:08:47,781 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:08:49,272 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:51,278 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:53,288 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:55,294 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:08:57,303 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:00,319 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:01,976 DEBUG   SenderThread:79962 [sender.py:send():232] send: stats
+2022-05-02 23:09:02,326 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:03,060 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:09:03,060 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:09:04,334 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:06,344 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:08,355 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:10,365 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:12,371 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:14,378 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:16,382 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:18,257 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:09:18,258 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:09:18,392 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:20,403 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:22,412 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:24,416 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:26,421 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:28,428 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:30,436 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:32,442 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:33,441 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:09:33,442 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:09:34,451 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:36,461 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:38,472 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:40,482 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:42,489 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:44,494 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:46,502 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:48,506 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:48,648 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:09:48,648 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:09:50,511 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:52,517 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:54,287 DEBUG   SenderThread:79962 [sender.py:send():232] send: stats
+2022-05-02 23:09:54,527 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:56,538 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:09:58,548 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:00,556 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:02,564 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:03,867 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:10:03,868 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:10:04,573 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:06,582 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:08,589 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:10,597 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:13,611 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:14,614 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:17,628 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:19,096 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:10:19,096 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:10:19,638 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:21,645 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:23,655 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:25,661 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:27,670 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:29,680 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:31,690 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:33,701 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:34,295 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:10:34,295 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:10:35,707 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:37,717 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:39,725 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:41,734 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:43,745 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:45,755 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:47,182 DEBUG   SenderThread:79962 [sender.py:send():232] send: stats
+2022-05-02 23:10:47,762 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:49,526 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:10:49,526 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:10:49,770 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:51,773 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:53,784 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:55,794 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:57,802 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:10:59,812 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:01,819 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:03,830 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:04,747 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:11:04,747 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:11:05,840 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:07,851 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:09,858 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:11,866 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:13,876 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:15,886 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:17,897 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:19,907 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:19,947 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:11:19,947 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:11:21,916 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:23,923 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:25,934 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:27,945 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:29,952 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:31,963 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:33,972 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:35,147 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-02 23:11:35,147 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: stop_status
+2022-05-02 23:11:35,975 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:37,986 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:38,540 WARNING MainThread:79962 [internal.py:wandb_internal():153] Internal process interrupt: 1
+2022-05-02 23:11:38,549 DEBUG   SenderThread:79962 [sender.py:send():232] send: telemetry
+2022-05-02 23:11:39,923 DEBUG   SenderThread:79962 [sender.py:send():232] send: stats
+2022-05-02 23:11:39,996 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:41,319 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:41,319 DEBUG   SenderThread:79962 [sender.py:send():232] send: exit
+2022-05-02 23:11:41,320 INFO    SenderThread:79962 [sender.py:send_exit():368] handling exit code: 255
+2022-05-02 23:11:41,321 INFO    SenderThread:79962 [sender.py:send_exit():370] handling runtime: 421
+2022-05-02 23:11:41,322 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:11:41,322 INFO    SenderThread:79962 [sender.py:send_exit():376] send defer
+2022-05-02 23:11:41,322 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:41,322 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: defer
+2022-05-02 23:11:41,323 INFO    HandlerThread:79962 [handler.py:handle_request_defer():164] handle defer: 0
+2022-05-02 23:11:41,323 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: defer
+2022-05-02 23:11:41,323 INFO    SenderThread:79962 [sender.py:send_request_defer():385] handle sender defer: 0
+2022-05-02 23:11:41,324 INFO    SenderThread:79962 [sender.py:transition_state():389] send defer: 1
+2022-05-02 23:11:41,324 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: defer
+2022-05-02 23:11:41,324 INFO    HandlerThread:79962 [handler.py:handle_request_defer():164] handle defer: 1
+2022-05-02 23:11:42,007 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-summary.json
+2022-05-02 23:11:42,008 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:42,865 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: defer
+2022-05-02 23:11:42,865 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:42,865 INFO    SenderThread:79962 [sender.py:send_request_defer():385] handle sender defer: 1
+2022-05-02 23:11:42,865 INFO    SenderThread:79962 [sender.py:transition_state():389] send defer: 2
+2022-05-02 23:11:42,865 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:42,866 DEBUG   SenderThread:79962 [sender.py:send():232] send: stats
+2022-05-02 23:11:42,866 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: defer
+2022-05-02 23:11:42,866 INFO    HandlerThread:79962 [handler.py:handle_request_defer():164] handle defer: 2
+2022-05-02 23:11:42,866 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: defer
+2022-05-02 23:11:42,866 INFO    SenderThread:79962 [sender.py:send_request_defer():385] handle sender defer: 2
+2022-05-02 23:11:42,866 INFO    SenderThread:79962 [sender.py:transition_state():389] send defer: 3
+2022-05-02 23:11:42,867 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: defer
+2022-05-02 23:11:42,867 INFO    HandlerThread:79962 [handler.py:handle_request_defer():164] handle defer: 3
+2022-05-02 23:11:42,867 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: defer
+2022-05-02 23:11:42,867 INFO    SenderThread:79962 [sender.py:send_request_defer():385] handle sender defer: 3
+2022-05-02 23:11:42,867 INFO    SenderThread:79962 [sender.py:transition_state():389] send defer: 4
+2022-05-02 23:11:42,867 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: defer
+2022-05-02 23:11:42,867 INFO    HandlerThread:79962 [handler.py:handle_request_defer():164] handle defer: 4
+2022-05-02 23:11:42,867 DEBUG   SenderThread:79962 [sender.py:send():232] send: summary
+2022-05-02 23:11:42,868 INFO    SenderThread:79962 [sender.py:_save_file():946] saving file wandb-summary.json with policy end
+2022-05-02 23:11:42,868 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: defer
+2022-05-02 23:11:42,868 INFO    SenderThread:79962 [sender.py:send_request_defer():385] handle sender defer: 4
+2022-05-02 23:11:42,868 INFO    SenderThread:79962 [sender.py:transition_state():389] send defer: 5
+2022-05-02 23:11:42,868 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: defer
+2022-05-02 23:11:42,868 INFO    HandlerThread:79962 [handler.py:handle_request_defer():164] handle defer: 5
+2022-05-02 23:11:42,868 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: defer
+2022-05-02 23:11:42,868 INFO    SenderThread:79962 [sender.py:send_request_defer():385] handle sender defer: 5
+2022-05-02 23:11:42,971 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:43,013 INFO    Thread-7  :79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-summary.json
+2022-05-02 23:11:43,077 INFO    SenderThread:79962 [sender.py:transition_state():389] send defer: 6
+2022-05-02 23:11:43,078 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:43,079 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: defer
+2022-05-02 23:11:43,079 INFO    HandlerThread:79962 [handler.py:handle_request_defer():164] handle defer: 6
+2022-05-02 23:11:43,079 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: defer
+2022-05-02 23:11:43,079 INFO    SenderThread:79962 [sender.py:send_request_defer():385] handle sender defer: 6
+2022-05-02 23:11:43,079 INFO    SenderThread:79962 [dir_watcher.py:finish():279] shutting down directory watcher
+2022-05-02 23:11:43,186 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:44,016 INFO    SenderThread:79962 [dir_watcher.py:_on_file_modified():226] file/dir modified: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/config.yaml
+2022-05-02 23:11:44,017 INFO    SenderThread:79962 [dir_watcher.py:finish():309] scan: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files
+2022-05-02 23:11:44,018 INFO    SenderThread:79962 [dir_watcher.py:finish():323] scan save: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/requirements.txt requirements.txt
+2022-05-02 23:11:44,018 INFO    SenderThread:79962 [dir_watcher.py:finish():323] scan save: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log output.log
+2022-05-02 23:11:44,025 INFO    SenderThread:79962 [dir_watcher.py:finish():323] scan save: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/config.yaml config.yaml
+2022-05-02 23:11:44,029 INFO    SenderThread:79962 [dir_watcher.py:finish():323] scan save: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-summary.json wandb-summary.json
+2022-05-02 23:11:44,036 INFO    SenderThread:79962 [dir_watcher.py:finish():323] scan save: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/conda-environment.yaml conda-environment.yaml
+2022-05-02 23:11:44,037 INFO    SenderThread:79962 [dir_watcher.py:finish():323] scan save: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-metadata.json wandb-metadata.json
+2022-05-02 23:11:44,037 INFO    SenderThread:79962 [sender.py:transition_state():389] send defer: 7
+2022-05-02 23:11:44,038 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:44,046 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: defer
+2022-05-02 23:11:44,047 INFO    HandlerThread:79962 [handler.py:handle_request_defer():164] handle defer: 7
+2022-05-02 23:11:44,048 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: defer
+2022-05-02 23:11:44,049 INFO    SenderThread:79962 [sender.py:send_request_defer():385] handle sender defer: 7
+2022-05-02 23:11:44,049 INFO    SenderThread:79962 [file_pusher.py:finish():145] shutting down file pusher
+2022-05-02 23:11:44,148 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:44,148 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:44,257 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:44,258 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:44,365 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:44,366 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:44,473 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:44,474 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:44,581 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:44,582 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:44,607 INFO    Thread-16 :79962 [upload_job.py:push():137] Uploaded file /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/conda-environment.yaml
+2022-05-02 23:11:44,613 INFO    Thread-13 :79962 [upload_job.py:push():137] Uploaded file /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/output.log
+2022-05-02 23:11:44,615 INFO    Thread-15 :79962 [upload_job.py:push():137] Uploaded file /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/wandb-summary.json
+2022-05-02 23:11:44,624 INFO    Thread-14 :79962 [upload_job.py:push():137] Uploaded file /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/config.yaml
+2022-05-02 23:11:44,687 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:44,688 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:44,795 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:44,796 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:44,852 INFO    Thread-12 :79962 [upload_job.py:push():137] Uploaded file /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/files/requirements.txt
+2022-05-02 23:11:44,899 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:44,900 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:45,002 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:45,002 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:45,058 INFO    Thread-6  :79962 [sender.py:transition_state():389] send defer: 8
+2022-05-02 23:11:45,059 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: defer
+2022-05-02 23:11:45,059 INFO    HandlerThread:79962 [handler.py:handle_request_defer():164] handle defer: 8
+2022-05-02 23:11:45,060 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: defer
+2022-05-02 23:11:45,060 INFO    SenderThread:79962 [sender.py:send_request_defer():385] handle sender defer: 8
+2022-05-02 23:11:45,106 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:45,643 INFO    SenderThread:79962 [sender.py:transition_state():389] send defer: 9
+2022-05-02 23:11:45,644 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:45,645 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: defer
+2022-05-02 23:11:45,645 INFO    HandlerThread:79962 [handler.py:handle_request_defer():164] handle defer: 9
+2022-05-02 23:11:45,645 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: defer
+2022-05-02 23:11:45,645 INFO    SenderThread:79962 [sender.py:send_request_defer():385] handle sender defer: 9
+2022-05-02 23:11:45,646 INFO    SenderThread:79962 [sender.py:transition_state():389] send defer: 10
+2022-05-02 23:11:45,647 DEBUG   SenderThread:79962 [sender.py:send():232] send: final
+2022-05-02 23:11:45,647 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: defer
+2022-05-02 23:11:45,647 DEBUG   SenderThread:79962 [sender.py:send():232] send: footer
+2022-05-02 23:11:45,647 INFO    HandlerThread:79962 [handler.py:handle_request_defer():164] handle defer: 10
+2022-05-02 23:11:45,648 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: defer
+2022-05-02 23:11:45,648 INFO    SenderThread:79962 [sender.py:send_request_defer():385] handle sender defer: 10
+2022-05-02 23:11:45,752 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-02 23:11:45,753 DEBUG   SenderThread:79962 [sender.py:send_request():246] send_request: poll_exit
+2022-05-02 23:11:45,753 INFO    SenderThread:79962 [file_pusher.py:join():150] waiting for file pusher
+2022-05-02 23:11:46,218 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: sampled_history
+2022-05-02 23:11:46,221 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: get_summary
+2022-05-02 23:11:46,222 DEBUG   HandlerThread:79962 [handler.py:handle_request():141] handle_request: shutdown
+2022-05-02 23:11:46,222 INFO    HandlerThread:79962 [handler.py:finish():806] shutting down handler
+2022-05-02 23:11:46,652 INFO    WriterThread:79962 [datastore.py:close():279] close: /Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/wandb/run-20220502_230438-3arq9tzb/run-3arq9tzb.wandb
+2022-05-02 23:11:47,114 INFO    SenderThread:79962 [sender.py:finish():1106] shutting down sender
+2022-05-02 23:11:47,114 INFO    SenderThread:79962 [file_pusher.py:finish():145] shutting down file pusher
+2022-05-02 23:11:47,114 INFO    SenderThread:79962 [file_pusher.py:join():150] waiting for file pusher
+2022-05-02 23:11:47,124 INFO    MainThread:79962 [internal.py:handle_exit():80] Internal process exited
