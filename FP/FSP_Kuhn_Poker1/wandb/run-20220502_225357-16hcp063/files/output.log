@@ -1,7 +1,0 @@
-  0%|                                                                                                                                                                              | 0/10000 [00:00<?, ?it/s]
-Traceback (most recent call last):
-  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_excute.py", line 27, in <module>
-    kuhn_trainer.train(n=10, m=5, memory_size=10**2)
-  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_trainer.py", line 311, in train
-    D = FSP_Kuhn_Poker_generate_data.GenerateData().generate_data(self.avg_strategy, self.best_response_strategy, n, m, eta)
-AttributeError: 'KuhnTrainer' object has no attribute 'best_response_strategy'

@@ -1,9 +1,0 @@
-  0%|                                                                                                                                                                      | 0/10000 [00:00<?, ?it/s]
-Traceback (most recent call last):
-  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_excute.py", line 27, in <module>
-    kuhn_trainer.train(n=10, m=5, memory_size=10**3)
-  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_trainer.py", line 323, in train
-    FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t)
-  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_reinforcement_learning.py", line 35, in RL_train
-    self.epsilon = 1/k
-ZeroDivisionError: division by zero
