@@ -1,4 +1,4 @@
-#ライブラリ
+#Library
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -10,7 +10,7 @@ from tqdm import tqdm
 import time
 import doctest
 import copy
-
+import wandb
 
 class KuhnTrainer:
   def __init__(self, train_iterations=10**4):
@@ -62,7 +62,7 @@ class KuhnTrainer:
 
 
 
-  #terminal stateかどうかを判定
+  #whether terminal state
   def whether_terminal_states(self, history):
     """return string
     >>> KuhnTrainer().whether_terminal_states("")
@@ -115,6 +115,8 @@ class KuhnTrainer:
     plt.xlabel("iterations")
     plt.ylabel("exploitability")
     plt.legend()
+    if wandb_save:
+      wandb.save()
 
 
   def calc_best_response_value(self, avg_strategy, best_response_strategy, best_response_player, history, prob):
@@ -250,8 +252,6 @@ class KuhnTrainer:
     for best_response_player_i in range(self.NUM_PLAYERS):
         exploitability += self.calc_best_response_value(self.avg_strategy, best_response_strategy, best_response_player_i, "", 1)
 
-    if exploitability < 0:
-      return 1e-7
     #assert exploitability >= 0
     return exploitability
 
@@ -315,15 +315,26 @@ class KuhnTrainer:
 
       if iteration_t in [int(j)-1 for j in np.logspace(1, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
+        if wandb_save:
+          wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
 
     self.show_plot("XFP_{}".format(lambda_num))
 
+#config
+iterations = 10000
+lambda_num = 2
+wandb_save = True
 
-#学習
-kuhn_trainer = KuhnTrainer(train_iterations=10000)
-kuhn_trainer.train(lambda_num = 1)
-kuhn_trainer.train(lambda_num = 2)
 
+if wandb_save:
+  wandb.init(project="kuhn_poker_project", name="kuhn_poker_xfp")
+
+#train
+kuhn_trainer = KuhnTrainer(train_iterations=iterations)
+kuhn_trainer.train(lambda_num = lambda_num)
+
+
+#result
 print("avg util:", kuhn_trainer.eval_vanilla_CFR("", 0, 0, 1, 1))
 
 result_dict = {}
@@ -336,7 +347,6 @@ df = df.reindex(["J", "Jp", "Jb", "Jpb", "Q", "Qp", "Qb", "Qpb", "K", "Kp", "Kb"
 df.index.name = "Node"
 
 print(df)
-
 
 
 doctest.testmod()
