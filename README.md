@@ -24,6 +24,11 @@ And the game and alogorithm I introduce is abundant.
 
 To people who want to study poker, game theory by using Python.
 
+# Contents
+
+- CFR (Counter Factual Regretminimization)
+  - CFR (Counter Factual Regretminimization)
+
 # Comment
 
 Please tell me if there is something careless.
