@@ -1,0 +1,34 @@
+
+  4%|██████▋                                                                                                                                                               | 406/10000 [00:01<00:37, 255.07it/s]
+avg_strategy: Qp [0.5 0.5] Jpb [0.66666667 0.33333333] Kpb [0.66666667 0.33333333]
+avg_strategy: Qp [0.6 0.4] Jpb [0.66666667 0.33333333] Kpb [0.75 0.25]
+avg_strategy: Qp [0.6 0.4] Jpb [0.66666667 0.33333333] Kpb [0.83333333 0.16666667]
+avg_strategy: Qp [0.57142857 0.42857143] Jpb [0.54545455 0.45454545] Kpb [0.85714286 0.14285714]
+avg_strategy: Qp [0.45454545 0.54545455] Jpb [0.53846154 0.46153846] Kpb [0.90909091 0.09090909]
+avg_strategy: Qp [0.35714286 0.64285714] Jpb [0.64285714 0.35714286] Kpb [0.875 0.125]
+avg_strategy: Qp [0.28571429 0.71428571] Jpb [0.72727273 0.27272727] Kpb [0.85 0.15]
+avg_strategy: Qp [0.25423729 0.74576271] Jpb [0.71764706 0.28235294] Kpb [0.82608696 0.17391304]
+avg_strategy: Qp [0.21505376 0.78494624] Jpb [0.74834437 0.25165563] Kpb [0.66666667 0.33333333]
+avg_strategy: Qp [0.19003115 0.80996885] Jpb [0.81494662 0.18505338] Kpb [0.69811321 0.30188679]
+avg_strategy: Qp [0.17283951 0.82716049] Jpb [0.83870968 0.16129032] Kpb [0.6625 0.3375]
+
+  9%|██████████████▎                                                                                                                                                       | 863/10000 [00:03<00:36, 247.75it/s]
+avg_strategy: Qp [0.2137823 0.7862177] Jpb [0.8776699 0.1223301] Kpb [0.53608247 0.46391753]
+avg_strategy: Qp [0.21266312 0.78733688] Jpb [0.89438453 0.10561547] Kpb [0.50541516 0.49458484]
+
+
+ 19%|███████████████████████████████▌                                                                                                                                     | 1910/10000 [00:07<00:33, 245.02it/s]
+
+
+
+ 34%|███████████████████████████████████████████████████████▌                                                                                                             | 3370/10000 [00:13<00:27, 243.62it/s]
+
+ 41%|███████████████████████████████████████████████████████████████████▏                                                                                                 | 4071/10000 [00:16<00:24, 242.46it/s]
+Traceback (most recent call last):
+  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_excute.py", line 27, in <module>
+    kuhn_trainer.train(n=10, m=5, memory_size=10**3)
+  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_trainer.py", line 324, in train
+    FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy)
+  File "/Users/yskamto/Desktop/yu5uke/Poker/FP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_reinforcement_learning.py", line 48, in RL_train
+    a = self.action_id[memory_i[2]]
+KeyboardInterrupt

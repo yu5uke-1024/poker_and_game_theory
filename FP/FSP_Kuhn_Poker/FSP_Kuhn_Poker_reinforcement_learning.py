@@ -26,14 +26,15 @@ class ReinforcementLearning:
     self.player_0_state = {"J":0, "Q":1, "K":2, "Jpb":3, "Qpb":4, "Kpb":5}
     self.player_1_state = {"Jp":0, "Jb":1, "Qp":2, "Qb":3, "Kp":4, "Kb":5}
     self.action_id = {"p":0, "b":1}
-    self.epsilon = 0.1
 
 
-  #def RL_train(self, memory, target_player, update_strategy, q_value, k):
-  def RL_train(self, memory, target_player, update_strategy):
+
+  def RL_train(self, memory, target_player, update_strategy, q_value, k):
+  #def RL_train(self, memory, target_player, update_strategy, iteration_t):
     self.alpha = 0.1
     #T = 1 / (1+ 0.02*(k**0.5))
-    q_value = np.zeros((6,2))
+    #q_value = np.zeros((6,2))
+    self.epsilon = 0.6/((k+1)**0.5)
 
     if target_player == 0:
       for memory_i in memory:

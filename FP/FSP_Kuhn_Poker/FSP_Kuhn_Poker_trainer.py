@@ -16,7 +16,7 @@ from collections import deque
 
 import wandb
 #wandb.init(project="FSP_project", name="fsp_dfs")
-wandb.init(project="FSP_project", name="fsp_rl")
+#wandb.init(project="FSP_project", name="fsp_rl")
 
 import FSP_Kuhn_Poker_supervised_learning
 import FSP_Kuhn_Poker_reinforcement_learning
@@ -303,33 +303,43 @@ class KuhnTrainer:
       self.N_count[node] = np.array([1.0 for _ in range(self.NUM_ACTIONS)], dtype=float)
 
     # q_value
-    #self.Q_value = [np.zeros((6,2)), np.zeros((6,2))]
+    self.Q_value = [np.zeros((6,2)), np.zeros((6,2))]
 
     for iteration_t in tqdm(range(int(self.train_iterations))):
       eta = 1/(iteration_t+2)
 
       D = FSP_Kuhn_Poker_generate_data.GenerateData().generate_data(self.avg_strategy, self.best_response_strategy, n, m, eta)
 
-      #self.best_response_strategy = {}
-      #self.infoSets_dict = {}
-      #for target_player in range(self.NUM_PLAYERS):
-      #  self.create_infoSets("", target_player, 1.0)
+      self.best_response_strategy_dfs = {}
+      self.infoSets_dict = {}
+      for target_player in range(self.NUM_PLAYERS):
+        self.create_infoSets("", target_player, 1.0)
 
       for player_i in range(self.NUM_ACTIONS):
         self.M_SL[player_i] = D[player_i]
         self.M_RL[player_i].extend(D[player_i])
 
-        #self.calc_best_response_value(self.avg_strategy, self.best_response_strategy, player_i, "", 1)
-        #FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t)
-        FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy)
+        self.calc_best_response_value(self.avg_strategy, self.best_response_strategy_dfs, player_i, "", 1)
+        FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t)
+        #FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, iteration_t)
         FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
 
+      print(iteration_t)
+      for na, pa in self.best_response_strategy_dfs.items():
+        if self.best_response_strategy[na][0] != pa[0]:
+          print(na, "dfs:", pa, "rl:", self.best_response_strategy[na])
 
-      if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*5)] :
+
+      if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
-        wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
-        print("avg_strategy:", "Qp", self.avg_strategy["Qp"],"Jpb",self.avg_strategy["Jpb"],"Kpb", self.avg_strategy["Kpb"] )
+        #wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
 
+        #print(self.M_RL[1].count("JQpp"),self.M_RL[1].count("JQpbp"),self.M_RL[1].count("JQpbb") ,self.M_RL[1].count("KQpp") ,self.M_RL[1].count("KQpbp"),self.M_RL[1].count("KQpbb") )
+
+        #print("Jpb:", self.N_count["Jpb"], self.avg_strategy["Jpb"], self.Q_value[0][3], self.best_response_strategy["Jpb"])
+        #print("Qp:",  self.Q_value[1][2], self.avg_strategy["Qp"], self.best_response_strategy["Qp"])
+        #print("Kpb:", self.N_count["Kpb"], self.avg_strategy["Kpb"], self.Q_value[0][5], self.best_response_strategy["Kpb"])
+        print("--------")
 
     self.show_plot("FSP")
     #wandb.save()
