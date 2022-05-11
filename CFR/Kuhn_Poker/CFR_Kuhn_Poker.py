@@ -547,8 +547,8 @@ algorithm_candicates = ["vanilla_CFR", "chance_sampling_CFR", "external_sampling
 algo = algorithm_candicates[1]
 train_iterations = 10**5
 num_players =  2
-wandb_save = False
-plt_save = False
+wandb_save = True
+
 
 if wandb_save:
   wandb.init(project="kuhn_poker_project", name="kuhn_poker_{}_{}".format(algo, num_players))
