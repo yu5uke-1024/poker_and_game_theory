@@ -81,9 +81,13 @@ class RPSTrainer:
         self.avgStrategy[a] = 1/ self.NUM_ACTIONS
     return self.avgStrategy
 
+#config
+oppStrategy=[0.4, 0.3, 0.3]
+iterations=100000
+
 
 #train
-trainer = RPSTrainer(oppStrategy=[0.4, 0.3, 0.3], iterations=100000)
+trainer = RPSTrainer(oppStrategy=oppStrategy, iterations=iterations)
 trainer.train()
 
 

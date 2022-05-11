@@ -1,0 +1,22 @@
+{
+    "os": "macOS-12.3.1-arm64-arm-64bit",
+    "python": "3.8.10",
+    "heartbeatAt": "2022-05-11T12:27:41.187915",
+    "startedAt": "2022-05-11T12:27:38.321107",
+    "docker": null,
+    "cpu_count": 8,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/Users/yskamto/Desktop/Poker/CFR/Kuhn_Poker/CFR_Kuhn_Poker.py",
+    "codePath": "CFR/Kuhn_Poker/CFR_Kuhn_Poker.py",
+    "git": {
+        "remote": "https://github.com/yusuke-sk/poker_and_game_theory.git",
+        "commit": "d48fccd10e47dd685027ea2ec93b2a277c84394e"
+    },
+    "email": "yusuke1024@gmail.com",
+    "root": "/Users/yskamto/Desktop/Poker",
+    "host": "yskamtonoMacBook-Air.local",
+    "username": "yskamto",
+    "executable": "/Users/yskamto/miniforge3/envs/yskamto/bin/python"
+}

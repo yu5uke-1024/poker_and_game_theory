@@ -1,22 +1,15 @@
 # Demo
 
-RPS.py
+CFR_Leduc_Poker.py
 
 # notes
 
 strategy [0.4, 0.3, 0.3] means that agent picks Rock: 40%, Paper: 30%, Scissors: 30%
 
-# config
-
-```python
-oppStrategy=[0.4, 0.3, 0.3]
-iterations=100000
-```
-
 # train
 
 ```python
-trainer = RPSTrainer(oppStrategy=oppStrategy, iterations=iterations)
+trainer = RPSTrainer(oppStrategy=[0.4, 0.3, 0.3], iterations=100000)
 trainer.train()
 ```
 
