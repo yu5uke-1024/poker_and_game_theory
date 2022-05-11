@@ -5,7 +5,7 @@ from tqdm.notebook import tqdm
 
 #RPS trainer
 class RPSTrainer:
-  def __init__(self):
+  def __init__(self, oppStrategy, iterations):
     self.ROCK = 0
     self.PAPER = 1
     self.SCISSORS = 2
@@ -14,8 +14,8 @@ class RPSTrainer:
     self.regretSum = [0 for _ in range(self.NUM_ACTIONS)]
     self.strategy = [0 for _ in range(self.NUM_ACTIONS)]
     self.strategySum = [0 for _ in range(self.NUM_ACTIONS)]
-    self.oppStrategy = [0.4, 0.3, 0.3]
-    self.iterations = 100000
+    self.oppStrategy = oppStrategy
+    self.iterations = iterations
     self.actionUtility = [0 for _ in range(self.NUM_ACTIONS)]
 
 
@@ -83,7 +83,7 @@ class RPSTrainer:
 
 
 #train
-trainer = RPSTrainer()
+trainer = RPSTrainer(oppStrategy=[0.4, 0.3, 0.3], iterations=100000)
 trainer.train()
 
 
