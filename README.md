@@ -1,4 +1,4 @@
-<img src=https://user-images.githubusercontent.com/63486375/167799827-c3ea1dd0-0b4e-45a2-ae2d-ae8359660e64.JPG>
+<img src=https://user-images.githubusercontent.com/63486375/167800473-e344baff-921d-45dc-9234-8f992163d83a.JPG>
 
 # Poker and Game theory
 
