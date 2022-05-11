@@ -1,20 +1,17 @@
-#ライブラリ
+#Library
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import random
 import itertools
-from collections import defaultdict
-import sys
-from tqdm import tqdm
-import time
 import doctest
-from collections import deque
-
-from datetime import datetime
-now = datetime.now()
-
+import copy
+import math
 import wandb
+
+from tqdm import tqdm
+from collections import defaultdict
+
 
 #Node Class
 #information set node class definition
@@ -147,7 +144,6 @@ class LeducTrainer:
     return card_deck
 
 
-  # round2に入っているhistoryを 手元card, round1 action, community card, round2 cardに分ける
   def Split_history(self, history):
     """return history_before, history_after
     >>> LeducTrainer(num_players=3).Split_history("JKQcccKcrcc")
@@ -268,7 +264,7 @@ class LeducTrainer:
     >>> int(LeducTrainer().Return_payoff_for_terminal_states("QKrrcQcc", 0))
     5
     """
-    #round1で終了
+    #round1 finish
     if history.count("f") == self.NUM_PLAYERS -1  and self.card_num_check(history) == self.NUM_PLAYERS:
       player_action_list = [[] for _ in range(self.NUM_PLAYERS)]
       player_money_list_round1 = [1 for _ in range(self.NUM_PLAYERS)]
@@ -295,8 +291,8 @@ class LeducTrainer:
       else:
         return sum(player_money_list_round1) -player_money_list_round1[target_player_i]
 
-    #round2で終了
-    #target_player_iのaction 履歴
+    #round2 finish
+    #target_player_i action history
     player_action_list, player_money_list_round1, player_money_list_round2, community_card = self.action_history_player(history)
 
     # target_player_i :fold
@@ -308,7 +304,7 @@ class LeducTrainer:
     if last_play.count("f") == self.NUM_PLAYERS - 1:
       return sum(player_money_list_round1) + sum(player_money_list_round2) - player_money_list_round1[target_player_i] - player_money_list_round2[target_player_i]
 
-    #何人かでshow down
+    #show down
     show_down_player =[idx for idx, hi in enumerate(player_action_list) if hi[-1] != "f"]
     show_down_player_card = {}
     for idx in show_down_player:
@@ -408,14 +404,6 @@ class LeducTrainer:
       self.nodeMap[infoSet] = node
     return node
 
-  def Get_strategy(self, node):
-    if not self.eval:
-      strategy =  node.strategy
-    else:
-      if self.eval:
-        strategy = node.Get_average_information_set_mixed_strategy()
-    return strategy
-
 
   #chance sampling CFR
   def chance_sampling_CFR(self, history, target_player_i, iteration_t, p_list):
@@ -443,17 +431,17 @@ class LeducTrainer:
     util_list = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
     nodeUtil = 0
     node.Get_strategy_through_regret_matching()
-    strategy = self.Get_strategy(node)
+
 
     for ai in node.possible_action:
       nextHistory = history + self.ACTION_DICT[ai]
       p_change = np.array([1 for _ in range(self.NUM_PLAYERS)], dtype=float)
-      p_change[player] = strategy[ai]
+      p_change[player] = node.strategy[ai]
 
       util_list[ai] = self.chance_sampling_CFR(nextHistory, target_player_i, iteration_t, p_list * p_change)
       nodeUtil += node.strategy[ai] * util_list[ai]
 
-    if (not self.eval) and  player == target_player_i:
+    if player == target_player_i:
       for ai in node.possible_action:
         regret = util_list[ai] - nodeUtil
 
@@ -463,7 +451,7 @@ class LeducTrainer:
             p_exclude *= p_list[idx]
 
         node.regretSum[ai] += p_exclude * regret
-        node.strategySum[ai] += strategy[ai] * p_list[player]
+        node.strategySum[ai] += node.strategy[ai] * p_list[player]
 
     return nodeUtil
 
@@ -499,7 +487,10 @@ class LeducTrainer:
     util_list = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
     nodeUtil = 0
 
-    strategy = self.Get_strategy(node)
+    if not self.eval:
+      strategy =  node.strategy
+    else:
+      strategy = node.Get_average_information_set_mixed_strategy()
 
     for ai in node.possible_action:
       nextHistory = history + self.ACTION_DICT[ai]
@@ -670,12 +661,14 @@ class LeducTrainer:
           self.epsilon = 0.6
           self.outcome_sampling_MCCFR("", target_player_i, iteration_t, p_list, 1)
 
-      #if iteration_t in [int(j)-1 for j in np.logspace(1, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
-      #  self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
-        #wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
+      #calculate expolitability
+      if iteration_t in [int(j)-1 for j in np.logspace(1, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
+        self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
+        if wandb_save:
+          wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
 
     self.show_plot(method)
-    #wandb.save()
+
 
 
   def show_plot(self, method):
@@ -686,6 +679,8 @@ class LeducTrainer:
     plt.xlabel("iterations")
     plt.ylabel("exploitability")
     plt.legend(loc = "lower left")
+    if wandb_save:
+      wandb.save()
 
 
   # evaluate average strategy
@@ -836,17 +831,20 @@ class LeducTrainer:
     return exploitability
 
 
-#train!!
-train_iterations=10**3
-num_player = 3
+#config
+algorithm_candicates =["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"]
+algo =algorithm_candicates[1]
+train_iterations=10**5
+num_players= 2
+wandb_save = True
 
-#wandb.init(project="leduc_poker_project", name="leduc_poker_many_player_{}".format(num_player))
-"""
-leduc_trainer = LeducTrainer(train_iterations=train_iterations, num_players=num_player)
-#leduc_trainer.train("vanilla_CFR")
-leduc_trainer.train("chance_sampling_CFR")
-#leduc_trainer.train("external_sampling_MCCFR")
-#leduc_trainer.train("outcome_sampling_MCCFR")
+if wandb_save:
+  wandb.init(project="leduc_poker_project", name="leduc_poker_{}_{}".format(algo, num_players))
+
+
+#train
+leduc_trainer = LeducTrainer(train_iterations=train_iterations, num_players=num_players)
+leduc_trainer.train(algo)
 
 print("avg util:", leduc_trainer.eval_strategy(0))
 
@@ -858,16 +856,13 @@ for key, value in sorted(leduc_trainer.nodeMap.items()):
 
 df = pd.DataFrame(result_dict.values(), index=result_dict.keys(), columns=["Fold", "Call", "Raise"])
 df.index.name = "Node"
-df
+print(df)
 
-#print(df)
-"""
-print("")
-# random strategy_profileのexploitability
 
-for i in range(2,4):
+# calculate random strategy_profile exploitability
+for i in range(2,3):
   kuhn_poker_agent = LeducTrainer(train_iterations=0, num_players=i)
-  print("{}人対戦:".format(i), kuhn_poker_agent.get_exploitability_dfs())
+  print("{}player game:".format(i), kuhn_poker_agent.get_exploitability_dfs())
 
 
 doctest.testmod()

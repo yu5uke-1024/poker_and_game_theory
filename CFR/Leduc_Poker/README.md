@@ -4,21 +4,56 @@ CFR_Leduc_Poker.py
 
 # notes
 
-strategy [0.4, 0.3, 0.3] means that agent picks Rock: 40%, Paper: 30%, Scissors: 30%
+if wandb_save == True, you can save result on your wandb.
 
-# train
+# config1
 
 ```python
-trainer = RPSTrainer(oppStrategy=[0.4, 0.3, 0.3], iterations=100000)
-trainer.train()
+algorithm_candicates =["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"]
+algo =algorithm_candicates[1]
+train_iterations=10**5
+num_players= 2
+wandb_save = False
 ```
 
-# result
+# train1
 
 ```python
-opponent strategy:
-[0.4, 0.3, 0.3]
+leduc_trainer = LeducTrainer(train_iterations=train_iterations, num_players=num_players)
+leduc_trainer.train(algo)
+```
 
-my optimal strategy:
-[0.000502654095904096, 0.9994856792374291, 1.1666666666666663e-05]
+# result1
+
+```python
+avg util: -0.05559434009541547
+
+         Pass       Bet
+Node
+J     0.862185  0.137815
+Jb    0.999985  0.000015
+Jp    0.674837  0.325163
+Jpb   0.999991  0.000009
+K     0.593180  0.406820
+Kb    0.000015  0.999985
+Kp    0.000015  0.999985
+Kpb   0.000013  0.999987
+Q     0.999620  0.000380
+Qb    0.656695  0.343305
+Qp    0.999856  0.000144
+Qpb   0.525814  0.474186
+```
+
+# train2 (calculate random strategy_profile exploitability)
+
+```python
+for i in range(2,3):
+  kuhn_poker_agent = LeducTrainer(train_iterations=0, num_players=i)
+  print("{}player game:".format(i), kuhn_poker_agent.get_exploitability_dfs())
+```
+
+# result2
+
+```python
+2player game: 0.9166666666666665
 ```

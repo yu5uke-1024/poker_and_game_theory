@@ -44,6 +44,10 @@ Qp    0.999856  0.000144
 Qpb   0.525814  0.474186
 ```
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/63486375/167853066-2a77ee19-a251-45e5-85d0-ab6252b1c9cb.png", width=480>
+</p>
+
 # train2 (calculate random strategy_profile exploitability)
 
 ```python
