@@ -9,10 +9,10 @@ if wandb_save == True, you can save result on your wandb.
 # config1
 
 ```python
-algorithm_candicates =["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"]
-algo =algorithm_candicates[1]
-train_iterations=10**5
-num_players= 2
+algorithm_candicates = ["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"]
+algo = algorithm_candicates[1]
+train_iterations = 10**5
+num_players =  2
 wandb_save = True
 ```
 
@@ -27,7 +27,13 @@ kuhn_trainer.train(algo)
 
 ```python
 avg util: -0.05559434009541547
+```
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/63486375/167853066-2a77ee19-a251-45e5-85d0-ab6252b1c9cb.png", width=640>
+</p>
+
+```python
          Pass       Bet
 Node
 J     0.862185  0.137815
@@ -43,10 +49,6 @@ Qb    0.656695  0.343305
 Qp    0.999856  0.000144
 Qpb   0.525814  0.474186
 ```
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/63486375/167853066-2a77ee19-a251-45e5-85d0-ab6252b1c9cb.png", width=480>
-</p>
 
 # train2 (calculate random strategy_profile exploitability)
 
