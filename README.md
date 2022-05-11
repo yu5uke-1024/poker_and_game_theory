@@ -1,14 +1,14 @@
 <p align="center">
-  <img src=https://user-images.githubusercontent.com/63486375/167800473-e344baff-921d-45dc-9234-8f992163d83a.JPG>
+  <img src="https://user-images.githubusercontent.com/63486375/167800473-e344baff-921d-45dc-9234-8f992163d83a.JPG">
 </p>
 
 # Poker and Game theory
 
-Introduce poker and game theory by using Python.
+I introduce poker and game theory by using Python.
 
-For example, the alogorithm is CFR,MCCFR and FSP.
+The algorithms we use are CFR,MCCFR and FSP. (add it from time to time)
 
-The game is RPS, Kuhn Poker and Leduc Poker.
+The games we play are RPS, Kuhn Poker and Leduc Poker.
 
 # Target
 
@@ -20,7 +20,9 @@ This graph show the result of decreasing exploitability by iterations.
 
 Game is Kuhn Poker and alogrithm is vanilla CFR, chance sampling CFR, external sampling MCCFR and outcome sampling MCCFR.
 
-<img src="https://user-images.githubusercontent.com/63486375/166136125-5d15cd43-6eb7-4bbb-988a-fc04e6b0b2ad.png" width=480>
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/63486375/166136125-5d15cd43-6eb7-4bbb-988a-fc04e6b0b2ad.png" width=480>
+</p>
 
 # Contents
 
@@ -44,7 +46,7 @@ Game is Kuhn Poker and alogrithm is vanilla CFR, chance sampling CFR, external s
 
 I try to introduing the code politely.
 
-And the game and alogorithm I introduce is abundant.
+And the games and alogorithms I introduce are abundant.
 
 # Comment
 

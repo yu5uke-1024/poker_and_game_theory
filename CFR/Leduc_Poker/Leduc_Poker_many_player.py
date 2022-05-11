@@ -841,7 +841,7 @@ train_iterations=10**3
 num_player = 3
 
 #wandb.init(project="leduc_poker_project", name="leduc_poker_many_player_{}".format(num_player))
-
+"""
 leduc_trainer = LeducTrainer(train_iterations=train_iterations, num_players=num_player)
 #leduc_trainer.train("vanilla_CFR")
 leduc_trainer.train("chance_sampling_CFR")
@@ -861,13 +861,13 @@ df.index.name = "Node"
 df
 
 #print(df)
-
+"""
 print("")
 # random strategy_profileのexploitability
-"""
+
 for i in range(2,4):
   kuhn_poker_agent = LeducTrainer(train_iterations=0, num_players=i)
   print("{}人対戦:".format(i), kuhn_poker_agent.get_exploitability_dfs())
-"""
+
 
 doctest.testmod()
