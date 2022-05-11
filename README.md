@@ -26,21 +26,21 @@ Game is Kuhn Poker and alogrithm is vanilla CFR, chance sampling CFR, external s
 
 # Contents
 
-- [CFR (Counter Factual Regretminimization)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/28b7832b9766d8b329eb3b29e0569ea38c40f085/CFR)
-  - [RPS (Rock, Paper, Scissors)](https://github.com/yu5uke-1024/poker_and_game_theory/blob/28b7832b9766d8b329eb3b29e0569ea38c40f085/CFR/RPS/RPS.py)
-  - [Kuhn Poker](https://github.com/yu5uke-1024/poker_and_game_theory/tree/28b7832b9766d8b329eb3b29e0569ea38c40f085/CFR/Kuhn_Poker)
-    - [two players](https://github.com/yu5uke-1024/poker_and_game_theory/blob/c5573836c2e3d90933b84c73b4a751ebbaef7389/CFR/Kuhn_Poker/CFR_Kuhn_Poker_two_player_exploitability_dfs.py)
-    - [many players](https://github.com/yu5uke-1024/poker_and_game_theory/blob/c5573836c2e3d90933b84c73b4a751ebbaef7389/CFR/Kuhn_Poker/CFR_Kuhn_Poker.py)
-  - [Leduc Poker](https://github.com/yu5uke-1024/poker_and_game_theory/tree/28b7832b9766d8b329eb3b29e0569ea38c40f085/CFR/Leduc_Poker)
-    - [two players](https://github.com/yu5uke-1024/poker_and_game_theory/blob/c5573836c2e3d90933b84c73b4a751ebbaef7389/CFR/Leduc_Poker/CFR_Leduc_Poker_two_players.py)
-    - [many players](https://github.com/yu5uke-1024/poker_and_game_theory/blob/c5573836c2e3d90933b84c73b4a751ebbaef7389/CFR/Leduc_Poker/CFR_Leduc_Poker.py)
+- [CFR (Counter Factual Regretminimization)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/CFR)
+  - [RPS (Rock, Paper, Scissors)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/CFR/RPS)
+  - [Kuhn Poker](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/CFR/Kuhn_Poker)
+    - [two players]https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/CFR/Kuhn_Poker/CFR_Kuhn_Poker_two_player_exploitability_dfs.py)
+    - [many players](https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/CFR/Kuhn_Poker/CFR_Kuhn_Poker.py)
+  - [Leduc Poker](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/CFR/Leduc_Poker)
+    - [two players](https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/CFR/Leduc_Poker/CFR_Leduc_Poker_two_players.py)
+    - [many players](https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/CFR/Leduc_Poker/CFR_Leduc_Poker.py)
 - [FP (Fictitious Play)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/28b7832b9766d8b329eb3b29e0569ea38c40f085/FP)
-  - [FP](https://github.com/yu5uke-1024/poker_and_game_theory/tree/28b7832b9766d8b329eb3b29e0569ea38c40f085/FP/FP)
-    - [coin game, RPS](https://github.com/yu5uke-1024/poker_and_game_theory/blob/28b7832b9766d8b329eb3b29e0569ea38c40f085/FP/FP/FP_Game_RPS.py)
-  - [XFP (Extensive-form Fictitious Play)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/28b7832b9766d8b329eb3b29e0569ea38c40f085/FP/XFP)
-    - [Kuhn Poker](https://github.com/yu5uke-1024/poker_and_game_theory/blob/28b7832b9766d8b329eb3b29e0569ea38c40f085/FP/XFP/XFP_Kuhn_Poker.py)
-  - [FSP (FSP: Fictitious Self Play)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/28b7832b9766d8b329eb3b29e0569ea38c40f085/FP/FSP)
-    - [Kuhn Poker](https://github.com/yu5uke-1024/poker_and_game_theory/tree/28b7832b9766d8b329eb3b29e0569ea38c40f085/FP/FSP/FSP_Kuhn_Poker)
+  - [FP](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/FP)
+    - [coin game, RPS](https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/FP/FP/FP_Game_RPS.py)
+  - [XFP (Extensive-form Fictitious Play)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/XFP)
+    - [Kuhn Poker](https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/FP/XFP/XFP_Kuhn_Poker.py)
+  - [FSP (FSP: Fictitious Self Play)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/FSP)
+    - [Kuhn Poker](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/FSP/FSP_Kuhn_Poker)
 
 # Features
 
