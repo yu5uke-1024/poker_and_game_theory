@@ -1,4 +1,4 @@
-#ライブラリ
+#Library
 import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,18 +8,17 @@ import doctest
 
 #Game trainer
 class GameTrainer:
-  def __init__(self, iterations):
+  def __init__(self, iterations, avg_me_strategy, avg_opp_strategy, payoff):
     self.iterations = iterations
-    self.avg_me_strategy = np.array([0.1, 0.9], dtype = "float")
-    self.avg_opp_strategy = np.array([0.6, 0.4], dtype = "float")
-    self.payoff = [[1,-1], [-1, 1], [-1,1], [1, -1]]
-
+    self.avg_me_strategy = avg_me_strategy
+    self.avg_opp_strategy = avg_opp_strategy
+    self.payoff = payoff
 
   def return_strategy_for_utility(self, action_0_utility, action_1_utility):
     """return vector
-    >>> GameTrainer(iterations=100).return_strategy_for_utility(2, 4)
+    >>> GameTrainer(100, np.array([0.1, 0.9], dtype = "float"), np.array([0.6, 0.4], dtype = "float"), [[1,-1], [-1, 1], [-1,1], [1, -1]]).return_strategy_for_utility(2, 4)
     array([0, 1])
-    >>> GameTrainer(iterations=100).return_strategy_for_utility(1, -1)
+    >>> GameTrainer(100, np.array([0.1, 0.9], dtype = "float"), np.array([0.6, 0.4], dtype = "float"), [[1,-1], [-1, 1], [-1,1], [1, -1]]).return_strategy_for_utility(1, -1)
     array([1, 0])
     """
     strategy = np.array([0, 0])
@@ -30,9 +29,10 @@ class GameTrainer:
       strategy[1] = 1
     return strategy
 
+
   def calculate_best_response_startegy_for_me(self, opp_strategy):
     """return vector
-    >>> GameTrainer(iterations=100).calculate_best_response_startegy_for_me(np.array([0.8,0.2]))
+    >>> GameTrainer(100, np.array([0.1, 0.9], dtype = "float"),  np.array([0.6, 0.4], dtype = "float"), [[1,-1], [-1, 1], [-1,1], [1, -1]]).calculate_best_response_startegy_for_me(np.array([0.8,0.2]))
     array([1, 0])
     """
     action_0_utility =  opp_strategy[0]*self.payoff[0][0] + opp_strategy[1]*self.payoff[1][0]
@@ -60,20 +60,18 @@ class GameTrainer:
 
 #RPS Trainer
 class RPSTrainer:
-  def __init__(self, iterations):
+  def __init__(self, iterations, avg_me_strategy, avg_opp_strategy):
     self.iterations = iterations
-    self.avg_me_strategy = np.array([0.4, 0.4, 0.2], dtype = "float")
-    self.avg_opp_strategy = np.array([0.0, 0.3, 0.7], dtype = "float")
+    self.avg_me_strategy = avg_me_strategy
+    self.avg_opp_strategy = avg_opp_strategy
 
 
   def calculate_best_response_startegy(self, other_strategy):
     """return vector
-    >>> RPSTrainer(iterations=100).calculate_best_response_startegy(np.array([0.8, 0.1, 0.1]))
+    >>> RPSTrainer(100, np.array([0.4, 0.4, 0.2], dtype = "float"), np.array([0.0, 0.3, 0.7], dtype = "float")).calculate_best_response_startegy(np.array([0.8, 0.1, 0.1]))
     array([0, 1, 0])
-    >>> RPSTrainer(iterations=100).calculate_best_response_startegy(np.array([0.33, 0.33, 0.34]))
-    array([1, 0, 0])
-    >>> RPSTrainer(iterations=100).calculate_best_response_startegy(np.array([0, 1, 0]))
-    array([0, 0, 1])
+    >>> RPSTrainer(100, np.array([0.4, 0.4, 0.2], dtype = "float"), np.array([0.0, 0.3, 0.7], dtype = "float")).calculate_best_response_startegy(np.array([0.8, 0.1, 0.1]))
+    array([0, 1, 0])
     """
     r = self.calculate_utility(np.array([1, 0, 0]), other_strategy)
     p = self.calculate_utility(np.array([0, 1, 0]), other_strategy)
@@ -88,11 +86,11 @@ class RPSTrainer:
 
   def calculate_best_response_startegy_not_good(self, other_strategy):
     """return vector
-    >>> RPSTrainer(iterations=100).calculate_best_response_startegy_not_good(np.array([0.8, 0.1, 0.1]))
+    >>> RPSTrainer(100, np.array([0.4, 0.4, 0.2], dtype = "float"), np.array([0.0, 0.3, 0.7], dtype = "float")).calculate_best_response_startegy_not_good(np.array([0.8, 0.1, 0.1]))
     array([0, 1, 0])
-    >>> RPSTrainer(iterations=100).calculate_best_response_startegy_not_good(np.array([0.33, 0.33, 0.34]))
+    >>> RPSTrainer(100, np.array([0.4, 0.4, 0.2], dtype = "float"), np.array([0.0, 0.3, 0.7], dtype = "float")).calculate_best_response_startegy_not_good(np.array([0.33, 0.33, 0.34]))
     array([1, 0, 0])
-    >>> RPSTrainer(iterations=100).calculate_best_response_startegy_not_good(np.array([0, 1, 0]))
+    >>> RPSTrainer(100, np.array([0.4, 0.4, 0.2], dtype = "float"), np.array([0.0, 0.3, 0.7], dtype = "float")).calculate_best_response_startegy_not_good(np.array([0, 1, 0]))
     array([0, 0, 1])
     """
     max_hand_for_other = np.max(other_strategy)
@@ -116,7 +114,7 @@ class RPSTrainer:
     return strategy
 
 
-  #utilityを計算する
+  #calculate utility
   def calculate_utility(self, avg_strategy_1, avg_strategy_2):
     r1 = avg_strategy_1[0]
     p1 =  avg_strategy_1[1]
@@ -142,22 +140,31 @@ class RPSTrainer:
 
       utility_list.append(self.calculate_utility(self.avg_me_strategy, self.avg_opp_strategy))
 
-    #描画
-    plt.plot(range(len(utility_list)), utility_list)
-    plt.show()
-
 
     return self.avg_me_strategy, self.avg_opp_strategy, self.calculate_utility(self.avg_me_strategy, self.avg_opp_strategy)
 
 
-#学習
-trainer0 = GameTrainer(iterations = 10000)
-result0 = trainer0.train()
-print("player0 strategy:", result0[0], "player1 strategy:", result0[1])
+#config1
+me_strategy = np.array([0.1, 0.9], dtype = "float")
+opp_strategy = np.array([0.6, 0.4], dtype = "float")
+iterations = 10000
+payoff = [[1,-1], [-1, 1], [-1,1], [1, -1]]
 
-trainer1 = RPSTrainer(iterations = 1000)
-result1  = trainer1.train()
+
+#train1
+trainer1 = GameTrainer(iterations = iterations, avg_me_strategy=me_strategy, avg_opp_strategy=opp_strategy, payoff=payoff)
+result1 = trainer1.train()
 print("player0 strategy:", result1[0], "player1 strategy:", result1[1])
 
+
+#config2
+me_strategy = np.array([0.4, 0.4, 0.2], dtype = "float")
+opp_strategy = np.array([0.0, 0.3, 0.7], dtype = "float")
+iterations = 1000
+
+#train2
+trainer2 = RPSTrainer(iterations = iterations, avg_me_strategy=me_strategy, avg_opp_strategy=opp_strategy)
+result2  = trainer2.train()
+print("player0 strategy:", result2[0], "player1 strategy:", result2[1])
 
 doctest.testmod()

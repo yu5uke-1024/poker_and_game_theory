@@ -50,7 +50,7 @@ Qp    0.999856  0.000144
 Qpb   0.525814  0.474186
 ```
 
-# train2 (calculate random strategy_profile exploitability)
+# train2 - calculate random strategy_profile exploitability -
 
 ```python
 for i in range(2,6):
