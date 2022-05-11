@@ -1,19 +1,16 @@
-#ライブラリ
+#Library
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import random
 import itertools
-from collections import defaultdict
-import sys
-from tqdm import tqdm
-import time
 import doctest
 import copy
 import math
-from datetime import datetime
+import wandb
 
-now = datetime.now()
+from tqdm import tqdm
+from collections import defaultdict
 
 
 #Node Class
@@ -65,8 +62,6 @@ class KuhnTrainer:
   def __init__(self, train_iterations=10**4, num_players =2):
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
-    self.PASS = 0
-    self.BET = 1
     self.NUM_ACTIONS = 2
     self.nodeMap = defaultdict(list)
     self.eval = False
@@ -114,7 +109,7 @@ class KuhnTrainer:
       start = -1
       target_player_action = history[self.NUM_PLAYERS+target_player_i::self.NUM_PLAYERS]
 
-      # 全員が pass
+      # all players pass
       if ("b" not in history) and (history.count("p") == self.NUM_PLAYERS):
         pass_player_card = {}
         for idx in range(self.NUM_PLAYERS):
@@ -129,12 +124,12 @@ class KuhnTrainer:
         else:
           return start
 
-      #target_plyaer は　pass , 誰かはbet
+      #target plyaer do pass , another player do bet
       elif ("b" not in target_player_action) and ("b" in history):
         return start
 
       else:
-        #betしている +pot or -2
+        #bet → +pot or -2
         bet_player_list = [idx%self.NUM_PLAYERS for idx, act in enumerate(history[self.NUM_PLAYERS:]) if act == "b"]
         bet_player_card = {}
         for idx in bet_player_list:
@@ -148,9 +143,9 @@ class KuhnTrainer:
           return start - 1
 
 
-  #terminal stateかどうかを判定
+  #whether terminal state
   def whether_terminal_states(self, history):
-    #passしかないhistory
+    #pass only history
     if "b" not in history:
       return history.count("p") == self.NUM_PLAYERS
 
@@ -159,7 +154,7 @@ class KuhnTrainer:
     return plays - first_bet -1  == self.NUM_PLAYERS -1
 
 
-   #terminal stateかどうかを判定
+  #whether chance node state
   def whether_chance_node(self, history):
     """return string
     >>> KuhnTrainer().whether_chance_node("")
@@ -182,15 +177,6 @@ class KuhnTrainer:
     return node
 
 
-  def Get_strategy(self, node):
-    if not self.eval:
-      strategy =  node.strategy
-    else:
-      if self.eval:
-        strategy = node.Get_average_information_set_mixed_strategy()
-    return strategy
-
-
   #chance sampling CFR
   def chance_sampling_CFR(self, history, target_player_i, iteration_t, p_list):
     plays = len(history)
@@ -210,19 +196,18 @@ class KuhnTrainer:
     util_list = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
     nodeUtil = 0
     node.Get_strategy_through_regret_matching()
-    strategy = self.Get_strategy(node)
 
     for ai in range(self.NUM_ACTIONS):
       nextHistory = history + ("p" if ai == 0 else "b")
 
       p_change = np.array([1 for _ in range(self.NUM_PLAYERS)], dtype=float)
-      p_change[player] = strategy[ai]
+      p_change[player] = node.strategy[ai]
 
       util_list[ai] = self.chance_sampling_CFR(nextHistory, target_player_i, iteration_t, p_list * p_change)
-      nodeUtil += strategy[ai] * util_list[ai]
+      nodeUtil += node.strategy[ai] * util_list[ai]
 
 
-    if (not self.eval) and  player == target_player_i:
+    if player == target_player_i:
       for ai in range(self.NUM_ACTIONS):
         regret = util_list[ai] - nodeUtil
 
@@ -232,7 +217,7 @@ class KuhnTrainer:
             p_exclude *= p_list[idx]
 
         node.regretSum[ai] += p_exclude * regret
-        node.strategySum[ai] += strategy[ai] * p_list[player]
+        node.strategySum[ai] += node.strategy[ai] * p_list[player]
 
     return nodeUtil
 
@@ -257,7 +242,11 @@ class KuhnTrainer:
     node = self.Get_information_set_node_or_create_it_if_nonexistant(infoSet)
     node.Get_strategy_through_regret_matching()
 
-    strategy = self.Get_strategy(node)
+    if not self.eval:
+      strategy =  node.strategy
+    else:
+      strategy = node.Get_average_information_set_mixed_strategy()
+
 
     util_list = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
     nodeUtil = 0
@@ -420,6 +409,8 @@ class KuhnTrainer:
       #calculate expolitability
       if iteration_t in [int(j)-1 for j in np.logspace(1, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
+        if wandb_save:
+          wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
 
     self.show_plot(method)
 
@@ -432,7 +423,8 @@ class KuhnTrainer:
     plt.xlabel("iterations")
     plt.ylabel("exploitability")
     plt.legend(loc = "lower left")
-    plt.savefig(image_file_path)
+    if wandb_save:
+      wandb.save()
 
 
   # evaluate average strategy
@@ -535,7 +527,7 @@ class KuhnTrainer:
 
 
   def get_exploitability_dfs(self):
-    # 各information setを作成 & reach_probabilityを計算
+    # make each information set & calculate reach_probability
     self.infoSets_dict = {}
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
@@ -545,21 +537,29 @@ class KuhnTrainer:
     for best_response_player_i in range(self.NUM_PLAYERS):
         exploitability += self.calc_best_response_value(best_response_strategy, best_response_player_i, "", 1)
 
-    if exploitability < 0:
-      return 1e-7
-    #assert exploitability >= 0
+    assert exploitability >= 0
     return exploitability
 
-image_file_path = "/Users/yskamto/Desktop/yu5uke/Poker/Images/kuhn_poker" + now.strftime('%Y%m%d_%H%M%S') + ".png"
 
 
-kuhn_trainer = KuhnTrainer(train_iterations=10**5, num_players=3)
-#kuhn_trainer.train("vanilla_CFR")
-kuhn_trainer.train("chance_sampling_CFR")
-#kuhn_trainer.train("external_sampling_MCCFR")
-#kuhn_trainer.train("outcome_sampling_MCCFR")
+#config
+algorithm_candicates =["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"]
+algo =algorithm_candicates[1]
+train_iterations=10**5
+num_players= 2
+wandb_save = True
 
-print("avg util:", kuhn_trainer.eval_strategy(2))
+if wandb_save:
+  wandb.init(project="kuhn_poker_project", name="kuhn_poker_{}_{}".format(algo, num_players))
+
+
+kuhn_trainer = KuhnTrainer(train_iterations=train_iterations, num_players=num_players)
+kuhn_trainer.train(algo)
+
+
+#result
+print("avg util:", kuhn_trainer.eval_strategy(target_player_i=0))
+
 
 result_dict = {}
 for key, value in sorted(kuhn_trainer.nodeMap.items()):
@@ -569,20 +569,11 @@ df.index.name = "Node"
 print(df)
 
 
-# 特定のstrategy_profileのexploitabilityを計算する
-# all fold strategy_profile → 2
-#kuhn_poker_agent = KuhnTrainer(train_iterations=0, num_players=2)
-#kuhn_poker_agent.eval_strategy(0)
-#for node_i, node_main in kuhn_poker_agent.nodeMap.items():
-#  kuhn_poker_agent.nodeMap[node_i].strategySum =  np.array([1, 0], dtype=float)
-#print(kuhn_poker_agent.get_exploitability_dfs())
-"""
-print("")
-# random strategy_profileのexploitability
-#→0.9166666666666665
+
+# calculate random strategy_profile exploitability
 for i in range(2,6):
   kuhn_poker_agent = KuhnTrainer(train_iterations=0, num_players=i)
-  print("{}人対戦:".format(i), kuhn_poker_agent.get_exploitability_dfs())
-"""
+  print("{}player game:".format(i), kuhn_poker_agent.get_exploitability_dfs())
+
 
 doctest.testmod()
