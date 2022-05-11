@@ -547,7 +547,8 @@ algorithm_candicates = ["vanilla_CFR", "chance_sampling_CFR", "external_sampling
 algo = algorithm_candicates[1]
 train_iterations = 10**5
 num_players =  2
-wandb_save = True
+wandb_save = False
+plt_save = False
 
 if wandb_save:
   wandb.init(project="kuhn_poker_project", name="kuhn_poker_{}_{}".format(algo, num_players))
@@ -567,6 +568,7 @@ for key, value in sorted(kuhn_trainer.nodeMap.items()):
 df = pd.DataFrame(result_dict.values(), index=result_dict.keys(), columns=['Pass', "Bet"])
 df.index.name = "Node"
 print(df)
+
 
 
 

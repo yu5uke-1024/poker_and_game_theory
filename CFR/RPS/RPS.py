@@ -82,8 +82,8 @@ class RPSTrainer:
     return self.avgStrategy
 
 #config
-oppStrategy=[0.4, 0.3, 0.3]
-iterations=100000
+oppStrategy = [0.4, 0.3, 0.3]
+iterations = 100000
 
 
 #train
