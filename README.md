@@ -26,8 +26,9 @@ Game is Kuhn Poker and alogrithm is vanilla CFR, chance sampling CFR, external s
 
 # Contents
 
+- [Regret Matching](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/RegretMatching)
+  - [RPS (Rock, Paper, Scissors)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/RegretMatching/RPS)
 - [CFR (Counter Factual Regretminimization)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/CFR)
-  - [RPS (Rock, Paper, Scissors)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/CFR/RPS)
   - [Kuhn Poker](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/CFR/Kuhn_Poker)
     - [two players](https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/CFR/Kuhn_Poker/CFR_Kuhn_Poker_two_player_exploitability_dfs.py)
     - [many players](https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/CFR/Kuhn_Poker/CFR_Kuhn_Poker.py)
