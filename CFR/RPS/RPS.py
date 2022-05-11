@@ -1,6 +1,7 @@
-#ライブラリ
+#Library
 import random
 from tqdm.notebook import tqdm
+
 
 #RPS trainer
 class RPSTrainer:
@@ -42,6 +43,7 @@ class RPSTrainer:
       a += 1
     return a
 
+
   def Get_regret_matched_mixed_strategy_actions(self):
     self.getStrategy()
     self.myAction = self.getAction(self.strategy)
@@ -57,6 +59,7 @@ class RPSTrainer:
   def Accumulate_action_regrets(self):
     for a in range(self.NUM_ACTIONS):
       self.regretSum[a] += self.actionUtility[a] - self.actionUtility[self.myAction]
+
 
   def train(self):
     for i in tqdm(range(self.iterations)):
@@ -78,9 +81,12 @@ class RPSTrainer:
         self.avgStrategy[a] = 1/ self.NUM_ACTIONS
     return self.avgStrategy
 
-#学習
+
+#train
 trainer = RPSTrainer()
 trainer.train()
 
-#結果
-print(trainer.Get_average_mixed_strategy())
+
+#result
+print("opponent strategy:", trainer.oppStrategy)
+print("my optimal strategy:", trainer.Get_average_mixed_strategy())
