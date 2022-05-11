@@ -27,10 +27,10 @@ To people who want to study poker, game theory by using Python.
 # Contents
 
 - CFR (Counter Factual Regretminimization)
-  - [RPS (Rock, Paper, Scissors)](https://github.com/yu5uke-1024/poker_and_game_theory/blob/28b7832b9766d8b329eb3b29e0569ea38c40f085/FP/FP/FP_Game_RPS.py)
-  - Kuhn Poker
-    - two player
-    - more than two player
+  - [RPS (Rock, Paper, Scissors)](https://github.com/yu5uke-1024/poker_and_game_theory/blob/28b7832b9766d8b329eb3b29e0569ea38c40f085/CFR/RPS/RPS.py)
+  - [Kuhn Poker](https://github.com/yu5uke-1024/poker_and_game_theory/tree/28b7832b9766d8b329eb3b29e0569ea38c40f085/CFR/Kuhn_Poker)
+    - [two player](https://github.com/yu5uke-1024/poker_and_game_theory/blob/28b7832b9766d8b329eb3b29e0569ea38c40f085/CFR/Kuhn_Poker/Kuhn_Poker_CFR_exploitability_dfs.py)
+    - [more than two player](https://github.com/yu5uke-1024/poker_and_game_theory/blob/28b7832b9766d8b329eb3b29e0569ea38c40f085/CFR/Kuhn_Poker/Kuhn_Poker_CFR_many_player.py)
   - Leduc Poker
     - two player
     - more than two player
