@@ -12,4 +12,5 @@
 
 # 内容
 
-- [Chapter 1 ](https://github.com/yu5uke-1024/poker_and_game_theory/blob/main/Doc/Chapter1.md)
+- [Chapter 1 ゲームの分類について](https://github.com/yu5uke-1024/poker_and_game_theory/blob/main/Doc/Chapter1.md)
+- [Chapter 2 ポーカーのミニゲーム](https://github.com/yu5uke-1024/poker_and_game_theory/blob/main/Doc/Chapter1.md)
