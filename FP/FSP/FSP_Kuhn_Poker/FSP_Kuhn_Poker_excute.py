@@ -1,4 +1,4 @@
-#ライブラリ
+#Library
 
 import numpy as np
 import pandas as pd
@@ -13,18 +13,31 @@ import doctest
 import copy
 from sklearn.neural_network import MLPClassifier
 from collections import deque
-
+import wandb
 
 import FSP_Kuhn_Poker_trainer
 import FSP_Kuhn_Poker_supervised_learning
 import FSP_Kuhn_Poker_reinforcement_learning
 import FSP_Kuhn_Poker_generate_data
 
+#config
 
+iterations = 10**4
+n = 2
+m = 2
+memory_size = 10**3
+wandb_save = False
+
+
+if wandb_save:
+  wandb.init(project="FSP_project", name="fsp_rl")
 #train
 
-kuhn_trainer = FSP_Kuhn_Poker_trainer.KuhnTrainer(train_iterations=10**2)
-kuhn_trainer.train(n=2, m=1, memory_size=10**3)
+kuhn_trainer = FSP_Kuhn_Poker_trainer.KuhnTrainer(train_iterations=iterations)
+kuhn_trainer.train(n=n, m=m, memory_size=memory_size, wandb_save=wandb_save)
+
+
+#result
 
 print("")
 print("avg_utility", kuhn_trainer.eval_vanilla_CFR("", 0, 0, 1, 1))

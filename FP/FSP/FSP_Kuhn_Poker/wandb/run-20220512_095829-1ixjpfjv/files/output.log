@@ -1,0 +1,7 @@
+  0%|                                                                                                                                                                                                  | 0/100000 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "/Users/yskamto/Desktop/poker/FP/FSP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_excute.py", line 37, in <module>
+    kuhn_trainer.train(n=n, m=m, memory_size=memory_size, wandb_save=wandb_save)
+  File "/Users/yskamto/Desktop/poker/FP/FSP/FSP_Kuhn_Poker/FSP_Kuhn_Poker_trainer.py", line 319, in train
+    FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t)
+AttributeError: 'KuhnTrainer' object has no attribute 'best_response_strategy'
