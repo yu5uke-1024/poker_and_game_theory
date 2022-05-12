@@ -1,5 +1,5 @@
 <p align="right">
-	 <img src="	https://img.shields.io/github/stars/yu5uke-1024/poker_and_game_theory">
+	 <img src="https://img.shields.io/github/stars/yu5uke-1024/poker_and_game_theory">
 	 <img src="https://img.shields.io/github/license/yu5uke-1024/poker_and_game_theory">
 </p>
 
