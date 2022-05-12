@@ -1,59 +1,19 @@
-<p align="right">
-	 <img src="https://img.shields.io/github/stars/yu5uke-1024/poker_and_game_theory">
-	 <img src="https://img.shields.io/github/license/yu5uke-1024/poker_and_game_theory">
-</p>
+# 概要
 
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/63486375/167800473-e344baff-921d-45dc-9234-8f992163d83a.JPG">
-</p>
+この資料では、Python を用いてポーカーやゲーム理論の基本的な部分を学ぶことができます。
 
-# Poker and Game theory
+全てコードを載せているため、実際に手を動かして試してもらうことが可能となっていることが特徴です。
 
-I introduce poker and game theory by using Python.
+コードや説明は、随時更新していきます。
 
-The algorithms we use are CFR,MCCFR and FSP. (add it from time to time)
+<br />
 
-The games we play are RPS, Kuhn Poker and Leduc Poker.
+また、この資料は、学生である筆者が普段勉強しているものをアウトプットとして整理しているという側面があります。
 
-# Target
+そのため、至らない部分が多々あると思いますが、その際はコメントをいただけると嬉しいです。
 
-To people who want to study poker, game theory by using Python.
+<br />
 
-# Demo
+# 内容
 
-This graph show the result of decreasing exploitability by iterations.
-
-Game is Kuhn Poker and alogrithm is vanilla CFR, chance sampling CFR, external sampling MCCFR and outcome sampling MCCFR.
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/63486375/167860623-1b4e7741-6602-414f-8d93-1fe5f8647ac7.png", width=640>
-</p>
-
-# Contents
-
-- [Regret Matching](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/RegretMatching)
-  - [RPS (Rock, Paper, Scissors)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/RegretMatching/RPS)
-- [CFR (Counter Factual Regretminimization)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/CFR)
-  - [Kuhn Poker](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/CFR/Kuhn_Poker)
-    - [two players](https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/CFR/Kuhn_Poker/CFR_Kuhn_Poker_two_player_exploitability_dfs.py)
-    - [many players](https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/CFR/Kuhn_Poker/CFR_Kuhn_Poker.py)
-  - [Leduc Poker](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/CFR/Leduc_Poker)
-    - [two players](https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/CFR/Leduc_Poker/CFR_Leduc_Poker_two_players.py)
-    - [many players](https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/CFR/Leduc_Poker/CFR_Leduc_Poker.py)
-- [FP (Fictitious Play)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/28b7832b9766d8b329eb3b29e0569ea38c40f085/FP)
-  - [FP](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/FP)
-    - [coin game, RPS](https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/FP/FP/FP_Game_RPS.py)
-  - [XFP (Extensive-form Fictitious Play)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/XFP)
-    - [Kuhn Poker](https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/FP/XFP/XFP_Kuhn_Poker.py)
-  - [FSP (FSP: Fictitious Self Play)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/FSP)
-    - [Kuhn Poker](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/FSP/FSP_Kuhn_Poker)
-
-# Features
-
-I try to introduing the code politely.
-
-And the games and alogorithms I introduce are abundant.
-
-# Comment
-
-Please tell me if there is something careless.
+- [Chapter 1 ](https://github.com/yu5uke-1024/poker_and_game_theory/blob/main/Doc/Chapter1.md)
