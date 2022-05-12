@@ -7,3 +7,12 @@
 そこで、手法の有効性を試す時には、情報集合数の少ないポーカーのミニゲームを用います。
 
 この資料では、Kuhn Poker (クーン・ポーカー) と Leduc Poker (ルダック・ポーカー) を使用します。
+
+#
+
+<table border="1">
+    <tr>
+        <td><a href="https://github.com/yu5uke-1024/poker_and_game_theory/blob/main/Doc/Chapter1.md">previous chapter</a></td>
+        <td><a href="https://github.com/yu5uke-1024/poker_and_game_theory/blob/main/Doc/Chapter2.md">next chapter</a></td>
+    </tr>
+</table>

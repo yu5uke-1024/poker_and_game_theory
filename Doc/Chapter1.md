@@ -18,3 +18,12 @@
 不完全情報ゲームは、不透明な状況で意思決定をする難しさがあります。
 
 この資料では、不完全情報ゲームであるポーカーに焦点を当てています。
+
+#
+
+<table border="1">
+    <tr>
+        <td><a href="https://github.com/yu5uke-1024/poker_and_game_theory/blob/main/Doc/README.md">previous chapter</a></td>
+        <td><a href="https://github.com/yu5uke-1024/poker_and_game_theory/blob/main/Doc/Chapter2.md">next chapter</a></td>
+    </tr>
+</table>
