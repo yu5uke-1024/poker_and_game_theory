@@ -11,7 +11,7 @@
 
 I introduce poker and game theory with Python.
 
-The algorithms we use are CFR,MCCFR and FSP. (add it from time to time)
+The algorithms we use are CFR, MCCFR and FSP. (add it from time to time)
 
 The games we play are RPS, Kuhn Poker and Leduc Poker.
 
