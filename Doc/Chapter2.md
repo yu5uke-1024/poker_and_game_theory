@@ -17,7 +17,9 @@
 
 # Kuhn Poker
 
-![a](https://user-images.githubusercontent.com/63486375/168191528-df281145-02c6-48ea-bd17-b8686ca7f06e.jpeg)
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/63486375/168191528-df281145-02c6-48ea-bd17-b8686ca7f06e.jpeg">
+<p>
 
 # 引用文献
 
