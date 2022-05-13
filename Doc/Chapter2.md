@@ -21,41 +21,49 @@
 
 # Kuhn Poker
 
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/63486375/168191528-df281145-02c6-48ea-bd17-b8686ca7f06e.jpeg">
-<p>
-
 [準備]
 
 準備 0. J,Q,K (強さ: J < Q <K) を 1 枚ずつ用意し、各プレイヤに 2 枚のチップを渡す
 
 準備 1. 1 枚ずつカードを配り、チップ 1 枚ずつポットに置く
 
-![a](https://user-images.githubusercontent.com/63486375/168206301-b9417f92-ced0-42df-9c73-f100613de5b0.png)
+<p align="left">
+<img src="https://user-images.githubusercontent.com/63486375/168206831-b3c9403c-6017-444a-914d-019925de568d.jpg", width=360>
+</p>
 
 [ゲーム]
 
 ゲーム 1. プレイヤ A が Pass か Bet (チップ 1 枚) を選択
 
-![b](https://user-images.githubusercontent.com/63486375/168206313-4b36afca-769a-43ed-a8d8-21af82210b4f.png)
+<p align="left">
+<img src="https://user-images.githubusercontent.com/63486375/168207120-3b422588-1809-4305-b0e3-ceee13b32039.jpg", width=360>
+</p>
 
 ゲーム 2. プレイヤ B が Pass か Bet (チップ 1 枚) を選択
 
-![c](https://user-images.githubusercontent.com/63486375/168206316-d89090cc-3c8f-4050-9ea8-ae10b27cb038.png)
+<p align="left">
+<img src="https://user-images.githubusercontent.com/63486375/168207122-85ec6bd2-0924-42eb-93d4-b08156486a8a.jpg", width=360>
+</p>
 
 ゲーム 3. Pass, Bet と行動が続いた場合、プレイヤ A が Pass か bet (チップ 1 枚) を選択
 
-![d](https://user-images.githubusercontent.com/63486375/168206318-c36be7ba-a97a-4464-90e1-07b5ec7d1c48.png)
+<p align="left">
+<img src="https://user-images.githubusercontent.com/63486375/168207128-2229e000-8f11-43ac-973b-f80a7b2ee707.jpg", width=360>
+</p>
 
 [終了条件]
 
 終了条件 1. 両プレイヤが Bet をした or Pass をした場合、手札を見せ合い、強い方がポットを獲得
 
-![e](https://user-images.githubusercontent.com/63486375/168206322-5e5ef9a8-e474-4cbe-808c-aac5e7566ead.png)
+<p align="left">
+<img src="https://user-images.githubusercontent.com/63486375/168207034-4039e3b1-4f83-4d37-9219-8fe51a4d99d6.jpg", width=360>
+</p>
 
 終了条件 2. 片方が Bet をしている状態で、片方が Pass を選択した場合、Bet したプレイヤがポットを獲得
 
-![f](https://user-images.githubusercontent.com/63486375/168206324-f113a08d-b3e2-41d4-96db-cfc1ae092317.png)
+<p align="left">
+<img src="https://user-images.githubusercontent.com/63486375/168207115-d42218e1-b240-4d62-840e-044caa554a51.jpg", width=360>
+</p>
 
 # 引用文献
 
