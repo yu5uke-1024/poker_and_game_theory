@@ -24,6 +24,7 @@
 <table border="1">
     <tr>
         <td><a href="https://github.com/yu5uke-1024/poker_and_game_theory/blob/main/Doc/README.md">previous chapter</a></td>
+        <td><a>♤</a></td>
         <td><a href="https://github.com/yu5uke-1024/poker_and_game_theory/blob/main/Doc/Chapter2.md">next chapter</a></td>
     </tr>
 </table>
