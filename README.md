@@ -6,6 +6,7 @@
 <p align="center">
   <img src="https://user-images.githubusercontent.com/63486375/167800473-e344baff-921d-45dc-9234-8f992163d83a.JPG">
 </p>
+<br/>
 
 # Poker and Game theory with Python
 
@@ -15,9 +16,13 @@ The algorithms we use are CFR, MCCFR and FSP. (add it from time to time)
 
 The games we play are RPS, Kuhn Poker and Leduc Poker.
 
+<br/>
+
 # Target
 
 To people who want to study poker, game theory by using Python.
+
+<br/>
 
 # Demo
 
@@ -25,9 +30,11 @@ This graph show the result of decreasing exploitability by iterations.
 
 Game is Kuhn Poker and alogrithm is vanilla CFR, chance sampling CFR, external sampling MCCFR and outcome sampling MCCFR.
 
+<br/>
 <p align="center">
   <img src="https://user-images.githubusercontent.com/63486375/167860623-1b4e7741-6602-414f-8d93-1fe5f8647ac7.png", width=640>
 </p>
+<br/>
 
 # Contents
 
@@ -49,11 +56,15 @@ Game is Kuhn Poker and alogrithm is vanilla CFR, chance sampling CFR, external s
   - [FSP (FSP: Fictitious Self Play)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/FSP)
     - [Kuhn Poker](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/FSP/FSP_Kuhn_Poker)
 
+<br/>
+
 # Features
 
 I try to introduing the code politely.
 
 And the games and alogorithms I introduce are abundant.
+
+<br/>
 
 # Comment
 
