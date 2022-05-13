@@ -7,9 +7,9 @@
   <img src="https://user-images.githubusercontent.com/63486375/167800473-e344baff-921d-45dc-9234-8f992163d83a.JPG">
 </p>
 
-# Poker and Game theory
+# Poker and Game theory with Python
 
-I introduce poker and game theory by using Python.
+I introduce poker and game theory with Python.
 
 The algorithms we use are CFR,MCCFR and FSP. (add it from time to time)
 
@@ -31,7 +31,7 @@ Game is Kuhn Poker and alogrithm is vanilla CFR, chance sampling CFR, external s
 
 # Contents
 
-- [Document: Poker and Game theory by Python](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/Doc)
+- [Document: Poker and Game theory with Python](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/Doc)
 - [Regret Matching](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/RegretMatching)
   - [RPS (Rock, Paper, Scissors)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/RegretMatching/RPS)
 - [CFR (Counter Factual Regretminimization)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/CFR)
