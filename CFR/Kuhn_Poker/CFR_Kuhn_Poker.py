@@ -545,7 +545,7 @@ class KuhnTrainer:
 #config
 algorithm_candicates = ["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"]
 algo = algorithm_candicates[1]
-train_iterations = 10**5
+train_iterations = 10**3
 num_players =  2
 wandb_save = True
 
@@ -573,7 +573,7 @@ print(df)
 
 
 # calculate random strategy_profile exploitability
-for i in range(2,6):
+for i in range(2,3):
   kuhn_poker_agent = KuhnTrainer(train_iterations=0, num_players=i)
   print("{}player game:".format(i), kuhn_poker_agent.get_exploitability_dfs())
 
