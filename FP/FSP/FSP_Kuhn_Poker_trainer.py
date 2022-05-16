@@ -1,4 +1,5 @@
 #Library
+from typing import ByteString
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -273,13 +274,13 @@ class KuhnTrainer:
 
 
   #KuhnTrainer main method
-  def train(self, n, m, memory_size, wandb_save):
+  def train(self, n, m, memory_size_rl, memory_size_sl, wandb_save, rl_algo, sl_algo, pseudo_code):
     self.exploitability_list = {}
 
-    self.M_SL_player0 = deque([], maxlen=memory_size)
-    self.M_SL_player1 = deque([], maxlen=memory_size)
-    self.M_RL_player0 = deque([], maxlen=memory_size)
-    self.M_RL_player1 = deque([], maxlen=memory_size)
+    self.M_SL_player0 = deque([], maxlen=memory_size_sl)
+    self.M_SL_player1 = deque([], maxlen=memory_size_sl)
+    self.M_RL_player0 = deque([], maxlen=memory_size_rl)
+    self.M_RL_player1 = deque([], maxlen=memory_size_rl)
 
     self.M_SL = [self.M_SL_player0, self.M_SL_player1]
     self.M_RL = [self.M_RL_player0, self.M_RL_player1]
@@ -300,44 +301,43 @@ class KuhnTrainer:
     # q_value
     self.Q_value = [np.zeros((6,2)), np.zeros((6,2))]
 
+
     for iteration_t in tqdm(range(int(self.train_iterations))):
-      eta = 1/(iteration_t+2)
 
-      D = FSP_Kuhn_Poker_generate_data.GenerateData().generate_data(self.avg_strategy, self.best_response_strategy, n, m, eta)
+      if pseudo_code == "batch_FSP":
+        FSP_Kuhn_Poker_generate_data.GenerateData().generate_data1(self.avg_strategy, n, self.M_RL)
 
-      #self.best_response_strategy_dfs = {}
-      #self.infoSets_dict = {}
-      #for target_player in range(self.NUM_PLAYERS):
-      #  self.create_infoSets("", target_player, 1.0)
+        for player_i in range(self.NUM_PLAYERS):
+          FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
 
-      for player_i in range(self.NUM_ACTIONS):
-        self.M_SL[player_i] = D[player_i]
-        self.M_RL[player_i].extend(D[player_i])
+        FSP_Kuhn_Poker_generate_data.GenerateData().generate_data2(self.avg_strategy, self.best_response_strategy, m, self.M_RL, self.M_SL)
 
-        #self.calc_best_response_value(self.avg_strategy, self.best_response_strategy_dfs, player_i, "", 1)
-        FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t)
-        #FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, iteration_t)
-        FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
+        for player_i in range(self.NUM_PLAYERS):
+          if sl_algo == "count_avg":
+            FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
+          elif sl_algo == "mlp":
+            FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
 
-      #print(iteration_t)
-      #for na, pa in self.best_response_strategy_dfs.items():
-      #  if self.best_response_strategy[na][0] != pa[0]:
-      #    print(na, "dfs:", pa, "rl:", self.best_response_strategy[na])
+      elif pseudo_code == "general_FSP":
+        eta = 1/(iteration_t+2)
+        D = FSP_Kuhn_Poker_generate_data.GenerateData().generate_data0(self.avg_strategy, self.best_response_strategy, n, m, eta)
+        for player_i in range(self.NUM_ACTIONS):
+          self.M_SL[player_i] = D[player_i]
+          self.M_RL[player_i].extend(D[player_i])
+
+          FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
+
+          if sl_algo == "count_avg":
+            FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
+          elif sl_algo == "mlp":
+            FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
 
 
       if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
+
         if wandb_save:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
-
-
-
-        #print(self.M_RL[1].count("JQpp"),self.M_RL[1].count("JQpbp"),self.M_RL[1].count("JQpbb") ,self.M_RL[1].count("KQpp") ,self.M_RL[1].count("KQpbp"),self.M_RL[1].count("KQpbb") )
-
-        #print("Jpb:", self.N_count["Jpb"], self.avg_strategy["Jpb"], self.Q_value[0][3], self.best_response_strategy["Jpb"])
-        #print("Qp:",  self.Q_value[1][2], self.avg_strategy["Qp"], self.best_response_strategy["Qp"])
-        print("Kpb:", self.N_count["Kpb"], self.avg_strategy["Kpb"], self.Q_value[0][5], self.best_response_strategy["Kpb"])
-
 
     self.show_plot("FSP")
     if wandb_save:

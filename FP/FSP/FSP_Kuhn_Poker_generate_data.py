@@ -20,7 +20,7 @@ class GenerateData:
   def __init__(self):
     pass
 
-  def generate_data(self, pi_strategy, beta_strategy, n, m, eta):
+  def generate_data0(self, pi_strategy, beta_strategy, n, m, eta):
     sigma_strategy = {}
     for infoset in pi_strategy.keys():
       sigma_strategy[infoset] = (1-eta)*pi_strategy[infoset] + eta*beta_strategy[infoset]
@@ -29,7 +29,6 @@ class GenerateData:
     beta_strategy_player0, beta_strategy_player1 = self.strategy_split_player(beta_strategy)
     D_history = []
 
-    #SLにはない方がいい
     for ni in range(n):
       ni_episode = self.one_episode("", self.strategy_uion(sigma_strategy_player0, sigma_strategy_player1))
       D_history.append(ni_episode)
@@ -49,6 +48,37 @@ class GenerateData:
           D_history_1.append(mi_episode)
         D_history_1 = D_history + D_history_1
     return [D_history_0, D_history_1]
+
+
+  def generate_data1(self, pi_strategy, n, M_rl):
+    pi_strategy_player0, pi_strategy_player1 = self.strategy_split_player(pi_strategy)
+    D_history = []
+
+    for ni in range(n):
+      ni_episode = self.one_episode("", self.strategy_uion(pi_strategy_player0, pi_strategy_player1))
+      D_history.append(ni_episode)
+
+    for player_i in range(FSP_Kuhn_Poker_trainer.KuhnTrainer().NUM_PLAYERS):
+      M_rl[player_i].extend(D_history)
+
+
+
+  def generate_data2(self, pi_strategy, beta_strategy, m, M_rl, M_sl):
+    pi_strategy_player0, pi_strategy_player1 = self.strategy_split_player(pi_strategy)
+    beta_strategy_player0, beta_strategy_player1 = self.strategy_split_player(beta_strategy)
+
+    for player_i in range(FSP_Kuhn_Poker_trainer.KuhnTrainer().NUM_PLAYERS):
+      if player_i == 0:
+        for mi in range(m):
+          mi_episode = self.one_episode("", self.strategy_uion(beta_strategy_player0, pi_strategy_player1))
+          M_rl[player_i].extend([mi_episode])
+          M_sl[player_i].extend([mi_episode])
+
+      else:
+        for mi in range(m):
+          mi_episode = self.one_episode("", self.strategy_uion(beta_strategy_player1, pi_strategy_player0))
+          M_rl[player_i].extend([mi_episode])
+          M_sl[player_i].extend([mi_episode])
 
 
   def strategy_split_player(self, strategy):

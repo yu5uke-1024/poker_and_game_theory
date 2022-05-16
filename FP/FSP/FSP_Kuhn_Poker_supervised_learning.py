@@ -36,6 +36,7 @@ class SupervisedLearning:
     for node_X , action_prob in n_count.items():
         strategy[node_X] = n_count[node_X] / np.sum(action_prob)
 
+    memory = []
     return strategy
 
 

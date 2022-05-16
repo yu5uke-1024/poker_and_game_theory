@@ -20,21 +20,34 @@ import FSP_Kuhn_Poker_supervised_learning
 import FSP_Kuhn_Poker_reinforcement_learning
 import FSP_Kuhn_Poker_generate_data
 
+
 #config
 
-iterations = 10**4
+iterations = 10**5
 n = 2
-m = 2
-memory_size = 10**3
-wandb_save = False
+m = 1
+memory_size_rl = 30
+memory_size_sl = 1000
+
+
+rl_algo_candicate = ["epsilon-greedy", "boltzmann"]
+rl_algo = rl_algo_candicate[1]
+sl_algo_candicate = ["count_avg", "mlp"]
+sl_algo = sl_algo_candicate[0]
+pseudo_code_candicate = ["general_FSP", "batch_FSP"]
+pseudo_code = pseudo_code_candicate[0]
+
+wandb_save = True
 
 
 if wandb_save:
-  wandb.init(project="FSP_project", name="fsp_rl")
+  wandb.init(project="FSP_project", name="fsp_rl_{}_{}".format(rl_algo, pseudo_code, sl_algo))
+
+
 #train
 
 kuhn_trainer = FSP_Kuhn_Poker_trainer.KuhnTrainer(train_iterations=iterations)
-kuhn_trainer.train(n=n, m=m, memory_size=memory_size, wandb_save=wandb_save)
+kuhn_trainer.train(n=n, m=m, memory_size_rl=memory_size_rl, memory_size_sl=memory_size_sl, wandb_save=wandb_save, rl_algo=rl_algo, sl_algo=sl_algo, pseudo_code=pseudo_code)
 
 
 #result
