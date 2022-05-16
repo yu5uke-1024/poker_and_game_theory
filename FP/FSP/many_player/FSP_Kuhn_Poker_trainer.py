@@ -313,21 +313,22 @@ class KuhnTrainer:
         FSP_Kuhn_Poker_generate_data.GenerateData().generate_data2(self.avg_strategy, self.best_response_strategy, m, self.M_RL, self.M_SL)
 
         for player_i in range(self.NUM_PLAYERS):
-          if sl_algo == "count_avg":
+          if sl_algo == "cnt":
             FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
           elif sl_algo == "mlp":
             FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
+
 
       elif pseudo_code == "general_FSP":
         eta = 1/(iteration_t+2)
         D = FSP_Kuhn_Poker_generate_data.GenerateData().generate_data0(self.avg_strategy, self.best_response_strategy, n, m, eta)
         for player_i in range(self.NUM_ACTIONS):
-          self.M_SL[player_i] = D[player_i]
+          self.M_SL[player_i].extend(D[player_i])
           self.M_RL[player_i].extend(D[player_i])
 
           FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
 
-          if sl_algo == "count_avg":
+          if sl_algo == "cnt":
             FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
           elif sl_algo == "mlp":
             FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)

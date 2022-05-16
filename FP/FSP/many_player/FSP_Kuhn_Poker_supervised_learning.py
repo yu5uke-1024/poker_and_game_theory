@@ -56,7 +56,7 @@ class SupervisedLearning:
       #print(train_X.shape, train_y.shape)
 
       #モデル構築 多層パーセプトロン
-      clf = MLPClassifier()
+      clf = MLPClassifier(hidden_layer_sizes=(200,))
       clf.fit(train_X, train_y)
 
       for node_X , _ in update_strategy.items():
