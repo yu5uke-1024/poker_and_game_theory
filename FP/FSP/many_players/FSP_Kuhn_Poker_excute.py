@@ -23,14 +23,15 @@ import FSP_Kuhn_Poker_generate_data
 #config
 config = dict(
   iterations = 10**3,
+  num_players = 2,
   n= 2,
   m= 1,
   memory_size_rl= 30,
   memory_size_sl= 1000,
   rl_algo = ["epsilon-greedy", "boltzmann"][0],
-  sl_algo = ["cnt", "mlp"][1],
+  sl_algo = ["cnt", "mlp"][0],
   pseudo_code = ["general_FSP", "batch_FSP"][0],
-  wandb_save = True
+  wandb_save = False
 )
 
 
@@ -43,7 +44,8 @@ if config["wandb_save"]:
 #train
 
 kuhn_trainer = FSP_Kuhn_Poker_trainer.KuhnTrainer(
-  train_iterations = config["iterations"]
+  train_iterations = config["iterations"],
+  num_players= config["num_players"]
   )
 
 
@@ -62,7 +64,7 @@ kuhn_trainer.train(
 #result
 
 print("")
-print("avg_utility", kuhn_trainer.eval_vanilla_CFR("", 0, 0, 1, 1))
+print("avg_utility", kuhn_trainer.eval_vanilla_CFR("", 0, 0, [1 for _ in range(config["num_players"])]))
 print("final_exploitability", list(kuhn_trainer.exploitability_list.items())[-1])
 print("")
 

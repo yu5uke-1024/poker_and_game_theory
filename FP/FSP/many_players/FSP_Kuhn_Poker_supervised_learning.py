@@ -21,7 +21,6 @@ class SupervisedLearning:
   def __init__(self):
     self.NUM_ACTIONS = 2
 
-
   # exploitability: 収束する
   def SL_train_AVG(self, memory, target_player, strategy, n_count):
     for one_episode in memory:
