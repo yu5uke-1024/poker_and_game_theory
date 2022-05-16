@@ -22,7 +22,7 @@ import FSP_Kuhn_Poker_generate_data
 
 #config
 config = dict(
-  iterations = 10**3,
+  iterations = 10**4,
   num_players = 2,
   n= 2,
   m= 1,

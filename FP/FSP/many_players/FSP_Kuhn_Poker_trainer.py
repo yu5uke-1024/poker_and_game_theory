@@ -133,7 +133,7 @@ class KuhnTrainer:
 
 
   # make node or get node
-  def Get_information_set_node_or_create_it_if_nonexistant(self, infoSet):
+  def if_nonexistant(self, infoSet):
     if infoSet not in self.avg_strategy:
       self.avg_strategy[infoSet] = np.array([1/self.NUM_ACTIONS for _ in range(self.NUM_ACTIONS)], dtype=float)
 
@@ -155,7 +155,7 @@ class KuhnTrainer:
         return utility_sum
 
       infoSet = history[player] + history[self.NUM_PLAYERS:]
-      node = self.Get_information_set_node_or_create_it_if_nonexistant(infoSet)
+      self.if_nonexistant(infoSet)
 
       if player == best_response_player:
         if infoSet not in best_response_strategy:
@@ -187,13 +187,12 @@ class KuhnTrainer:
         return best_response_util
 
       else:
-        avg_strategy = node.Get_average_information_set_mixed_strategy()
         nodeUtil = 0
         action_value_list = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
         for ai in range(self.NUM_ACTIONS):
           nextHistory =  history + ("p" if ai == 0 else "b")
-          action_value_list[ai] = self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, prob*avg_strategy[ai])
-          nodeUtil += avg_strategy[ai] * action_value_list[ai]
+          action_value_list[ai] = self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, prob* self.avg_strategy[infoSet][ai])
+          nodeUtil += self.avg_strategy[infoSet][ai] * action_value_list[ai]
         return nodeUtil
 
 
@@ -223,8 +222,8 @@ class KuhnTrainer:
       if player == target_player:
         self.create_infoSets(nextHistory, target_player, po)
       else:
-        node = self.Get_information_set_node_or_create_it_if_nonexistant(infoSet)
-        actionProb = node.Get_average_information_set_mixed_strategy()[ai]
+        self.if_nonexistant(infoSet)
+        actionProb =self.avg_strategy[infoSet][ai]
         self.create_infoSets(nextHistory, target_player, po*actionProb)
 
 
@@ -240,7 +239,7 @@ class KuhnTrainer:
     exploitability = 0
     best_response_strategy = {}
     for best_response_player_i in range(self.NUM_PLAYERS):
-        exploitability += self.calc_best_response_value(self.avg_strategy, best_response_strategy, best_response_player_i, "", 1)
+        exploitability += self.calc_best_response_value(best_response_strategy, best_response_player_i, "", 1)
 
     assert exploitability >= 0
     return exploitability
@@ -264,10 +263,9 @@ class KuhnTrainer:
       return utility_sum
 
     infoSet = history[player] + history[self.NUM_PLAYERS:]
-    node = self.Get_information_set_node_or_create_it_if_nonexistant(infoSet)
-    node.Get_strategy_through_regret_matching()
+    self.if_nonexistant(infoSet)
 
-    strategy = node.Get_average_information_set_mixed_strategy()
+    strategy = self.avg_strategy[infoSet]
 
     util_list = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
     nodeUtil = 0
