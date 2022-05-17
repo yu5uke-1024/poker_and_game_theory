@@ -32,6 +32,7 @@ class KuhnTrainer:
 
 
 
+
   def make_rank(self, num_players):
     """return dict
     >>> KuhnTrainer().make_rank(2) == {'J':1, 'Q':2, 'K':3}
@@ -68,7 +69,10 @@ class KuhnTrainer:
       -1
       >>> KuhnTrainer(num_players=2).Return_payoff_for_terminal_states("JKpbp", 1)
       1
+      >>> KuhnTrainer(num_players=3).Return_payoff_for_terminal_states("JKTpbpp", 1)
+      2
       """
+
       pot = self.NUM_PLAYERS * 1 + history.count("b")
       start = -1
       target_player_action = history[self.NUM_PLAYERS+target_player_i::self.NUM_PLAYERS]
@@ -98,6 +102,7 @@ class KuhnTrainer:
         bet_player_card = {}
         for idx in bet_player_list:
           bet_player_card[idx] = [history[idx], self.card_rank[history[idx]]]
+
 
         winner_rank = max([idx[1] for idx in bet_player_card.values()])
         target_player_rank = bet_player_card[target_player_i][1]
@@ -215,7 +220,9 @@ class KuhnTrainer:
     if player == target_player:
       if self.infoSets_dict.get(infoSet) is None:
         self.infoSets_dict[infoSet] = []
+        self.infoSets_dict_player[player].append(infoSet)
       self.infoSets_dict[infoSet].append((history, po))
+
 
     for ai in range(self.NUM_ACTIONS):
       nextHistory = history + ("p" if ai == 0 else "b")
@@ -304,8 +311,9 @@ class KuhnTrainer:
     self.M_SL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
     self.M_RL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
 
-
+    self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
     self.infoSets_dict = {}
+
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
 
@@ -317,39 +325,45 @@ class KuhnTrainer:
       self.N_count[node] = np.array([1.0 for _ in range(self.NUM_ACTIONS)], dtype=float)
 
     # q_value
-    self.Q_value = [np.zeros((6,2)) for _ in range(self.NUM_PLAYERS)]
+    self.Q_value = [np.zeros((len(self.infoSets_dict_player[i]),2)) for i in range(self.NUM_PLAYERS)]
+
+
+
+    RL = FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS)
+    SL = FSP_Kuhn_Poker_supervised_learning.SupervisedLearning(self.NUM_PLAYERS, self.NUM_ACTIONS)
+    GD = FSP_Kuhn_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS)
 
 
     for iteration_t in tqdm(range(int(self.train_iterations))):
 
       if pseudo_code == "batch_FSP":
-        FSP_Kuhn_Poker_generate_data.GenerateData().generate_data1(self.avg_strategy, n, self.M_RL)
+        GD.generate_data1(self.avg_strategy, n, self.M_RL)
 
         for player_i in range(self.NUM_PLAYERS):
-          FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
+          RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
 
-        FSP_Kuhn_Poker_generate_data.GenerateData().generate_data2(self.avg_strategy, self.best_response_strategy, m, self.M_RL, self.M_SL)
+        GD.generate_data2(self.avg_strategy, self.best_response_strategy, m, self.M_RL, self.M_SL)
 
         for player_i in range(self.NUM_PLAYERS):
           if sl_algo == "cnt":
-            FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
+            SL.SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
           elif sl_algo == "mlp":
-            FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
+            SL.SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
 
 
       elif pseudo_code == "general_FSP":
         eta = 1/(iteration_t+2)
-        D = FSP_Kuhn_Poker_generate_data.GenerateData().generate_data0(self.avg_strategy, self.best_response_strategy, n, m, eta)
+        D = GD.generate_data0(self.avg_strategy, self.best_response_strategy, n, m, eta)
         for player_i in range(self.NUM_PLAYERS):
           self.M_SL[player_i].extend(D[player_i])
           self.M_RL[player_i].extend(D[player_i])
 
-          FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning().RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
+          RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
 
           if sl_algo == "cnt":
-            FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
+            SL.SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
           elif sl_algo == "mlp":
-            FSP_Kuhn_Poker_supervised_learning.SupervisedLearning().SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
+            SL.SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
 
 
       if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
@@ -361,3 +375,6 @@ class KuhnTrainer:
     self.show_plot("FSP")
     if wandb_save:
       wandb.save()
+
+
+doctest.testmod()

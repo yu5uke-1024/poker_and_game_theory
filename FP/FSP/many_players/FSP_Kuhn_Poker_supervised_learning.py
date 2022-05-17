@@ -16,10 +16,13 @@ from collections import deque
 import warnings
 warnings.filterwarnings('ignore')
 
+import FSP_Kuhn_Poker_trainer
+
 
 class SupervisedLearning:
-  def __init__(self):
-    self.NUM_ACTIONS = 2
+  def __init__(self, num_players, num_actions):
+    self.num_players = num_players
+    self.num_actions = num_actions
 
   # exploitability: 収束する
   def SL_train_AVG(self, memory, target_player, strategy, n_count):
@@ -27,7 +30,7 @@ class SupervisedLearning:
       one_episode_split = self.Episode_split(one_episode)
 
       for X, y in one_episode_split:
-        if (target_player == 0 and len(X) %2 != 0) or (target_player == 1 and len(X) %2 == 0):
+        if (len(X)-1) % self.num_players == target_player :
           if y == "p":
             n_count[X] += np.array([1.0, 0.0], dtype=float)
           else:
@@ -67,9 +70,9 @@ class SupervisedLearning:
 
   def From_episode_to_bit(self, one_episode, target_player):
     """return list
-    >>> SupervisedLearning().From_episode_to_bit('QKbp', 0)
+    >>> SupervisedLearning(2, 2).From_episode_to_bit('QKbp', 0)
     [(array([0, 1, 0, 0, 0, 0, 0]), array([1]))]
-    >>> SupervisedLearning().From_episode_to_bit('QKbp', 1)
+    >>> SupervisedLearning(2, 2).From_episode_to_bit('QKbp', 1)
     [(array([0, 0, 1, 0, 1, 0, 0]), array([0]))]
     """
     one_episode_split = self.Episode_split(one_episode)
@@ -128,22 +131,17 @@ class SupervisedLearning:
 
   def Episode_split(self, one_episode):
     """return list
-    >>> SupervisedLearning().Episode_split('QKbp')
+    >>> SupervisedLearning(2, 2).Episode_split('QKbp')
     [('Q', 'b'), ('Kb', 'p')]
-    >>> SupervisedLearning().Episode_split('KQpbp')
+    >>> SupervisedLearning(2, 2).Episode_split('KQpbp')
     [('K', 'p'), ('Qp', 'b'), ('Kpb', 'p')]
     """
     one_episode_split = []
-    my_card = one_episode[0]
-    opp_card = one_episode[1]
-
-    if len(one_episode) == 4:
-      one_episode_split.append((my_card, one_episode[2]))
-      one_episode_split.append((opp_card+one_episode[2], one_episode[3]))
-    else:
-      one_episode_split.append((my_card, one_episode[2]))
-      one_episode_split.append((opp_card+one_episode[2], one_episode[3]))
-      one_episode_split.append((my_card+one_episode[2:4], one_episode[4]))
+    action_history = one_episode[self.num_players:]
+    for idx, ai in enumerate(action_history):
+      s = one_episode[idx%self.num_players] + action_history[:idx]
+      a = ai
+      one_episode_split.append((s,a))
 
     return one_episode_split
 
