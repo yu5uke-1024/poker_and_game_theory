@@ -22,14 +22,14 @@ import FSP_Kuhn_Poker_generate_data
 
 #config
 config = dict(
-  iterations = 10**5,
+  iterations = 10**4,
   n= 2,
   m= 1,
   memory_size_rl= 30,
-  memory_size_sl= 1000,
+  memory_size_sl= 10000,
   rl_algo = ["epsilon-greedy", "boltzmann"][0],
   sl_algo = ["cnt", "mlp"][0],
-  pseudo_code = ["general_FSP", "batch_FSP"][1],
+  pseudo_code = ["general_FSP", "batch_FSP"][0],
   wandb_save = True
 )
 
