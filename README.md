@@ -55,6 +55,9 @@ Game is Kuhn Poker and alogrithm is vanilla CFR, chance sampling CFR, external s
     - [Kuhn Poker](https://github.com/yu5uke-1024/poker_and_game_theory/blob/d559d0b658ea4ec3e5d3b4aabd225f6e6dc9ac63/FP/XFP/XFP_Kuhn_Poker.py)
   - [FSP (FSP: Fictitious Self Play)](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/FSP)
     - [Kuhn Poker](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/FSP/FSP_Kuhn_Poker)
+      - [two players](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/FSP/Kuhn_Poker/two_players)
+      - [many players](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/FSP/Kuhn_Poker/many_players)
+    - [Leduc Poker](https://github.com/yu5uke-1024/poker_and_game_theory/tree/main/FP/FSP/Leduc_Poker/many_players)
 
 <br/>
 
