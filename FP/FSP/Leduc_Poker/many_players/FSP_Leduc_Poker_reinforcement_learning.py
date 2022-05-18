@@ -67,6 +67,7 @@ class ReinforcementLearning:
 
 
     for one_episode in memory:
+
       one_episode_split = self.Episode_split(one_episode)
       for trainsition in one_episode_split:
         s, a, r, s_prime = trainsition[0], trainsition[1], trainsition[2], trainsition[3]

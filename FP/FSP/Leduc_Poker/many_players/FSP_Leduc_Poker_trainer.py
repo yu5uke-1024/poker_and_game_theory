@@ -176,6 +176,8 @@ class LeducTrainer:
     1
     >>> LeducTrainer().action_player("JQcr")
     0
+    >>> LeducTrainer().action_player("JQr")
+    1
     >>> LeducTrainer(num_players=3).action_player("JQTrfr")
     0
     """
@@ -586,7 +588,10 @@ class LeducTrainer:
     # n_count
     self.N_count = copy.deepcopy(self.avg_strategy)
     for node, cn in self.N_count.items():
-      self.N_count[node] = np.array([1.0 for _ in range(self.NUM_ACTIONS)], dtype=float)
+      self.N_count[node] = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
+      for key_i, valye_i in enumerate(self.avg_strategy[node]):
+        if valye_i != 0:
+          self.N_count[node][key_i] = 1.0
 
     # q_value
     self.Q_value = [np.zeros((len(self.infoSets_dict_player[i]),2)) for i in range(self.NUM_PLAYERS)]
@@ -594,7 +599,7 @@ class LeducTrainer:
 
 
     RL = FSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS)
-    SL = FSP_Leduc_Poker_supervised_learning.SupervisedLearning(self.NUM_PLAYERS, self.NUM_ACTIONS)
+    SL = FSP_Leduc_Poker_supervised_learning.SupervisedLearning(self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action)
     GD = FSP_Leduc_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS)
 
 
@@ -623,7 +628,9 @@ class LeducTrainer:
           self.M_SL[player_i].extend(D[player_i])
           self.M_RL[player_i].extend(D[player_i])
 
+          """
           RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
+          """
 
           if sl_algo == "cnt":
             SL.SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)

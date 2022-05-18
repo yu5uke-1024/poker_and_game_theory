@@ -125,6 +125,7 @@ class GenerateData:
 
     infoSet = history[player] + history[self.num_players:]
 
+
     sampling_action = np.random.choice(list(range(self.num_actions)), p=strategy[infoSet])
     nextHistory = history + self.leduc_trainer.ACTION_DICT[sampling_action]
     return self.one_episode(nextHistory, strategy)

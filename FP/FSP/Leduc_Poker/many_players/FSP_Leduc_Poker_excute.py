@@ -19,14 +19,14 @@ import FSP_Leduc_Poker_trainer
 
 #config
 config = dict(
-  iterations = 10**1,
+  iterations = 10**2,
   num_players = 2,
   n= 2,
   m= 1,
   memory_size_rl= 30,
   memory_size_sl= 1000,
   rl_algo = ["epsilon-greedy", "boltzmann"][0],
-  sl_algo = ["cnt", "mlp"][1],
+  sl_algo = ["cnt", "mlp"][0],
   pseudo_code = ["general_FSP", "batch_FSP"][0],
   wandb_save = False
 )

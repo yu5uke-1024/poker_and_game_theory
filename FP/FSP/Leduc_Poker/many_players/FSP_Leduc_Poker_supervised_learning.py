@@ -16,28 +16,39 @@ from collections import deque
 import warnings
 warnings.filterwarnings('ignore')
 
+import FSP_Leduc_Poker_trainer
+
 
 
 class SupervisedLearning:
-  def __init__(self, num_players=2, num_actions=2):
+  def __init__(self, num_players=2, num_actions=2, node_possible_action=None):
     self.num_players = num_players
     self.num_actions = num_actions
-    self.max_len_X_bit = (self.num_players + 1) + 2*(self.num_players *2 - 2)
+    self.node_possible_action = node_possible_action
+    self.max_len_X_bit = 2* ( (self.num_players + 1) + 3*(self.num_players *3 - 2) )
+    self.ACTION_DICT = {0:"f", 1:"c", 2:"r"}
+    self.ACTION_DICT_verse = {"f":0, "c":1, "r":2}
 
+
+    self.cards = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
     self.card_order  = self.make_card_order(self.num_players)
+    self.leduc_trainer = FSP_Leduc_Poker_trainer.LeducTrainer(num_players=self.num_players)
+
 
 
   def make_card_order(self, num_players):
     """return dict
     >>> SupervisedLearning().make_card_order(2) == {'J':0, 'Q':1, 'K':2}
     True
+    >>> SupervisedLearning().make_card_order(3) == {'T':0, 'J':1, 'Q':2, 'K':3}
+    True
     """
-    card = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
     card_order = {}
     for i in range(num_players+1):
-      card_order[card[11-num_players+i]] =  i
+      card_order[self.cards[11-num_players+i]] =  i
 
     return card_order
+
 
   # exploitability: 収束する
   def SL_train_AVG(self, memory, target_player, strategy, n_count):
@@ -45,11 +56,10 @@ class SupervisedLearning:
       one_episode_split = self.Episode_split(one_episode)
 
       for X, y in one_episode_split:
-        if (len(X)-1) % self.num_players == target_player :
-          if y == "p":
-            n_count[X] += np.array([1.0, 0.0], dtype=float)
-          else:
-            n_count[X] += np.array([0.0, 1.0], dtype=float)
+        if self.leduc_trainer.action_player("J"*(self.num_players-1) + X) == target_player :
+          action_prob_list = np.array([0 for _ in range(self.num_actions)], dtype=float)
+          action_prob_list[self.ACTION_DICT_verse[y]] = 1.0
+
 
     for node_X , action_prob in n_count.items():
         strategy[node_X] = n_count[node_X] / np.sum(action_prob)
@@ -80,68 +90,85 @@ class SupervisedLearning:
       for node_X , _ in update_strategy.items():
         node_bit_X = self.make_X(node_X).reshape(-1, self.max_len_X_bit)
         y = clf.predict_proba(node_bit_X).ravel()
+        possible_action_list = self.node_possible_action[node_X]
+        normalizationSum = 0
+        for action_i, yi in enumerate(y):
+          if action_i not in possible_action_list:
+            y[action_i] = 0
+          else:
+            normalizationSum += yi
+
+        y /= normalizationSum
         update_strategy[node_X] = y
 
 
   def From_episode_to_bit(self, one_episode, target_player):
     """return list
-    >>> SupervisedLearning(2, 2).From_episode_to_bit('QKbp', 0)
-    [(array([0, 1, 0, 0, 0, 0, 0]), array([1]))]
-    >>> SupervisedLearning(2, 2).From_episode_to_bit('QKbp', 1)
-    [(array([0, 0, 1, 0, 1, 0, 0]), array([0]))]
+    >>> SupervisedLearning(2, 2).From_episode_to_bit('QKrf', 0)
+    [(array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0]), array([2]))]
+    >>> SupervisedLearning(2, 2).From_episode_to_bit('QKccJcc', 0)
+    [(array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0]), array([1])), (array([0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 1]), array([1]))]
     """
     one_episode_split = self.Episode_split(one_episode)
     one_episode_bit = []
     for X, y in one_episode_split:
-      if (len(X)-1) % self.num_players == target_player :
+      if self.leduc_trainer.action_player("J"*(self.num_players-1) + X) == target_player :
+
         y_bit = self.make_y(y)
         X_bit = self.make_X(X)
         one_episode_bit.append((X_bit, y_bit))
 
     return one_episode_bit
 
+
   def make_y(self, y):
-    if y == "p":
+    if y == "f":
       y_bit = np.array([0])
-    else:
+    elif y == "c":
       y_bit = np.array([1])
+    elif y == "r":
+      y_bit = np.array([2])
     return y_bit
 
+
+  # com card X_bit の最後のn+1を使う
   def make_X(self, X):
 
     X_bit = np.array([0 for _ in range(self.max_len_X_bit)])
     X_bit[self.card_order[X[0]]] = 1
 
     for idx, Xi in enumerate(X[1:]):
-      if Xi == "p":
-        X_bit[(self.num_players+1) + 2*idx] = 1
+      if Xi not in self.cards:
+        X_bit[(self.num_players+1) + 3*idx + self.ACTION_DICT_verse[Xi]] = 1
       else:
-        X_bit[(self.num_players+1) + 2*idx +1] = 1
+        com_idx = self.card_order[Xi] + 1
+        X_bit[-com_idx] = 1
 
-    return X_bit
-
-
-  def first_bit(self, X0, X_bit):
-    if X0 == "J":
-      X_bit[0] = 1
-    elif X0 == "Q":
-      X_bit[1] = 1
-    elif X0 == "K":
-      X_bit[2] = 1
     return X_bit
 
 
   def Episode_split(self, one_episode):
     """return list
-    >>> SupervisedLearning(2, 2).Episode_split('QKccJcc')
+    >>> SupervisedLearning(2, 3).Episode_split('QKccJcc')
     [('Q', 'c'), ('Kc', 'c'), ('QccJ', 'c'), ('KccJc', 'c')]
+    >>> SupervisedLearning(3, 3).Episode_split('QKTcrfcJrf')
+    [('Q', 'c'), ('Kc', 'r'), ('Tcr', 'f'), ('Qcrf', 'c'), ('QcrfcJ', 'r'), ('KcrfcJr', 'f')]
     """
     one_episode_split = []
+
+    player_card = one_episode[:self.num_players]
     action_history = one_episode[self.num_players:]
-    for idx, ai in enumerate(action_history):
-      s = one_episode[idx%self.num_players] + action_history[:idx]
-      a = ai
-      one_episode_split.append((s,a))
+    act = ""
+
+    for ai in action_history:
+      if ai not in self.cards:
+        si = one_episode[self.leduc_trainer.action_player(player_card+act)] + act
+        one_episode_split.append((si,ai))
+
+      act += ai
 
     return one_episode_split
 
