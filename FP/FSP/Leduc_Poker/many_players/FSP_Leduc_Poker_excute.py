@@ -27,7 +27,7 @@ config = dict(
   memory_size_sl= 1000,
   rl_algo = ["epsilon-greedy", "boltzmann"][0],
   sl_algo = ["cnt", "mlp"][1],
-  pseudo_code = ["general_FSP", "batch_FSP"][1],
+  pseudo_code = ["general_FSP", "batch_FSP"][0],
   wandb_save = False
 )
 

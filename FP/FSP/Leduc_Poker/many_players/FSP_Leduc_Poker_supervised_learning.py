@@ -133,10 +133,8 @@ class SupervisedLearning:
 
   def Episode_split(self, one_episode):
     """return list
-    >>> SupervisedLearning(2, 2).Episode_split('QKbp')
-    [('Q', 'b'), ('Kb', 'p')]
-    >>> SupervisedLearning(2, 2).Episode_split('KQpbp')
-    [('K', 'p'), ('Qp', 'b'), ('Kpb', 'p')]
+    >>> SupervisedLearning(2, 2).Episode_split('QKccJcc')
+    [('Q', 'c'), ('Kc', 'c'), ('QccJ', 'c'), ('KccJc', 'c')]
     """
     one_episode_split = []
     action_history = one_episode[self.num_players:]

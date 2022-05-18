@@ -20,7 +20,7 @@ class GenerateData:
   def __init__(self, num_players, num_actions):
     self.num_players = num_players
     self.num_actions = num_actions
-    self.kuhn_trainer = FSP_Leduc_Poker_trainer.LeducTrainer(num_players=self.num_players)
+    self.leduc_trainer = FSP_Leduc_Poker_trainer.LeducTrainer(num_players=self.num_players)
 
 
   def generate_data0(self, pi_strategy, beta_strategy, n, m, eta):
@@ -32,6 +32,7 @@ class GenerateData:
     sigma_strategy_player_list = self.strategy_split_player(sigma_strategy)
     beta_strategy_player_list = self.strategy_split_player(beta_strategy)
     D_history = []
+
 
     for ni in range(n):
       ni_episode = self.one_episode("", self.strategy_uion(sigma_strategy_player_list, sigma_strategy_player_list, 0))
@@ -80,7 +81,8 @@ class GenerateData:
     strategy_player_list = [{} for _ in range(self.num_players)]
 
     for infoset, avg_strategy in strategy.items():
-        player = (len(infoset)-1) % self.num_players
+        # J is dummy card (infoset → history)
+        player = self.leduc_trainer.action_player("J"*(self.num_players-1) + infoset)
         strategy_player_list[player][infoset] = avg_strategy
     return strategy_player_list
 
@@ -104,22 +106,27 @@ class GenerateData:
 
 
   def one_episode(self, history, strategy):
-    plays = len(history)
-    player = plays % self.num_players
 
-    if self.kuhn_trainer.whether_terminal_states(history):
+    player = self.leduc_trainer.action_player(history)
+
+    if self.leduc_trainer.whether_terminal_states(history):
       return history
 
-    elif self.kuhn_trainer.whether_chance_node(history):
-      cards = self.kuhn_trainer.card_distribution(self.num_players)
-      random.shuffle(cards)
-      nextHistory = "".join(cards[:self.num_players])
-      return self.one_episode(nextHistory, strategy)
+    elif self.leduc_trainer.whether_chance_node(history):
+      if len(history) == 0:
+        self.cards = self.leduc_trainer.card_distribution()
+        random.shuffle(self.cards)
+        nextHistory = "".join(self.cards[:self.num_players])
+        return self.one_episode(nextHistory, strategy)
+      else:
+        nextHistory = history + self.cards[self.num_players]
+        return self.one_episode(nextHistory, strategy)
+
 
     infoSet = history[player] + history[self.num_players:]
 
     sampling_action = np.random.choice(list(range(self.num_actions)), p=strategy[infoSet])
-    nextHistory = history + ("p" if sampling_action == 0 else "b")
+    nextHistory = history + self.leduc_trainer.ACTION_DICT[sampling_action]
     return self.one_episode(nextHistory, strategy)
 
 

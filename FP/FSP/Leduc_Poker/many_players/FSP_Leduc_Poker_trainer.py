@@ -618,6 +618,7 @@ class LeducTrainer:
       elif pseudo_code == "general_FSP":
         eta = 1/(iteration_t+2)
         D = GD.generate_data0(self.avg_strategy, self.best_response_strategy, n, m, eta)
+
         for player_i in range(self.NUM_PLAYERS):
           self.M_SL[player_i].extend(D[player_i])
           self.M_RL[player_i].extend(D[player_i])

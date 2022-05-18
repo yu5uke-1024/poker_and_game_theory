@@ -27,7 +27,7 @@ class ReinforcementLearning:
     self.num_actions = num_actions
     self.action_id = {"p":0, "b":1}
     self.player_q_state = self.make_each_player_state_idx(infoSet_dict_player)
-    self.kuhn_trainer = FSP_Leduc_Poker_trainer.LeducTrainer(num_players=self.num_players)
+    self.leduc_trainer = FSP_Leduc_Poker_trainer.LeducTrainer(num_players=self.num_players)
 
 
   def make_each_player_state_idx(self, infoSet_dict_player):
@@ -41,10 +41,8 @@ class ReinforcementLearning:
 
   def Episode_split(self, one_episode):
     """return list
-    >>> ReinforcementLearning([],2, 2).Episode_split('QKbp')
-    [('Q', 'b', 1, None), ('Kb', 'p', -1, None)]
-    >>> ReinforcementLearning([], 2, 2).Episode_split('KJpbb')
-    [('K', 'p', 0, 'Kpb'), ('Jp', 'b', -2, None), ('Kpb', 'b', 2, None)]
+    >>> ReinforcementLearning([],2, 2).Episode_split('QKccJcc')
+    [('Q', 'c', 0, 'QccJ'), ('Kc', 'c', 0, 'KccJc'), ('QccJ', 'c', -1, None), ('KccJc', 'c', 1, None)]
     """
     one_episode_split = []
     action_history = one_episode[self.num_players:]
@@ -56,7 +54,7 @@ class ReinforcementLearning:
         r = 0
       else:
         s_prime = None
-        r = self.kuhn_trainer.Return_payoff_for_terminal_states(one_episode, idx%self.num_players)
+        r = self.leduc_trainer.Return_payoff_for_terminal_states(one_episode, idx%self.num_players)
 
       one_episode_split.append((s, a, r, s_prime))
     return one_episode_split
