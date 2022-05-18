@@ -29,7 +29,7 @@ config = dict(
   memory_size_rl= 30,
   memory_size_sl= 1000,
   rl_algo = ["epsilon-greedy", "boltzmann"][0],
-  sl_algo = ["cnt", "mlp"][0],
+  sl_algo = ["cnt", "mlp"][1],
   pseudo_code = ["general_FSP", "batch_FSP"][1],
   wandb_save = True
 )
@@ -37,7 +37,7 @@ config = dict(
 
 
 if config["wandb_save"]:
-  wandb.init(project="FSP_project_{}".format(config["num_players"]), name="kuhn_poker_{}_{}_{}".format(config["rl_algo"], config["sl_algo"], config["pseudo_code"]))
+  wandb.init(project="FSP_project_{}players".format(config["num_players"]), name="kuhn_poker_{}_{}_{}".format(config["rl_algo"], config["sl_algo"], config["pseudo_code"]))
   wandb.config.update(config)
 
 
@@ -64,7 +64,7 @@ kuhn_trainer.train(
 #result
 
 print("")
-print("avg_utility", kuhn_trainer.eval_vanilla_CFR("", 0, 0, [1 for _ in range(config["num_players"])]))
+print("avg_utility", kuhn_trainer.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(config["num_players"])]))
 print("final_exploitability", list(kuhn_trainer.exploitability_list.items())[-1])
 print("")
 
@@ -81,7 +81,7 @@ for key, value in sorted(kuhn_trainer.best_response_strategy.items()):
 df1 = pd.DataFrame(result_dict_br.values(), index=result_dict_br.keys(), columns=['Pass_br', "Bet_br"])
 df1.index.name = "Node"
 
-print(pd.concat([df, df1], axis=1))
+#print(pd.concat([df, df1], axis=1))
 
 
 doctest.testmod()

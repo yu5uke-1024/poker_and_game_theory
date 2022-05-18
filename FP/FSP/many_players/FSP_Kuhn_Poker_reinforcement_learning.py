@@ -27,6 +27,7 @@ class ReinforcementLearning:
     self.num_actions = num_actions
     self.action_id = {"p":0, "b":1}
     self.player_q_state = self.make_each_player_state_idx(infoSet_dict_player)
+    self.kuhn_trainer = FSP_Kuhn_Poker_trainer.KuhnTrainer(num_players=self.num_players)
 
 
 
@@ -56,7 +57,7 @@ class ReinforcementLearning:
         r = 0
       else:
         s_prime = None
-        r = FSP_Kuhn_Poker_trainer.KuhnTrainer(num_players=self.num_players).Return_payoff_for_terminal_states(one_episode, idx%self.num_players)
+        r = self.kuhn_trainer.Return_payoff_for_terminal_states(one_episode, idx%self.num_players)
 
       one_episode_split.append((s, a, r, s_prime))
     return one_episode_split

@@ -23,14 +23,12 @@ import FSP_Kuhn_Poker_generate_data
 
 
 class KuhnTrainer:
-  def __init__(self, train_iterations=10**4, num_players =2):
+  def __init__(self, train_iterations=10**1, num_players =2):
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
     self.NUM_ACTIONS = 2
     self.avg_strategy = {}
     self.card_rank = self.make_rank(self.NUM_PLAYERS)
-
-
 
 
   def make_rank(self, num_players):

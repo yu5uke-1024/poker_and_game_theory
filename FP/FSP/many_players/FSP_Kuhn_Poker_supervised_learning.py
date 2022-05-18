@@ -20,9 +20,25 @@ import FSP_Kuhn_Poker_trainer
 
 
 class SupervisedLearning:
-  def __init__(self, num_players, num_actions):
+  def __init__(self, num_players=2, num_actions=2):
     self.num_players = num_players
     self.num_actions = num_actions
+    self.max_len_X_bit = (self.num_players + 1) + 2*(self.num_players *2 - 2)
+
+    self.card_order  = self.make_card_order(self.num_players)
+
+
+  def make_card_order(self, num_players):
+    """return dict
+    >>> SupervisedLearning().make_card_order(2) == {'J':0, 'Q':1, 'K':2}
+    True
+    """
+    card = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
+    card_order = {}
+    for i in range(num_players+1):
+      card_order[card[11-num_players+i]] =  i
+
+    return card_order
 
   # exploitability: 収束する
   def SL_train_AVG(self, memory, target_player, strategy, n_count):
@@ -54,7 +70,7 @@ class SupervisedLearning:
           train_X = np.append(train_X, train_i[0])
           train_y = np.append(train_y, train_i[1])
 
-      train_X = train_X.reshape(-1, 7)
+      train_X = train_X.reshape(-1, self.max_len_X_bit)
       train_y = train_y.reshape(-1, 1)
       #print(train_X.shape, train_y.shape)
 
@@ -63,7 +79,7 @@ class SupervisedLearning:
       clf.fit(train_X, train_y)
 
       for node_X , _ in update_strategy.items():
-        node_bit_X = self.make_X(node_X).reshape(-1, 7)
+        node_bit_X = self.make_X(node_X).reshape(-1, self.max_len_X_bit)
         y = clf.predict_proba(node_bit_X).ravel()
         update_strategy[node_X] = y
 
@@ -77,9 +93,8 @@ class SupervisedLearning:
     """
     one_episode_split = self.Episode_split(one_episode)
     one_episode_bit = []
-
     for X, y in one_episode_split:
-      if (target_player == 0 and len(X) %2 != 0) or (target_player == 1 and len(X) %2 == 0):
+      if (len(X)-1) % self.num_players == target_player :
         y_bit = self.make_y(y)
         X_bit = self.make_X(X)
         one_episode_bit.append((X_bit, y_bit))
@@ -94,17 +109,18 @@ class SupervisedLearning:
     return y_bit
 
   def make_X(self, X):
-    X_bit = np.array([0, 0, 0, 0, 0, 0, 0])
-    if len(X) == 1:
-      X_bit = self.first_bit(X[0], X_bit)
-    elif len(X) == 2:
-      X_bit = self.first_bit(X[0], X_bit)
-      X_bit = self.second_bit(X[1], X_bit)
-    elif len(X) == 3:
-      X_bit = self.first_bit(X[0], X_bit)
-      X_bit = self.second_bit(X[1], X_bit)
-      X_bit = self.third_bit(X[2], X_bit)
+
+    X_bit = np.array([0 for _ in range(self.max_len_X_bit)])
+    X_bit[self.card_order[X[0]]] = 1
+
+    for idx, Xi in enumerate(X[1:]):
+      if Xi == "p":
+        X_bit[(self.num_players+1) + 2*idx] = 1
+      else:
+        X_bit[(self.num_players+1) + 2*idx +1] = 1
+
     return X_bit
+
 
   def first_bit(self, X0, X_bit):
     if X0 == "J":
@@ -115,19 +131,6 @@ class SupervisedLearning:
       X_bit[2] = 1
     return X_bit
 
-  def second_bit(self, X1, X_bit):
-    if X1 == "p":
-      X_bit[3] = 1
-    elif X1 == "b":
-      X_bit[4] = 1
-    return X_bit
-
-  def third_bit(self, X1, X_bit):
-    if X1 == "p":
-      X_bit[5] = 1
-    elif X1 == "b":
-      X_bit[6] = 1
-    return X_bit
 
   def Episode_split(self, one_episode):
     """return list

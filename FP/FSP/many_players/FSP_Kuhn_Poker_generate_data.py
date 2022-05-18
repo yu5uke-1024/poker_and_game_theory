@@ -20,7 +20,7 @@ class GenerateData:
   def __init__(self, num_players, num_actions):
     self.num_players = num_players
     self.num_actions = num_actions
-
+    self.kuhn_trainer = FSP_Kuhn_Poker_trainer.KuhnTrainer(num_players=self.num_players)
 
 
   def generate_data0(self, pi_strategy, beta_strategy, n, m, eta):
@@ -107,11 +107,11 @@ class GenerateData:
     plays = len(history)
     player = plays % self.num_players
 
-    if FSP_Kuhn_Poker_trainer.KuhnTrainer(num_players=self.num_players).whether_terminal_states(history):
+    if self.kuhn_trainer.whether_terminal_states(history):
       return history
 
-    elif FSP_Kuhn_Poker_trainer.KuhnTrainer(num_players=self.num_players).whether_chance_node(history):
-      cards = FSP_Kuhn_Poker_trainer.KuhnTrainer(num_players=self.num_players).card_distribution(self.num_players)
+    elif self.kuhn_trainer.whether_chance_node(history):
+      cards = self.kuhn_trainer.card_distribution(self.num_players)
       random.shuffle(cards)
       nextHistory = "".join(cards[:self.num_players])
       return self.one_episode(nextHistory, strategy)
