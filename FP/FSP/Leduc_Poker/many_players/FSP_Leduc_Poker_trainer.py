@@ -481,6 +481,7 @@ class LeducTrainer:
     if player == target_player:
       if self.infoSets_dict.get(infoSet) is None:
         self.infoSets_dict[infoSet] = defaultdict(int)
+        self.infoSets_dict_player[player].append(infoSet)
 
       self.infoSets_dict[infoSet][history]  += po
 
@@ -497,6 +498,7 @@ class LeducTrainer:
   def get_exploitability_dfs(self):
 
     # 各information setを作成 & reach_probabilityを計算
+    self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
     self.infoSets_dict = {}
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
@@ -575,7 +577,6 @@ class LeducTrainer:
 
     self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
     self.infoSets_dict = {}
-
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
 
@@ -598,7 +599,7 @@ class LeducTrainer:
 
 
     for iteration_t in tqdm(range(int(self.train_iterations))):
-      """
+
       if pseudo_code == "batch_FSP":
         GD.generate_data1(self.avg_strategy, n, self.M_RL)
 
@@ -628,7 +629,7 @@ class LeducTrainer:
           elif sl_algo == "mlp":
             SL.SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
 
-      """
+
       if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
 

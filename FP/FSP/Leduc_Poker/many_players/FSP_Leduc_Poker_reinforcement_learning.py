@@ -27,8 +27,7 @@ class ReinforcementLearning:
     self.num_actions = num_actions
     self.action_id = {"p":0, "b":1}
     self.player_q_state = self.make_each_player_state_idx(infoSet_dict_player)
-    self.kuhn_trainer = FSP_Leduc_Poker_trainer.KuhnTrainer(num_players=self.num_players)
-
+    self.kuhn_trainer = FSP_Leduc_Poker_trainer.LeducTrainer(num_players=self.num_players)
 
 
   def make_each_player_state_idx(self, infoSet_dict_player):
