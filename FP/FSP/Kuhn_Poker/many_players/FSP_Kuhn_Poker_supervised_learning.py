@@ -16,7 +16,7 @@ from collections import deque
 import warnings
 warnings.filterwarnings('ignore')
 
-import FSP_Kuhn_Poker_trainer
+
 
 
 class SupervisedLearning:

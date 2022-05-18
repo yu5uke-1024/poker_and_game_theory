@@ -14,16 +14,13 @@ from sklearn.neural_network import MLPClassifier
 from collections import deque
 import wandb
 
-import FSP_Kuhn_Poker_trainer
-import FSP_Kuhn_Poker_supervised_learning
-import FSP_Kuhn_Poker_reinforcement_learning
-import FSP_Kuhn_Poker_generate_data
+import FSP_Leduc_Poker_trainer
 
 
 #config
 config = dict(
-  iterations = 10**4,
-  num_players = 3,
+  iterations = 10**2,
+  num_players = 2,
   n= 2,
   m= 1,
   memory_size_rl= 30,
@@ -31,7 +28,7 @@ config = dict(
   rl_algo = ["epsilon-greedy", "boltzmann"][0],
   sl_algo = ["cnt", "mlp"][1],
   pseudo_code = ["general_FSP", "batch_FSP"][1],
-  wandb_save = True
+  wandb_save = False
 )
 
 
@@ -43,7 +40,7 @@ if config["wandb_save"]:
 
 #train
 
-kuhn_trainer = FSP_Kuhn_Poker_trainer.KuhnTrainer(
+kuhn_trainer = FSP_Leduc_Poker_trainer.KuhnTrainer(
   train_iterations = config["iterations"],
   num_players= config["num_players"]
   )
