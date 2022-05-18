@@ -1,12 +1,10 @@
 #Library
-from typing import ByteString
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import random
 import itertools
 from collections import defaultdict
-import sys
 from tqdm import tqdm
 import time
 import doctest
@@ -22,140 +20,391 @@ import FSP_Leduc_Poker_generate_data
 
 
 
-class KuhnTrainer:
+class LeducTrainer:
   def __init__(self, train_iterations=10**1, num_players =2):
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
-    self.NUM_ACTIONS = 2
+    self.NUM_ACTIONS = 3
+    self.ACTION_DICT = {0:"f", 1:"c", 2:"r"}
     self.avg_strategy = {}
-    self.card_rank = self.make_rank(self.NUM_PLAYERS)
+    self.node_possible_action = {}
+    self.card_rank = self.make_rank()
 
 
-  def make_rank(self, num_players):
+  def Get_possible_action_by_information_set(self, infoset): #{0:"f", 1:"c", 2:"r"}
+    """return int
+    >>> LeducTrainer().Get_possible_action_by_information_set("JccKc")
+    array([1, 2])
+    >>> LeducTrainer().Get_possible_action_by_information_set("Jr")
+    array([0, 1, 2])
+    >>> LeducTrainer().Get_possible_action_by_information_set("JccJc")
+    array([1, 2])
+    >>> LeducTrainer().Get_possible_action_by_information_set("J")
+    array([1, 2])
+    """
+    infoset_without_hand_card = infoset[1:]
+    if self.card_num_check(infoset_without_hand_card) == 1:
+      private_cards, history_before, community_card, history_after = self.Split_history("??" + infoset_without_hand_card)
+      infoset_without_hand_card = history_after
+
+    if  len(infoset_without_hand_card) == 0 or infoset_without_hand_card.count("r") == 0:
+      return np.array([1,2], dtype=int)
+    elif infoset_without_hand_card.count("r") == 1:
+      return np.array([0,1,2], dtype=int)
+    elif infoset_without_hand_card.count("r") == 2:
+      return np.array([0,1], dtype=int)
+
+
+  def make_rank(self):
     """return dict
-    >>> KuhnTrainer().make_rank(2) == {'J':1, 'Q':2, 'K':3}
+    >>> LeducTrainer(num_players=2).make_rank() == {"KK":6, "QQ":5, "JJ":4, "KQ":3, "QK":3, "KJ":2, "JK":2, "QJ":1, "JQ":1}
     True
     """
+    card_deck = self.card_distribution()
+    card_unique = card_deck[::2]
     card_rank = {}
-    card = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
-    for i in range(num_players+1):
-      card_rank[card[11-num_players+i]] =  i+1
+    count = (len(card_unique)-1)*len(card_unique) //2
+    for i in range(len(card_unique)-1,-1, -1):
+      for j in range(i-1, -1, -1):
+            card_rank[card_unique[i] + card_unique[j]] = count
+            card_rank[card_unique[j] + card_unique[i]] = count
+            count -= 1
+
+    count = (len(card_unique)-1)*len(card_unique) //2 +1
+    for i in range(len(card_unique)):
+        card_rank[card_unique[i] + card_unique[i]] = count
+        count += 1
+
     return card_rank
 
 
-  def card_distribution(self, num_players):
+  def Rank(self, my_card, com_card):
+    """return int
+    >>> LeducTrainer(num_players=2).Rank("J", "Q")
+    1
+    >>> LeducTrainer(num_players=2).Rank("Q", "J")
+    1
+    >>> LeducTrainer(num_players=2).Rank("K", "K")
+    6
+    """
+    hand = my_card + com_card
+    return self.card_rank[hand]
+
+
+  def card_distribution(self):
     """return list
-    >>> KuhnTrainer().card_distribution(2)
-    ['J', 'Q', 'K']
+    >>> LeducTrainer(num_players=2).card_distribution()
+    ['J', 'J', 'Q', 'Q', 'K', 'K']
+    >>> LeducTrainer(num_players=3).card_distribution()
+    ['T', 'T', 'J', 'J', 'Q', 'Q', 'K', 'K']
     """
     card = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
-    return card[11-num_players:]
+    card_deck = []
+    for i in range(self.NUM_PLAYERS+1):
+      card_deck.append(card[11-self.NUM_PLAYERS+i])
+      card_deck.append(card[11-self.NUM_PLAYERS+i])
+
+    return card_deck
 
 
-  #return util for terminal state for target_player_i
+  def Split_history(self, history):
+    """return history_before, history_after
+    >>> LeducTrainer(num_players=3).Split_history("JKQcccKcrcc")
+    ('JKQ', 'ccc', 'K', 'crcc')
+    >>> LeducTrainer(num_players=2).Split_history("KQrrcQrrc")
+    ('KQ', 'rrc', 'Q', 'rrc')
+    >>> LeducTrainer(num_players=2).Split_history("QQcrrcKcc")
+    ('QQ', 'crrc', 'K', 'cc')
+    """
+    for ai, history_ai in enumerate(history[self.NUM_PLAYERS:]):
+      if history_ai in self.card_distribution():
+        idx = ai+self.NUM_PLAYERS
+        community_catd = history_ai
+    return history[:self.NUM_PLAYERS], history[self.NUM_PLAYERS:idx], community_catd, history[idx+1:]
+
+
+  def action_history_player(self, history):
+    #target_player_iのaction 履歴
+    player_action_list = [[] for _ in range(self.NUM_PLAYERS)]
+    player_money_list_round1 = [1 for _ in range(self.NUM_PLAYERS)]
+
+    player_money_list_round2 = [0 for _ in range(self.NUM_PLAYERS)]
+
+    f_count, a_count, raise_count = 0, 0, 0
+
+    card = self.card_distribution()
+    private_cards, history_before, community_card, history_after = self.Split_history(history)
+    for hi in history_before:
+      while len(player_action_list[(a_count + f_count)%self.NUM_PLAYERS])>=1 and player_action_list[(a_count + f_count)%self.NUM_PLAYERS][-1] == "f":
+        f_count += 1
+      player_action_list[(a_count + f_count)%self.NUM_PLAYERS].append(hi)
+
+      if hi == "c":
+        player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] = max(player_money_list_round1)
+      elif hi == "r" and raise_count == 0:
+        raise_count += 1
+        player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] += 2
+      elif hi == "r" and raise_count == 1:
+        player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] += 4
+
+      a_count += 1
+
+    f_count, a_count, raise_count = 0, 0, 0
+
+    for hi in history_after:
+        if hi not in card:
+          while len(player_action_list[(a_count + f_count)%self.NUM_PLAYERS])>=1 and player_action_list[(a_count + f_count)%self.NUM_PLAYERS][-1] == "f":
+            f_count += 1
+          player_action_list[(a_count + f_count)%self.NUM_PLAYERS].append(hi)
+
+          if hi == "c":
+            player_money_list_round2[(a_count + f_count)%self.NUM_PLAYERS] = max(player_money_list_round2)
+          elif hi == "r" and raise_count == 0:
+            raise_count += 1
+            player_money_list_round2[(a_count + f_count)%self.NUM_PLAYERS] += 4
+          elif hi == "r" and raise_count == 1:
+            player_money_list_round2[(a_count + f_count)%self.NUM_PLAYERS] += 8
+
+          a_count += 1
+
+    return player_action_list, player_money_list_round1, player_money_list_round2, community_card
+
+
+  def action_player(self, history):
+    """return int
+    >>> LeducTrainer().action_player("JJc")
+    1
+    >>> LeducTrainer().action_player("JQcr")
+    0
+    >>> LeducTrainer(num_players=3).action_player("JQTrfr")
+    0
+    """
+    player_action_list = [[] for _ in range(self.NUM_PLAYERS)]
+    a_count = 0
+    f_count = 0
+
+    if self.card_num_check(history) == self.NUM_PLAYERS:
+
+      for hi in history[self.NUM_PLAYERS:]:
+        while len(player_action_list[(a_count + f_count)%self.NUM_PLAYERS])>=1 and player_action_list[(a_count + f_count)%self.NUM_PLAYERS][-1] == "f":
+          f_count += 1
+        player_action_list[(a_count + f_count)%self.NUM_PLAYERS].append(hi)
+        a_count += 1
+    elif self.card_num_check(history) == self.NUM_PLAYERS+1:
+
+      private_cards, history_before, community_card, history_after = self.Split_history(history)
+      for hi in history_after:
+        while len(player_action_list[(a_count + f_count)%self.NUM_PLAYERS])>=1 and player_action_list[(a_count + f_count)%self.NUM_PLAYERS][-1] == "f":
+          f_count += 1
+        player_action_list[(a_count + f_count)%self.NUM_PLAYERS].append(hi)
+        a_count += 1
+
+    return (a_count + f_count)%self.NUM_PLAYERS
+
+
+  #6 Return payoff for terminal states #if terminal states  return util
   def Return_payoff_for_terminal_states(self, history, target_player_i):
-      """return list
-      >>> KuhnTrainer(num_players=2).Return_payoff_for_terminal_states("JKbb", 0)
-      -2
-      >>> KuhnTrainer(num_players=2).Return_payoff_for_terminal_states("JKbb", 1)
-      2
-      >>> KuhnTrainer(num_players=2).Return_payoff_for_terminal_states("JKpp", 0)
-      -1
-      >>> KuhnTrainer(num_players=2).Return_payoff_for_terminal_states("JKpp", 1)
-      1
-      >>> KuhnTrainer(num_players=2).Return_payoff_for_terminal_states("JKpbp", 0)
-      -1
-      >>> KuhnTrainer(num_players=2).Return_payoff_for_terminal_states("JKpbp", 1)
-      1
-      >>> KuhnTrainer(num_players=3).Return_payoff_for_terminal_states("JKTpbpp", 1)
-      2
-      """
+    """return int
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("KQrf", 0))
+    1
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("QKcrf", 0))
+    -1
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("QKrrf", 0))
+    -3
 
-      pot = self.NUM_PLAYERS * 1 + history.count("b")
-      start = -1
-      target_player_action = history[self.NUM_PLAYERS+target_player_i::self.NUM_PLAYERS]
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("JJccQcc", 0))
+    0
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("JKccQcc", 1))
+    1
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("JQcrcKcrc", 0))
+    -7
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("JQcrcKcrc", 1))
+    7
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("QKrrcQrrf", 0))
+    -9
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("QKrrcQrrc", 0))
+    13
+    >>> int(LeducTrainer().Return_payoff_for_terminal_states("QKrrcQcc", 0))
+    5
+    """
+    #round1 finish
+    if history.count("f") == self.NUM_PLAYERS -1  and self.card_num_check(history) == self.NUM_PLAYERS:
+      player_action_list = [[] for _ in range(self.NUM_PLAYERS)]
+      player_money_list_round1 = [1 for _ in range(self.NUM_PLAYERS)]
+      player_money_list_round2 = [0 for _ in range(self.NUM_PLAYERS)]
 
-      # all players pass
-      if ("b" not in history) and (history.count("p") == self.NUM_PLAYERS):
-        pass_player_card = {}
-        for idx in range(self.NUM_PLAYERS):
-          pass_player_card[idx] = [history[idx], self.card_rank[history[idx]]]
+      f_count, a_count, raise_count = 0, 0, 0
 
-        winner_rank = max([idx[1] for idx in pass_player_card.values()])
+      for hi in history[self.NUM_PLAYERS:]:
+        while len(player_action_list[(a_count + f_count)%self.NUM_PLAYERS])>=1 and player_action_list[(a_count + f_count)%self.NUM_PLAYERS][-1] == "f":
+          f_count += 1
+        player_action_list[(a_count + f_count)%self.NUM_PLAYERS].append(hi)
 
-        target_player_rank = pass_player_card[target_player_i][1]
+        if hi == "c":
+          player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] = max(player_money_list_round1)
+        elif hi == "r" and raise_count == 0:
+          raise_count += 1
+          player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] += 2
+        elif hi == "r" and raise_count == 1:
+          player_money_list_round1[(a_count + f_count)%self.NUM_PLAYERS] += 4
 
-        if target_player_rank == winner_rank:
-          return start + pot
-        else:
-          return start
-
-      #target plyaer do pass , another player do bet
-      elif ("b" not in target_player_action) and ("b" in history):
-        return start
-
+        a_count += 1
+      if len(player_action_list[target_player_i]) >= 1 and player_action_list[target_player_i][-1] == "f":
+        return -player_money_list_round1[target_player_i]
       else:
-        #bet → +pot or -2
-        bet_player_list = [idx%self.NUM_PLAYERS for idx, act in enumerate(history[self.NUM_PLAYERS:]) if act == "b"]
-        bet_player_card = {}
-        for idx in bet_player_list:
-          bet_player_card[idx] = [history[idx], self.card_rank[history[idx]]]
+        return sum(player_money_list_round1) -player_money_list_round1[target_player_i]
+
+    #round2 finish
+    #target_player_i action history
+    player_action_list, player_money_list_round1, player_money_list_round2, community_card = self.action_history_player(history)
+
+    # target_player_i :fold
+    if player_action_list[target_player_i][-1] == "f":
+      return -player_money_list_round1[target_player_i] - player_money_list_round2[target_player_i]
+
+    #周りがfold
+    last_play =[hi[-1] for idx, hi in enumerate(player_action_list) if idx != target_player_i]
+    if last_play.count("f") == self.NUM_PLAYERS - 1:
+      return sum(player_money_list_round1) + sum(player_money_list_round2) - player_money_list_round1[target_player_i] - player_money_list_round2[target_player_i]
+
+    #show down
+    show_down_player =[idx for idx, hi in enumerate(player_action_list) if hi[-1] != "f"]
+    show_down_player_card = {}
+    for idx in show_down_player:
+      show_down_player_card[idx] = self.Rank(history[idx], community_card)
+    max_rank = max(show_down_player_card.values())
+    if show_down_player_card[target_player_i] != max_rank:
+      return - player_money_list_round1[target_player_i] - player_money_list_round2[target_player_i]
+    else:
+      win_num = len([idx for idx, card_rank in show_down_player_card.items() if card_rank == max_rank])
+
+      return float((sum(player_money_list_round1) + sum(player_money_list_round2))/win_num) - player_money_list_round1[target_player_i] - player_money_list_round2[target_player_i]
 
 
-        winner_rank = max([idx[1] for idx in bet_player_card.values()])
-        target_player_rank = bet_player_card[target_player_i][1]
-        if target_player_rank == winner_rank:
-          return start + pot - 1
-        else:
-          return start - 1
 
-
-  #whether terminal state
+  # whetther terminal_states
   def whether_terminal_states(self, history):
-    #pass only history
-    if "b" not in history:
-      return history.count("p") == self.NUM_PLAYERS
+    """return string
+    >>> LeducTrainer().whether_terminal_states("JKccKr")
+    False
+    >>> LeducTrainer().whether_terminal_states("QJccJcc")
+    True
+    >>> LeducTrainer().whether_terminal_states("QQcr")
+    False
+    >>> LeducTrainer(num_players=3).whether_terminal_states("QKTrff")
+    True
+    >>> LeducTrainer(num_players=3).whether_terminal_states("KKTcccQcrcrcc")
+    True
+    """
+    if history.count("f") == self.NUM_PLAYERS -1 :
+      return True
 
-    plays = len(history)
-    first_bet = history.index("b")
-    return plays - first_bet -1  == self.NUM_PLAYERS -1
+    if self.card_num_check(history) == self.NUM_PLAYERS +1 :
+      private_cards, history_before, community_card, history_after = self.Split_history(history)
+      if history_after.count("r") == 0 and history_after.count("c") == self.NUM_PLAYERS:
+        return True
+
+      if history.count("r") >=1 :
+        idx = 0
+        for i,hi in enumerate(history_after):
+          if hi == "r":
+            idx = i
+        if history_after[idx+1:].count("c") == self.NUM_PLAYERS -1 :
+          return True
+
+    return False
 
 
-  #whether chance node state
+  def card_num_check(self, history):
+    """return string
+    >>> LeducTrainer(num_players=3).card_num_check("JKTccc")
+    3
+    >>> LeducTrainer(num_players=2).card_num_check("KQcr")
+    2
+    """
+    cards = self.card_distribution()
+    count = 0
+    for hi in history:
+      if hi in cards:
+        count += 1
+    return count
+
+
   def whether_chance_node(self, history):
     """return string
-    >>> KuhnTrainer().whether_chance_node("")
+    >>> LeducTrainer().whether_chance_node("JKcc")
     True
-    >>> KuhnTrainer().whether_chance_node("p")
+    >>> LeducTrainer().whether_chance_node("KQcr")
+    False
+    >>> LeducTrainer().whether_chance_node("")
+    True
+    >>> LeducTrainer(num_players=3).whether_chance_node("KQTcc")
     False
     """
     if history == "":
       return True
-    else:
-      return False
+
+    if self.card_num_check(history) == self.NUM_PLAYERS :
+      if history.count("r") == 0 and history.count("c") == self.NUM_PLAYERS:
+        return True
+
+      if history.count("r") >=1 :
+        idx = 0
+        for i,hi in enumerate(history):
+          if hi == "r":
+            idx = i
+        if history[idx+1:].count("c") == self.NUM_PLAYERS -1 :
+          return True
+
+    return False
 
 
   # make node or get node
   def if_nonexistant(self, infoSet):
     if infoSet not in self.avg_strategy:
-      self.avg_strategy[infoSet] = np.array([1/self.NUM_ACTIONS for _ in range(self.NUM_ACTIONS)], dtype=float)
+      self.node_possible_action[infoSet] = self.Get_possible_action_by_information_set(infoSet)
+      self.avg_strategy[infoSet] = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
+      self.normalizingSum = 0
+      for ai in self.node_possible_action[infoSet]:
+        self.avg_strategy[infoSet][ai] = 1
+        self.normalizingSum += 1
+
+      self.avg_strategy[infoSet] /= self.normalizingSum
 
 
   def calc_best_response_value(self, best_response_strategy, best_response_player, history, prob):
-      plays = len(history)
-      player = plays % self.NUM_PLAYERS
+      if self.card_num_check(history) == self.NUM_PLAYERS + 1:
+        private_cards, history_before, community_card, history_after = self.Split_history(history)
+
+      player = self.action_player(history)
 
       if self.whether_terminal_states(history):
         return self.Return_payoff_for_terminal_states(history, best_response_player)
 
       elif self.whether_chance_node(history):
-        cards = self.card_distribution(self.NUM_PLAYERS)
-        cards_candicates = [list(cards_candicate) for cards_candicate in itertools.permutations(cards)]
-        utility_sum = 0
-        for cards_i in cards_candicates:
-          nextHistory = "".join(cards_i[:self.NUM_PLAYERS])
-          utility_sum +=  (1/len(cards_candicates))* self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, prob)
-        return utility_sum
+        if len(history) == 0:
+          cards = self.card_distribution()
+          cards_candicates = [cards_candicate for cards_candicate in itertools.permutations(cards, self.NUM_PLAYERS)]
+          utility_sum = 0
+          for cards_i in cards_candicates:
+            nextHistory = "".join(cards_i[:self.NUM_PLAYERS])
+            utility =  (1/len(cards_candicates))* self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, prob)
+            utility_sum += utility
+
+          return utility_sum
+
+        else:
+          com_cards = self.card_distribution()
+          com_cards.remove(history[0])
+          com_cards.remove(history[1])
+
+          utility_sum_round2 = 0
+          for com_cards_i in com_cards:
+            nextHistory = history + com_cards_i
+            utility_sum_round2 += (1/len(com_cards))*self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, prob)
+
+          return utility_sum_round2
+
 
       infoSet = history[player] + history[self.NUM_PLAYERS:]
       self.if_nonexistant(infoSet)
@@ -165,26 +414,27 @@ class KuhnTrainer:
           action_value = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
           br_value = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
 
+          for assume_history, po_ in self.infoSets_dict[infoSet].items():
 
-          for assume_history, po_ in self.infoSets_dict[infoSet]:
-            for ai in range(self.NUM_ACTIONS):
-              nextHistory =  assume_history + ("p" if ai == 0 else "b")
+            for ai in self.node_possible_action[infoSet]:
+              nextHistory = assume_history + self.ACTION_DICT[ai]
               br_value[ai] = self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, po_)
               action_value[ai] += br_value[ai] * po_
 
-          br_action = 0
-          for ai in range(self.NUM_ACTIONS):
+          #br_action = 0  ← action 0 を全てのノードで選択できるわけではないため不適切
+          br_action = self.node_possible_action[infoSet][0]
+          for ai in self.node_possible_action[infoSet]:
             if action_value[ai] > action_value[br_action]:
               br_action = ai
           best_response_strategy[infoSet] = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
           best_response_strategy[infoSet][br_action] = 1.0
 
         node_util = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
-        for ai in range(self.NUM_ACTIONS):
-          nextHistory =  history + ("p" if ai == 0 else "b")
+        for ai in self.node_possible_action[infoSet]:
+          nextHistory = history + self.ACTION_DICT[ai]
           node_util[ai] = self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, prob)
         best_response_util = 0
-        for ai in range(self.NUM_ACTIONS):
+        for ai in self.node_possible_action[infoSet]:
           best_response_util += node_util[ai] * best_response_strategy[infoSet][ai]
 
         return best_response_util
@@ -192,46 +442,56 @@ class KuhnTrainer:
       else:
         nodeUtil = 0
         action_value_list = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
-        for ai in range(self.NUM_ACTIONS):
-          nextHistory =  history + ("p" if ai == 0 else "b")
-          action_value_list[ai] = self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, prob* self.avg_strategy[infoSet][ai])
+        for ai in self.node_possible_action[infoSet]:
+          nextHistory = history + self.ACTION_DICT[ai]
+          action_value_list[ai] = self.calc_best_response_value(best_response_strategy, best_response_player, nextHistory, prob*self.avg_strategy[infoSet][ai])
           nodeUtil += self.avg_strategy[infoSet][ai] * action_value_list[ai]
         return nodeUtil
 
 
   def create_infoSets(self, history, target_player, po):
-    plays = len(history)
-    player = plays % self.NUM_PLAYERS
+    player = self.action_player(history)
 
     if self.whether_terminal_states(history):
       return
 
     elif self.whether_chance_node(history):
-      cards = self.card_distribution(self.NUM_PLAYERS)
-      cards_candicates = [list(cards_candicate) for cards_candicate in itertools.permutations(cards)]
-      for cards_i in cards_candicates:
-        nextHistory = "".join(cards_i[:self.NUM_PLAYERS])
-        self.create_infoSets(nextHistory, target_player, po)
-      return
+      #round1
+      if len(history) == 0:
+        cards = self.card_distribution()
+        cards_candicates = [cards_candicate for cards_candicate in itertools.permutations(cards, self.NUM_PLAYERS)]
+        for cards_candicates_i in cards_candicates:
+          nextHistory = "".join(cards_candicates_i[:self.NUM_PLAYERS])
+          self.create_infoSets(nextHistory, target_player, po*(1/len(cards_candicates)))
+        return
+
+      #round2
+      else:
+        com_cards_candicates = self.card_distribution()
+        for player_i in range(self.NUM_PLAYERS):
+          com_cards_candicates.remove(history[player_i])
+
+        for com_cards_i in com_cards_candicates:
+          nextHistory = history + com_cards_i
+          self.create_infoSets(nextHistory, target_player, po*(1/len(com_cards_candicates)))
+        return
 
     infoSet = history[player] + history[self.NUM_PLAYERS:]
+
     if player == target_player:
       if self.infoSets_dict.get(infoSet) is None:
-        self.infoSets_dict[infoSet] = []
-        self.infoSets_dict_player[player].append(infoSet)
-      self.infoSets_dict[infoSet].append((history, po))
+        self.infoSets_dict[infoSet] = defaultdict(int)
 
+      self.infoSets_dict[infoSet][history]  += po
 
-    for ai in range(self.NUM_ACTIONS):
-      nextHistory = history + ("p" if ai == 0 else "b")
+    self.if_nonexistant(infoSet)
+    for ai in self.node_possible_action[infoSet]:
+      nextHistory = history + self.ACTION_DICT[ai]
       if player == target_player:
         self.create_infoSets(nextHistory, target_player, po)
       else:
-        self.if_nonexistant(infoSet)
-        actionProb =self.avg_strategy[infoSet][ai]
+        actionProb = self.avg_strategy[infoSet][ai]
         self.create_infoSets(nextHistory, target_player, po*actionProb)
-
-
 
 
   def get_exploitability_dfs(self):
@@ -240,6 +500,7 @@ class KuhnTrainer:
     self.infoSets_dict = {}
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
+
 
     exploitability = 0
     best_response_strategy = {}
@@ -252,42 +513,45 @@ class KuhnTrainer:
 
 
   def eval_vanilla_CFR(self, history, target_player_i, iteration_t, p_list):
-    plays = len(history)
-    player = plays % self.NUM_PLAYERS
+    if self.card_num_check(history) == self.NUM_PLAYERS + 1:
+      private_cards, history_before, community_card, history_after = self.Split_history(history)
+
+    player = self.action_player(history)
 
     if self.whether_terminal_states(history):
       return self.Return_payoff_for_terminal_states(history, target_player_i)
 
     elif self.whether_chance_node(history):
-      cards = self.card_distribution(self.NUM_PLAYERS)
-      cards_candicates = [list(cards_candicate) for cards_candicate in itertools.permutations(cards)]
-      utility_sum = 0
-      for cards_i in cards_candicates:
-        nextHistory = "".join(cards_i[:self.NUM_PLAYERS])
-        utility_sum +=  (1/len(cards_candicates))* self.eval_vanilla_CFR(nextHistory, target_player_i, iteration_t, p_list)
-      return utility_sum
+      if len(history) == 0:
+        cards = self.card_distribution()
+        cards_candicates = [cards_candicate for cards_candicate in itertools.permutations(cards, self.NUM_PLAYERS+1)]
+        utility_sum = 0
+        for cards_i in cards_candicates:
+          self.cards_i = cards_i
+          nextHistory = "".join(cards_i[:self.NUM_PLAYERS])
+          utility_sum += (1/len(cards_candicates))* self.eval_vanilla_CFR(nextHistory, target_player_i, iteration_t, p_list)
+        return  utility_sum
+      else:
+        nextHistory = history + self.cards_i[self.NUM_PLAYERS]
+        return self.eval_vanilla_CFR(nextHistory, target_player_i, iteration_t, p_list)
 
     infoSet = history[player] + history[self.NUM_PLAYERS:]
     self.if_nonexistant(infoSet)
 
-    strategy = self.avg_strategy[infoSet]
-
     util_list = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
     nodeUtil = 0
 
-    for ai in range(self.NUM_ACTIONS):
-      nextHistory = history + ("p" if ai == 0 else "b")
-
+    for ai in self.node_possible_action[infoSet]:
+      nextHistory = history + self.ACTION_DICT[ai]
       p_change = np.array([1 for _ in range(self.NUM_PLAYERS)], dtype=float)
-      p_change[player] = strategy[ai]
+      p_change[player] = self.avg_strategy[infoSet][ai]
 
       util_list[ai] = self.eval_vanilla_CFR(nextHistory, target_player_i, iteration_t, p_list * p_change)
 
-      nodeUtil += strategy[ai] * util_list[ai]
+      nodeUtil += self.avg_strategy[infoSet][ai] * util_list[ai]
+
 
     return nodeUtil
-
-
 
 
   def show_plot(self, method):
@@ -315,6 +579,7 @@ class KuhnTrainer:
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
 
+
     self.best_response_strategy = copy.deepcopy(self.avg_strategy)
 
     # n_count
@@ -333,7 +598,7 @@ class KuhnTrainer:
 
 
     for iteration_t in tqdm(range(int(self.train_iterations))):
-
+      """
       if pseudo_code == "batch_FSP":
         GD.generate_data1(self.avg_strategy, n, self.M_RL)
 
@@ -363,7 +628,7 @@ class KuhnTrainer:
           elif sl_algo == "mlp":
             SL.SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
 
-
+      """
       if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
 

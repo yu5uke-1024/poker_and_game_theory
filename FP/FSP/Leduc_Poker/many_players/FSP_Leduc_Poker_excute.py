@@ -19,7 +19,7 @@ import FSP_Leduc_Poker_trainer
 
 #config
 config = dict(
-  iterations = 10**2,
+  iterations = 10**1,
   num_players = 2,
   n= 2,
   m= 1,
@@ -34,19 +34,19 @@ config = dict(
 
 
 if config["wandb_save"]:
-  wandb.init(project="FSP_project_{}players".format(config["num_players"]), name="kuhn_poker_{}_{}_{}".format(config["rl_algo"], config["sl_algo"], config["pseudo_code"]))
+  wandb.init(project="Leduc_Poker_{}players".format(config["num_players"]), name="fsp_{}_{}_{}".format(config["rl_algo"], config["sl_algo"], config["pseudo_code"]))
   wandb.config.update(config)
 
 
 #train
 
-kuhn_trainer = FSP_Leduc_Poker_trainer.KuhnTrainer(
+leduc_trainer = FSP_Leduc_Poker_trainer.LeducTrainer(
   train_iterations = config["iterations"],
   num_players= config["num_players"]
   )
 
 
-kuhn_trainer.train(
+leduc_trainer.train(
   n = config["n"],
   m = config["m"],
   memory_size_rl = config["memory_size_rl"],
@@ -61,24 +61,29 @@ kuhn_trainer.train(
 #result
 
 print("")
-print("avg_utility", kuhn_trainer.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(config["num_players"])]))
-print("final_exploitability", list(kuhn_trainer.exploitability_list.items())[-1])
+print("avg_utility", leduc_trainer.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(config["num_players"])]))
+print("final_exploitability", list(leduc_trainer.exploitability_list.items())[-1])
 print("")
 
 
 result_dict_avg = {}
-for key, value in sorted(kuhn_trainer.avg_strategy.items()):
+for key, value in sorted(leduc_trainer.avg_strategy.items()):
   result_dict_avg[key] = value
-df = pd.DataFrame(result_dict_avg.values(), index=result_dict_avg.keys(), columns=['Pass_avg', "Bet_avg"])
+df = pd.DataFrame(result_dict_avg.values(), index=result_dict_avg.keys(), columns=["Fold_avg", "Call_avg", "Raise_avg"])
 df.index.name = "Node"
 
 result_dict_br = {}
-for key, value in sorted(kuhn_trainer.best_response_strategy.items()):
+for key, value in sorted(leduc_trainer.best_response_strategy.items()):
   result_dict_br[key] = value
-df1 = pd.DataFrame(result_dict_br.values(), index=result_dict_br.keys(), columns=['Pass_br', "Bet_br"])
+df1 = pd.DataFrame(result_dict_br.values(), index=result_dict_br.keys(), columns=["Fold_br", "Call_br", "Raise_br"])
 df1.index.name = "Node"
 
 #print(pd.concat([df, df1], axis=1))
+
+
+for i in range(2,3):
+  leduc_poker_agent = FSP_Leduc_Poker_trainer.LeducTrainer(train_iterations=0, num_players=i)
+  print("{}player game:".format(i), leduc_poker_agent.get_exploitability_dfs())
 
 
 doctest.testmod()

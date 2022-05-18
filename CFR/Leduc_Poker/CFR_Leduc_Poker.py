@@ -821,7 +821,6 @@ class LeducTrainer:
     self.infoSets_dict = {}
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
-
     exploitability = 0
     best_response_strategy = {}
     for best_response_player_i in range(self.NUM_PLAYERS):
@@ -836,10 +835,10 @@ algorithm_candicates = ["vanilla_CFR", "chance_sampling_CFR", "external_sampling
 algo = algorithm_candicates[2]
 train_iterations = 10**3
 num_players =  2
-wandb_save = True
+wandb_save = False
 
 if wandb_save:
-  wandb.init(project="leduc_poker_project", name="leduc_poker_{}_{}".format(algo, num_players))
+  wandb.init(project="Leduc_Poker_{}players".format(num_players), name="cfr_{}".format(algo))
 
 
 #train
