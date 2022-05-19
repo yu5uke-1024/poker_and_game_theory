@@ -21,7 +21,7 @@ import FSP_Kuhn_Poker_trainer
 #config
 config = dict(
   iterations = 10**5,
-  num_players = 2,
+  num_players = 3,
   n= 2,
   m= 1,
   memory_size_rl= 30,

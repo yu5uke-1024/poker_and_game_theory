@@ -546,7 +546,7 @@ class KuhnTrainer:
 algorithm_candicates = ["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"]
 algo = algorithm_candicates[2]
 train_iterations = 10**5
-num_players =  2
+num_players =  3
 wandb_save = True
 
 
