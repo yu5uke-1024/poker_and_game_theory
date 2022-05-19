@@ -19,7 +19,7 @@ import FSP_Leduc_Poker_trainer
 
 #config
 config = dict(
-  iterations = 10**2,
+  iterations = 10**3,
   num_players = 2,
   n= 2,
   m= 1,
@@ -28,7 +28,7 @@ config = dict(
   rl_algo = ["epsilon-greedy", "boltzmann"][0],
   sl_algo = ["cnt", "mlp"][0],
   pseudo_code = ["general_FSP", "batch_FSP"][0],
-  wandb_save = False
+  wandb_save = True
 )
 
 
@@ -78,7 +78,7 @@ for key, value in sorted(leduc_trainer.best_response_strategy.items()):
 df1 = pd.DataFrame(result_dict_br.values(), index=result_dict_br.keys(), columns=["Fold_br", "Call_br", "Raise_br"])
 df1.index.name = "Node"
 
-#print(pd.concat([df, df1], axis=1))
+print(pd.concat([df, df1], axis=1))
 
 
 for i in range(2,3):

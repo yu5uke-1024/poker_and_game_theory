@@ -280,7 +280,7 @@ class LeducTrainer:
     else:
       win_num = len([idx for idx, card_rank in show_down_player_card.items() if card_rank == max_rank])
 
-      return float((sum(player_money_list_round1) + sum(player_money_list_round2))/win_num) - player_money_list_round1[target_player_i] - player_money_list_round2[target_player_i]
+      return int((sum(player_money_list_round1) + sum(player_money_list_round2))/win_num) - player_money_list_round1[target_player_i] - player_money_list_round2[target_player_i]
 
 
 
@@ -594,11 +594,11 @@ class LeducTrainer:
           self.N_count[node][key_i] = 1.0
 
     # q_value
-    self.Q_value = [np.zeros((len(self.infoSets_dict_player[i]),2)) for i in range(self.NUM_PLAYERS)]
+    self.Q_value = [np.zeros((len(self.infoSets_dict_player[i]),3)) for i in range(self.NUM_PLAYERS)]
 
 
 
-    RL = FSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS)
+    RL = FSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action)
     SL = FSP_Leduc_Poker_supervised_learning.SupervisedLearning(self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action)
     GD = FSP_Leduc_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS)
 
@@ -628,9 +628,9 @@ class LeducTrainer:
           self.M_SL[player_i].extend(D[player_i])
           self.M_RL[player_i].extend(D[player_i])
 
-          """
+
           RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
-          """
+
 
           if sl_algo == "cnt":
             SL.SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)

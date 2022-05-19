@@ -20,22 +20,22 @@ import FSP_Kuhn_Poker_trainer
 
 #config
 config = dict(
-  iterations = 10**2,
+  iterations = 10**5,
   num_players = 2,
   n= 2,
   m= 1,
   memory_size_rl= 30,
   memory_size_sl= 1000,
   rl_algo = ["epsilon-greedy", "boltzmann"][0],
-  sl_algo = ["cnt", "mlp"][1],
+  sl_algo = ["cnt", "mlp"][0],
   pseudo_code = ["general_FSP", "batch_FSP"][1],
-  wandb_save = False
+  wandb_save =  True
 )
 
 
 
 if config["wandb_save"]:
-  wandb.init(project="FSP_project_{}players".format(config["num_players"]), name="kuhn_poker_{}_{}_{}".format(config["rl_algo"], config["sl_algo"], config["pseudo_code"]))
+  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="fsp_{}_{}_{}".format(config["rl_algo"], config["sl_algo"], config["pseudo_code"]))
   wandb.config.update(config)
 
 

@@ -1,4 +1,4 @@
-#ライブラリ
+#Library
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -59,6 +59,7 @@ class SupervisedLearning:
         if self.leduc_trainer.action_player("J"*(self.num_players-1) + X) == target_player :
           action_prob_list = np.array([0 for _ in range(self.num_actions)], dtype=float)
           action_prob_list[self.ACTION_DICT_verse[y]] = 1.0
+          n_count[X] += action_prob_list
 
 
     for node_X , action_prob in n_count.items():

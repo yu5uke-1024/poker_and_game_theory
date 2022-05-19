@@ -106,6 +106,7 @@ class GenerateData:
 
 
   def one_episode(self, history, strategy):
+    #print(strategy)
 
     player = self.leduc_trainer.action_player(history)
 
