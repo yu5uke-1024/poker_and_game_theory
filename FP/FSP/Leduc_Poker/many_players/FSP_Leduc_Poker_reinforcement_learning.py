@@ -19,7 +19,7 @@ import FSP_Leduc_Poker_trainer
 
 
 class ReinforcementLearning:
-  def __init__(self, infoSet_dict_player, num_players, num_actions, node_possible_action=None):
+  def __init__(self, infoSet_dict_player, num_players, num_actions, node_possible_action=None, infoset_action_player_dict=None):
     self.gamma = 1
     self.num_players = num_players
     self.num_actions = num_actions
@@ -28,6 +28,7 @@ class ReinforcementLearning:
     self.leduc_trainer = FSP_Leduc_Poker_trainer.LeducTrainer(num_players=self.num_players)
     self.cards = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
     self.node_possible_action = node_possible_action
+    self.infoset_action_player_dict = infoset_action_player_dict
 
 
   def make_each_player_state_idx(self, infoSet_dict_player):
@@ -84,7 +85,7 @@ class ReinforcementLearning:
       one_episode_split = self.Episode_split(one_episode)
       for trainsition in one_episode_split:
         s, a, r, s_prime = trainsition[0], trainsition[1], trainsition[2], trainsition[3]
-        if self.leduc_trainer.action_player("J"*(self.num_players-1) + s) == target_player :
+        if self.infoset_action_player_dict[s] == target_player :
           s_idx = self.player_q_state[target_player][s]
           a_idx = self.ACTION_DICT_verse[a]
 

@@ -29,6 +29,7 @@ class LeducTrainer:
     self.avg_strategy = {}
     self.node_possible_action = {}
     self.card_rank = self.make_rank()
+    self.history_action_player_dict = {}
 
 
   def Get_possible_action_by_information_set(self, infoset): #{0:"f", 1:"c", 2:"r"}
@@ -181,27 +182,34 @@ class LeducTrainer:
     >>> LeducTrainer(num_players=3).action_player("JQTrfr")
     0
     """
-    player_action_list = [[] for _ in range(self.NUM_PLAYERS)]
-    a_count = 0
-    f_count = 0
+    if history not in self.history_action_player_dict:
+      player_action_list = [[] for _ in range(self.NUM_PLAYERS)]
+      a_count = 0
+      f_count = 0
 
-    if self.card_num_check(history) == self.NUM_PLAYERS:
+      if self.card_num_check(history) == self.NUM_PLAYERS:
 
-      for hi in history[self.NUM_PLAYERS:]:
-        while len(player_action_list[(a_count + f_count)%self.NUM_PLAYERS])>=1 and player_action_list[(a_count + f_count)%self.NUM_PLAYERS][-1] == "f":
-          f_count += 1
-        player_action_list[(a_count + f_count)%self.NUM_PLAYERS].append(hi)
-        a_count += 1
-    elif self.card_num_check(history) == self.NUM_PLAYERS+1:
+        for hi in history[self.NUM_PLAYERS:]:
+          while len(player_action_list[(a_count + f_count)%self.NUM_PLAYERS])>=1 and player_action_list[(a_count + f_count)%self.NUM_PLAYERS][-1] == "f":
+            f_count += 1
+          player_action_list[(a_count + f_count)%self.NUM_PLAYERS].append(hi)
+          a_count += 1
+      elif self.card_num_check(history) == self.NUM_PLAYERS+1:
 
-      private_cards, history_before, community_card, history_after = self.Split_history(history)
-      for hi in history_after:
-        while len(player_action_list[(a_count + f_count)%self.NUM_PLAYERS])>=1 and player_action_list[(a_count + f_count)%self.NUM_PLAYERS][-1] == "f":
-          f_count += 1
-        player_action_list[(a_count + f_count)%self.NUM_PLAYERS].append(hi)
-        a_count += 1
+        private_cards, history_before, community_card, history_after = self.Split_history(history)
+        for hi in history_after:
+          while len(player_action_list[(a_count + f_count)%self.NUM_PLAYERS])>=1 and player_action_list[(a_count + f_count)%self.NUM_PLAYERS][-1] == "f":
+            f_count += 1
+          player_action_list[(a_count + f_count)%self.NUM_PLAYERS].append(hi)
+          a_count += 1
 
-    return (a_count + f_count)%self.NUM_PLAYERS
+      player_i = (a_count + f_count)%self.NUM_PLAYERS
+      self.history_action_player_dict[history] = player_i
+
+      return player_i
+
+    else:
+      return self.history_action_player_dict[history]
 
 
   #6 Return payoff for terminal states #if terminal states  return util
@@ -366,6 +374,8 @@ class LeducTrainer:
     if infoSet not in self.avg_strategy:
       self.node_possible_action[infoSet] = self.Get_possible_action_by_information_set(infoSet)
       self.avg_strategy[infoSet] = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
+
+
       self.normalizingSum = 0
       for ai in self.node_possible_action[infoSet]:
         self.avg_strategy[infoSet][ai] = 1
@@ -484,15 +494,19 @@ class LeducTrainer:
       if self.infoSets_dict.get(infoSet) is None:
         self.infoSets_dict[infoSet] = defaultdict(int)
         self.infoSets_dict_player[player].append(infoSet)
+        self.infoset_action_player_dict[infoSet] = player
 
       self.infoSets_dict[infoSet][history]  += po
 
+
     self.if_nonexistant(infoSet)
+
     for ai in self.node_possible_action[infoSet]:
       nextHistory = history + self.ACTION_DICT[ai]
       if player == target_player:
         self.create_infoSets(nextHistory, target_player, po)
       else:
+
         actionProb = self.avg_strategy[infoSet][ai]
         self.create_infoSets(nextHistory, target_player, po*actionProb)
 
@@ -502,6 +516,8 @@ class LeducTrainer:
     # 各information setを作成 & reach_probabilityを計算
     self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
     self.infoSets_dict = {}
+    self.infoset_action_player_dict = {}
+
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
 
@@ -579,6 +595,8 @@ class LeducTrainer:
 
     self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
     self.infoSets_dict = {}
+    self.infoset_action_player_dict = {}
+
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
 
@@ -598,24 +616,29 @@ class LeducTrainer:
 
 
 
-    RL = FSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action)
-    SL = FSP_Leduc_Poker_supervised_learning.SupervisedLearning(self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action)
-    GD = FSP_Leduc_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS)
+    RL = FSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action, self.infoset_action_player_dict)
+    SL = FSP_Leduc_Poker_supervised_learning.SupervisedLearning(self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action, self.infoset_action_player_dict)
+    GD = FSP_Leduc_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS, self.infoset_action_player_dict)
 
 
     for iteration_t in tqdm(range(int(self.train_iterations))):
-
       if pseudo_code == "batch_FSP":
-        GD.generate_data1(self.avg_strategy, n, self.M_RL)
+        #GD.generate_data1(self.avg_strategy, n, self.M_RL)
 
-        for player_i in range(self.NUM_PLAYERS):
-          RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
+        for target_player in range(self.NUM_PLAYERS):
+          self.create_infoSets("", target_player, 1.0)
+        self.best_response_strategy = {}
+        for best_response_player_i in range(self.NUM_PLAYERS):
+            self.calc_best_response_value(self.best_response_strategy, best_response_player_i, "", 1)
+        #for player_i in range(self.NUM_PLAYERS):
+        #  RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
 
         GD.generate_data2(self.avg_strategy, self.best_response_strategy, m, self.M_RL, self.M_SL)
 
         for player_i in range(self.NUM_PLAYERS):
           if sl_algo == "cnt":
             SL.SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
+            self.M_SL[player_i] = []
           elif sl_algo == "mlp":
             SL.SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
 
@@ -643,6 +666,10 @@ class LeducTrainer:
 
         if wandb_save:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
+
+    #result
+    #print(self.Q_value)
+    #print(self.N_count)
 
     self.show_plot("FSP")
     if wandb_save:

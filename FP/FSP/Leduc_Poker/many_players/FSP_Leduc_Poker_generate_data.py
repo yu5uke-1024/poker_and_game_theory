@@ -17,10 +17,11 @@ import FSP_Leduc_Poker_trainer
 
 
 class GenerateData:
-  def __init__(self, num_players, num_actions):
+  def __init__(self, num_players, num_actions, infoset_action_player_dict):
     self.num_players = num_players
     self.num_actions = num_actions
     self.leduc_trainer = FSP_Leduc_Poker_trainer.LeducTrainer(num_players=self.num_players)
+    self.infoset_action_player_dict = infoset_action_player_dict
 
 
   def generate_data0(self, pi_strategy, beta_strategy, n, m, eta):
@@ -82,7 +83,7 @@ class GenerateData:
 
     for infoset, avg_strategy in strategy.items():
         # J is dummy card (infoset → history)
-        player = self.leduc_trainer.action_player("J"*(self.num_players-1) + infoset)
+        player = self.infoset_action_player_dict[infoset]
         strategy_player_list[player][infoset] = avg_strategy
     return strategy_player_list
 

@@ -21,13 +21,14 @@ import FSP_Leduc_Poker_trainer
 
 
 class SupervisedLearning:
-  def __init__(self, num_players=2, num_actions=2, node_possible_action=None):
+  def __init__(self, num_players=2, num_actions=2, node_possible_action=None, infoset_action_player_dict=None):
     self.num_players = num_players
     self.num_actions = num_actions
     self.node_possible_action = node_possible_action
     self.max_len_X_bit = 2* ( (self.num_players + 1) + 3*(self.num_players *3 - 2) )
     self.ACTION_DICT = {0:"f", 1:"c", 2:"r"}
     self.ACTION_DICT_verse = {"f":0, "c":1, "r":2}
+    self.infoset_action_player_dict = infoset_action_player_dict
 
 
     self.cards = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
@@ -56,7 +57,7 @@ class SupervisedLearning:
       one_episode_split = self.Episode_split(one_episode)
 
       for X, y in one_episode_split:
-        if self.leduc_trainer.action_player("J"*(self.num_players-1) + X) == target_player :
+        if self.infoset_action_player_dict[X] == target_player :
           action_prob_list = np.array([0 for _ in range(self.num_actions)], dtype=float)
           action_prob_list[self.ACTION_DICT_verse[y]] = 1.0
           n_count[X] += action_prob_list
@@ -65,7 +66,6 @@ class SupervisedLearning:
     for node_X , action_prob in n_count.items():
         strategy[node_X] = n_count[node_X] / np.sum(action_prob)
 
-    memory = []
     return strategy
 
 
@@ -116,7 +116,7 @@ class SupervisedLearning:
     one_episode_split = self.Episode_split(one_episode)
     one_episode_bit = []
     for X, y in one_episode_split:
-      if self.leduc_trainer.action_player("J"*(self.num_players-1) + X) == target_player :
+      if self.infoset_action_player_dict[X] == target_player :
 
         y_bit = self.make_y(y)
         X_bit = self.make_X(X)

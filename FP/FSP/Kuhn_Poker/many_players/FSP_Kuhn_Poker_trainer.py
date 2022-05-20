@@ -345,6 +345,7 @@ class KuhnTrainer:
         for player_i in range(self.NUM_PLAYERS):
           if sl_algo == "cnt":
             SL.SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
+            self.M_SL[player_i] = []
           elif sl_algo == "mlp":
             SL.SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
 
