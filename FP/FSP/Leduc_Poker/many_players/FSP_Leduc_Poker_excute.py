@@ -19,7 +19,7 @@ import FSP_Leduc_Poker_trainer
 
 #config
 config = dict(
-  iterations = 10**4,
+  iterations = 10**6,
   num_players = 2,
   n= 2,
   m= 1,

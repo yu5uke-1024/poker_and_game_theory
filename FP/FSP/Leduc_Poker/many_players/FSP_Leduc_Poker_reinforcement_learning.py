@@ -31,6 +31,9 @@ class ReinforcementLearning:
     self.infoset_action_player_dict = infoset_action_player_dict
 
 
+
+
+
   def make_each_player_state_idx(self, infoSet_dict_player):
     #Q-state for each player
     player_q_state = [{} for _ in range(self.num_players)]
@@ -80,7 +83,11 @@ class ReinforcementLearning:
     self.epsilon = 0.6/((k+1)**0.5)
 
 
+
     for one_episode in memory:
+
+      #print("")
+      #print(one_episode, target_player)
 
       one_episode_split = self.Episode_split(one_episode)
       for trainsition in one_episode_split:
@@ -90,10 +97,23 @@ class ReinforcementLearning:
           a_idx = self.ACTION_DICT_verse[a]
 
           if s_prime == None:
+            #print("before:", s, a, q_value[s_idx][a_idx], r, s_prime)
             q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r - q_value[s_idx][a_idx])
+
           else:
             s_prime_idx = self.player_q_state[target_player][s_prime]
-            q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r + self.gamma*max(q_value[s_prime_idx]) - q_value[s_idx][a_idx])
+
+            q_value_s__prime_max = q_value[s_prime_idx][self.node_possible_action[s_prime][0]]
+            for ai in self.node_possible_action[s_prime]:
+              if q_value_s__prime_max <= q_value[s_prime_idx][ai]:
+                q_value_s__prime_max = q_value[s_prime_idx][ai]
+
+            #print("before:", s, a, q_value[s_idx][a_idx], r, s_prime, q_value[s_prime_idx], q_value_s__prime_max)
+
+            q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r + self.gamma*q_value_s__prime_max- q_value[s_idx][a_idx])
+
+          #print("after:", s, a, q_value[s_idx][a_idx])
+
 
 
     state_space = len(self.player_q_state[target_player])

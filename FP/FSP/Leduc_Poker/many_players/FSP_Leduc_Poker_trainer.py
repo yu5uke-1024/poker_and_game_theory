@@ -614,6 +614,8 @@ class LeducTrainer:
     # q_value
     self.Q_value = [np.zeros((len(self.infoSets_dict_player[i]),3)) for i in range(self.NUM_PLAYERS)]
 
+    #self.Q_value = [np.full((len(self.infoSets_dict_player[i]),3), 20.0) for i in range(self.NUM_PLAYERS)]
+
 
 
     RL = FSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action, self.infoset_action_player_dict)
@@ -623,15 +625,18 @@ class LeducTrainer:
 
     for iteration_t in tqdm(range(int(self.train_iterations))):
       if pseudo_code == "batch_FSP":
-        #GD.generate_data1(self.avg_strategy, n, self.M_RL)
+        GD.generate_data1(self.avg_strategy, n, self.M_RL)
 
-        for target_player in range(self.NUM_PLAYERS):
-          self.create_infoSets("", target_player, 1.0)
-        self.best_response_strategy = {}
-        for best_response_player_i in range(self.NUM_PLAYERS):
-            self.calc_best_response_value(self.best_response_strategy, best_response_player_i, "", 1)
-        #for player_i in range(self.NUM_PLAYERS):
-        #  RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
+        #for target_player in range(self.NUM_PLAYERS):
+        #  self.create_infoSets("", target_player, 1.0)
+        #self.best_response_strategy = {}
+        #for best_response_player_i in range(self.NUM_PLAYERS):
+        #    self.calc_best_response_value(self.best_response_strategy, best_response_player_i, "", 1)
+
+        for player_i in range(self.NUM_PLAYERS):
+          RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
+
+
 
         GD.generate_data2(self.avg_strategy, self.best_response_strategy, m, self.M_RL, self.M_SL)
 
@@ -668,6 +673,8 @@ class LeducTrainer:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
 
     #result
+    for i, j in zip(RL.player_q_state[0], self.Q_value[0]):
+      print(i, j)
     #print(self.Q_value)
     #print(self.N_count)
 

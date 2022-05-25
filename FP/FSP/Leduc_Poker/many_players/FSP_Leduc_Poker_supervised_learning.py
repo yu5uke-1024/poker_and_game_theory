@@ -37,6 +37,7 @@ class SupervisedLearning:
 
 
 
+
   def make_card_order(self, num_players):
     """return dict
     >>> SupervisedLearning().make_card_order(2) == {'J':0, 'Q':1, 'K':2}
