@@ -13,14 +13,14 @@ import copy
 from sklearn.neural_network import MLPClassifier
 from collections import deque
 
-import FSP_Kuhn_Poker_trainer
+import NFSP_Kuhn_Poker_trainer
 
 
 class GenerateData:
   def __init__(self, num_players, num_actions):
     self.num_players = num_players
     self.num_actions = num_actions
-    self.kuhn_trainer = FSP_Kuhn_Poker_trainer.KuhnTrainer(num_players=self.num_players)
+    self.kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(num_players=self.num_players)
 
 
   def generate_data0(self, pi_strategy, beta_strategy, n, m, eta):

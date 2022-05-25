@@ -16,9 +16,9 @@ from collections import deque
 import wandb
 
 
-import FSP_Kuhn_Poker_supervised_learning
-import FSP_Kuhn_Poker_reinforcement_learning
-import FSP_Kuhn_Poker_generate_data
+import NFSP_Kuhn_Poker_supervised_learning
+import NFSP_Kuhn_Poker_reinforcement_learning
+import NFSP_Kuhn_Poker_generate_data
 
 
 
@@ -327,9 +327,9 @@ class KuhnTrainer:
 
 
 
-    RL = FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS)
-    SL = FSP_Kuhn_Poker_supervised_learning.SupervisedLearning(self.NUM_PLAYERS, self.NUM_ACTIONS)
-    GD = FSP_Kuhn_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS)
+    RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS)
+    SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(self.NUM_PLAYERS, self.NUM_ACTIONS)
+    GD = NFSP_Kuhn_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS)
 
 
     for iteration_t in tqdm(range(int(self.train_iterations))):

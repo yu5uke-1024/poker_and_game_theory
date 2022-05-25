@@ -14,7 +14,7 @@ from sklearn.neural_network import MLPClassifier
 from collections import deque
 import wandb
 
-import FSP_Kuhn_Poker_trainer
+import NFSP_Kuhn_Poker_trainer
 
 
 
@@ -29,19 +29,19 @@ config = dict(
   rl_algo = ["epsilon-greedy", "boltzmann"][0],
   sl_algo = ["cnt", "mlp"][0],
   pseudo_code = ["general_FSP", "batch_FSP"][1],
-  wandb_save =  True
+  wandb_save =  False
 )
 
 
 
 if config["wandb_save"]:
-  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="fsp_{}_{}_{}".format(config["rl_algo"], config["sl_algo"], config["pseudo_code"]))
+  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="nfsp_{}_{}_{}".format(config["rl_algo"], config["sl_algo"], config["pseudo_code"]))
   wandb.config.update(config)
 
 
 #train
 
-kuhn_trainer = FSP_Kuhn_Poker_trainer.KuhnTrainer(
+kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(
   train_iterations = config["iterations"],
   num_players= config["num_players"]
   )
