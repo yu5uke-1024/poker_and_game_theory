@@ -22,20 +22,15 @@ import NFSP_Kuhn_Poker_trainer
 config = dict(
   iterations = 10**4,
   num_players = 2,
-  n= 2,
-  m= 1,
-  memory_size_rl= 30,
-  memory_size_sl= 1000,
-  rl_algo = ["epsilon-greedy", "boltzmann"][0],
-  sl_algo = ["cnt", "mlp"][0],
-  pseudo_code = ["general_FSP", "batch_FSP"][1],
+  memory_size_rl = 100,
+  memory_size_sl = 100,
   wandb_save =  False
 )
 
 
 
 if config["wandb_save"]:
-  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="nfsp_{}_{}_{}".format(config["rl_algo"], config["sl_algo"], config["pseudo_code"]))
+  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="nfsp")
   wandb.config.update(config)
 
 
@@ -48,13 +43,8 @@ kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(
 
 
 kuhn_trainer.train(
-  n = config["n"],
-  m = config["m"],
   memory_size_rl = config["memory_size_rl"],
   memory_size_sl = config["memory_size_sl"],
-  rl_algo = config["rl_algo"],
-  sl_algo = config["sl_algo"],
-  pseudo_code = config["pseudo_code"],
   wandb_save = config["wandb_save"]
   )
 

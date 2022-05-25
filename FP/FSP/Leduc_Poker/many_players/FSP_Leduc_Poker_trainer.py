@@ -591,7 +591,7 @@ class LeducTrainer:
     self.exploitability_list = {}
 
     self.M_SL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
-    self.M_RL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
+    self.M_RL = [deque([], maxlen=memory_size_rl) for _ in range(self.NUM_PLAYERS)]
 
     self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
     self.infoSets_dict = {}

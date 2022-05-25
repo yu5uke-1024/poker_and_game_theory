@@ -303,11 +303,11 @@ class KuhnTrainer:
 
 
   #KuhnTrainer main method
-  def train(self, n, m, memory_size_rl, memory_size_sl, wandb_save, rl_algo, sl_algo, pseudo_code):
+  def train(self, memory_size_rl, memory_size_sl,  wandb_save):
     self.exploitability_list = {}
 
     self.M_SL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
-    self.M_RL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
+    self.M_RL = [deque([], maxlen=memory_size_rl) for _ in range(self.NUM_PLAYERS)]
 
     self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
     self.infoSets_dict = {}
@@ -318,9 +318,7 @@ class KuhnTrainer:
     self.best_response_strategy = copy.deepcopy(self.avg_strategy)
 
     # n_count
-    self.N_count = copy.deepcopy(self.avg_strategy)
-    for node, cn in self.N_count.items():
-      self.N_count[node] = np.array([1.0 for _ in range(self.NUM_ACTIONS)], dtype=float)
+
 
     # q_value
     self.Q_value = [np.zeros((len(self.infoSets_dict_player[i]),2)) for i in range(self.NUM_PLAYERS)]
@@ -334,35 +332,6 @@ class KuhnTrainer:
 
     for iteration_t in tqdm(range(int(self.train_iterations))):
 
-      if pseudo_code == "batch_FSP":
-        GD.generate_data1(self.avg_strategy, n, self.M_RL)
-
-        for player_i in range(self.NUM_PLAYERS):
-          RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
-
-        GD.generate_data2(self.avg_strategy, self.best_response_strategy, m, self.M_RL, self.M_SL)
-
-        for player_i in range(self.NUM_PLAYERS):
-          if sl_algo == "cnt":
-            SL.SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
-            self.M_SL[player_i] = []
-          elif sl_algo == "mlp":
-            SL.SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
-
-
-      elif pseudo_code == "general_FSP":
-        eta = 1/(iteration_t+2)
-        D = GD.generate_data0(self.avg_strategy, self.best_response_strategy, n, m, eta)
-        for player_i in range(self.NUM_PLAYERS):
-          self.M_SL[player_i].extend(D[player_i])
-          self.M_RL[player_i].extend(D[player_i])
-
-          RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
-
-          if sl_algo == "cnt":
-            SL.SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
-          elif sl_algo == "mlp":
-            SL.SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
 
 
       if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
@@ -371,7 +340,8 @@ class KuhnTrainer:
         if wandb_save:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
 
-    self.show_plot("FSP")
+
+    #self.show_plot("NFSP")
     if wandb_save:
       wandb.save()
 
