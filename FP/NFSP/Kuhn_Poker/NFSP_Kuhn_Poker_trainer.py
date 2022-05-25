@@ -16,11 +16,6 @@ from collections import deque
 import wandb
 
 
-import NFSP_Kuhn_Poker_supervised_learning
-import NFSP_Kuhn_Poker_reinforcement_learning
-import NFSP_Kuhn_Poker_generate_data
-
-
 
 class KuhnTrainer:
   def __init__(self, train_iterations=10**1, num_players =2):
@@ -29,6 +24,21 @@ class KuhnTrainer:
     self.NUM_ACTIONS = 2
     self.avg_strategy = {}
     self.card_rank = self.make_rank(self.NUM_PLAYERS)
+
+
+    self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
+    self.infoSets_dict = {}
+
+    for target_player in range(self.NUM_PLAYERS):
+      self.create_infoSets("", target_player, 1.0)
+
+
+    self.epsilon_greedy_q_strategy = copy.deepcopy(self.avg_strategy)
+
+    # q_value
+    self.Q_value = [np.zeros((len(self.infoSets_dict_player[i]),2)) for i in range(self.NUM_PLAYERS)]
+    self.player_q_state = self.make_each_player_state_idx()
+
 
 
   def make_rank(self, num_players):
@@ -290,16 +300,17 @@ class KuhnTrainer:
 
 
 
-  def show_plot(self, method):
-    plt.scatter(list(self.exploitability_list.keys()), list(self.exploitability_list.values()), label=method)
-    plt.plot(list(self.exploitability_list.keys()), list(self.exploitability_list.values()))
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.xlabel("iterations")
-    plt.ylabel("exploitability")
-    plt.legend()
-    #plt.show()
-
+  def make_each_player_state_idx(self):
+    """return string
+    >>> KuhnTrainer().make_each_player_state_idx()
+    [{'J': 0, 'Jpb': 1, 'Q': 2, 'Qpb': 3, 'K': 4, 'Kpb': 5}, {'Qp': 0, 'Qb': 1, 'Kp': 2, 'Kb': 3, 'Jp': 4, 'Jb': 5}]
+    """
+    #Q-state for each player
+    player_q_state = [{} for _ in range(self.NUM_PLAYERS)]
+    for player_i, player_i_state in enumerate(self.infoSets_dict_player):
+      for idx, j in enumerate(player_i_state):
+        player_q_state[player_i][j] = idx
+    return player_q_state
 
 
   #KuhnTrainer main method
@@ -309,28 +320,18 @@ class KuhnTrainer:
     self.M_SL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
     self.M_RL = [deque([], maxlen=memory_size_rl) for _ in range(self.NUM_PLAYERS)]
 
-    self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
-    self.infoSets_dict = {}
-
-    for target_player in range(self.NUM_PLAYERS):
-      self.create_infoSets("", target_player, 1.0)
-
-    self.best_response_strategy = copy.deepcopy(self.avg_strategy)
-
-    # n_count
-
-
-    # q_value
-    self.Q_value = [np.zeros((len(self.infoSets_dict_player[i]),2)) for i in range(self.NUM_PLAYERS)]
-
-
-
-    RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS)
-    SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(self.NUM_PLAYERS, self.NUM_ACTIONS)
-    GD = NFSP_Kuhn_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS)
 
 
     for iteration_t in tqdm(range(int(self.train_iterations))):
+      self.epsilon = 0.6/((iteration_t+1)**0.5)
+      self.eta = 0.1
+
+      for player_i in range(self.NUM_PLAYERS):
+        if np.random.uniform() < self.eta:
+          self.sigma_strategy = self.epsilon_greedy_q_strategy
+        else:
+          self.sigma_strategy = self.avg_strategy
+
 
 
 
@@ -341,7 +342,6 @@ class KuhnTrainer:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
 
 
-    #self.show_plot("NFSP")
     if wandb_save:
       wandb.save()
 
