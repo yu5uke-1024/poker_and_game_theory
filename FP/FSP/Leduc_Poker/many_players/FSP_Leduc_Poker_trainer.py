@@ -614,9 +614,6 @@ class LeducTrainer:
     # q_value
     self.Q_value = [np.zeros((len(self.infoSets_dict_player[i]),3)) for i in range(self.NUM_PLAYERS)]
 
-    #self.Q_value = [np.full((len(self.infoSets_dict_player[i]),3), 20.0) for i in range(self.NUM_PLAYERS)]
-
-
 
     RL = FSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action, self.infoset_action_player_dict)
     SL = FSP_Leduc_Poker_supervised_learning.SupervisedLearning(self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action, self.infoset_action_player_dict)
@@ -672,13 +669,8 @@ class LeducTrainer:
         if wandb_save:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
 
-    #result
-    for i, j in zip(RL.player_q_state[0], self.Q_value[0]):
-      print(i, j)
-    #print(self.Q_value)
-    #print(self.N_count)
 
-    self.show_plot("FSP")
+    #self.show_plot("FSP")
     if wandb_save:
       wandb.save()
 

@@ -52,7 +52,6 @@ class SupervisedLearning:
     return card_order
 
 
-  # exploitability: 収束する
   def SL_train_AVG(self, memory, target_player, strategy, n_count):
     for one_episode in memory:
       one_episode_split = self.Episode_split(one_episode)
@@ -70,7 +69,7 @@ class SupervisedLearning:
     return strategy
 
 
-  # exploitability: 収束しない
+
   def SL_train_MLP(self, memory, target_player, update_strategy):
 
       train_X = np.array([])
@@ -81,9 +80,19 @@ class SupervisedLearning:
           train_X = np.append(train_X, train_i[0])
           train_y = np.append(train_y, train_i[1])
 
+
+      #最初にtrain_y に 0,1,2全てそろわない可能性あり　3値分類でなくなってしまう
+      for action_id in range(self.num_actions):
+        train_X = np.append(train_X, [0 for _ in range(self.max_len_X_bit)])
+        train_y = np.append(train_y, [action_id])
+
+
+
       train_X = train_X.reshape(-1, self.max_len_X_bit)
       train_y = train_y.reshape(-1, 1)
-      #print(train_X.shape, train_y.shape)
+
+
+
 
       #モデル構築 多層パーセプトロン
       clf = MLPClassifier(hidden_layer_sizes=(200,))
@@ -92,6 +101,8 @@ class SupervisedLearning:
       for node_X , _ in update_strategy.items():
         node_bit_X = self.make_X(node_X).reshape(-1, self.max_len_X_bit)
         y = clf.predict_proba(node_bit_X).ravel()
+
+        #print("first:", y)
         possible_action_list = self.node_possible_action[node_X]
         normalizationSum = 0
         for action_i, yi in enumerate(y):
@@ -102,6 +113,7 @@ class SupervisedLearning:
 
         y /= normalizationSum
         update_strategy[node_X] = y
+
 
 
   def From_episode_to_bit(self, one_episode, target_player):
