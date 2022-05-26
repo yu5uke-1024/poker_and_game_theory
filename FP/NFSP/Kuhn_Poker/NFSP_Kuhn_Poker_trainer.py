@@ -326,11 +326,13 @@ class KuhnTrainer:
       self.epsilon = 0.6/((iteration_t+1)**0.5)
       self.eta = 0.1
 
+      #0 → epsilon_greedy_q_strategy, 1 → avg_strategy
+      self.sigma_strategy_bit = [-1 for _ in range(self.NUM_PLAYERS)]
       for player_i in range(self.NUM_PLAYERS):
         if np.random.uniform() < self.eta:
-          self.sigma_strategy = self.epsilon_greedy_q_strategy
+          self.sigma_strategy_bit[player_i] = 0
         else:
-          self.sigma_strategy = self.avg_strategy
+          self.sigma_strategy_bit[player_i] = 1
 
 
 
