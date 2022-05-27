@@ -20,7 +20,7 @@ import FSP_Kuhn_Poker_trainer
 
 #config
 config = dict(
-  iterations = 10**3,
+  iterations = 10**5,
   num_players = 2,
   n= 2,
   m= 1,
@@ -37,6 +37,8 @@ config = dict(
 if config["wandb_save"]:
   wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="fsp_{}_{}_{}".format(config["rl_algo"], config["sl_algo"], config["pseudo_code"]))
   wandb.config.update(config)
+  wandb.define_metric("exploitability", summary="last")
+  wandb.define_metric("avg_utility", summary="last")
 
 
 #train
@@ -60,11 +62,9 @@ kuhn_trainer.train(
 
 
 #result
-
-print("")
-print("avg_utility", kuhn_trainer.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(config["num_players"])]))
-print("final_exploitability", list(kuhn_trainer.exploitability_list.items())[-1])
-print("")
+if not config["wandb_save"]:
+  print("avg_utility", list(kuhn_trainer.exploitability_list.items())[-1])
+  print("final_exploitability", list(kuhn_trainer.exploitability_list.items())[-1])
 
 
 result_dict_avg = {}
@@ -81,10 +81,12 @@ df1.index.name = "Node"
 
 df2 = pd.concat([df, df1], axis=1)
 
+
 if config["wandb_save"]:
   tbl = wandb.Table(data=df2)
   tbl.add_column("Node", [i for i in df2.index])
   wandb.log({"table:":tbl})
+  wandb.save()
 else:
   print(df2)
 

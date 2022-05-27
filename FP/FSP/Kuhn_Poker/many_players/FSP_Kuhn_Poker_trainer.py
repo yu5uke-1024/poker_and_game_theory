@@ -305,6 +305,9 @@ class KuhnTrainer:
   #KuhnTrainer main method
   def train(self, n, m, memory_size_rl, memory_size_sl, wandb_save, rl_algo, sl_algo, pseudo_code):
     self.exploitability_list = {}
+    self.avg_utility_list = {}
+
+
 
     self.M_SL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
     self.M_RL = [deque([], maxlen=memory_size_rl) for _ in range(self.NUM_PLAYERS)]
@@ -367,13 +370,13 @@ class KuhnTrainer:
 
       if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
+        self.avg_utility_list[iteration_t] = self.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(self.NUM_PLAYERS)])
 
         if wandb_save:
-          wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
+          wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t]})
+
 
     self.show_plot("FSP")
-    if wandb_save:
-      wandb.save()
 
 
 doctest.testmod()
