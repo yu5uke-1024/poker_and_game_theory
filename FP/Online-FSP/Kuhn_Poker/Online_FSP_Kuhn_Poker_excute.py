@@ -14,7 +14,7 @@ from sklearn.neural_network import MLPClassifier
 from collections import deque
 import wandb
 
-import NFSP_Kuhn_Poker_trainer
+import Online_FSP_Kuhn_Poker_trainer
 
 
 
@@ -37,7 +37,7 @@ if config["wandb_save"]:
 
 #train
 
-kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(
+kuhn_trainer = Online_FSP_Kuhn_Poker_trainer.KuhnTrainer(
   train_iterations = config["iterations"],
   num_players= config["num_players"]
   )
