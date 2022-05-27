@@ -40,12 +40,9 @@ class SupervisedLearning:
 
     return card_order
 
-  # exploitability: 収束する
   def SL_train_AVG(self, memory, target_player, strategy, n_count):
-    for one_episode in memory:
-      one_episode_split = self.Episode_split(one_episode)
-
-      for X, y in one_episode_split:
+    for one_s_a_set in memory:
+      for X, y in [one_s_a_set]:
         if (len(X)-1) % self.num_players == target_player :
           if y == "p":
             n_count[X] += np.array([1.0, 0.0], dtype=float)
@@ -59,16 +56,14 @@ class SupervisedLearning:
     return strategy
 
 
-  # exploitability: 収束しない
   def SL_train_MLP(self, memory, target_player, update_strategy):
 
       train_X = np.array([])
       train_y = np.array([])
-      for one_episode in memory:
-        train = self.From_episode_to_bit(one_episode, target_player)
-        for train_i in train:
-          train_X = np.append(train_X, train_i[0])
-          train_y = np.append(train_y, train_i[1])
+      for one_s_a_set in memory:
+        train_i = self.From_episode_to_bit([one_s_a_set])
+        train_X = np.append(train_X, train_i[0])
+        train_y = np.append(train_y, train_i[1])
 
       train_X = train_X.reshape(-1, self.max_len_X_bit)
       train_y = train_y.reshape(-1, 1)
@@ -84,22 +79,16 @@ class SupervisedLearning:
         update_strategy[node_X] = y
 
 
-  def From_episode_to_bit(self, one_episode, target_player):
+  def From_episode_to_bit(self, one_s_a_set):
     """return list
-    >>> SupervisedLearning(2, 2).From_episode_to_bit('QKbp', 0)
-    [(array([0, 1, 0, 0, 0, 0, 0]), array([1]))]
-    >>> SupervisedLearning(2, 2).From_episode_to_bit('QKbp', 1)
-    [(array([0, 0, 1, 0, 1, 0, 0]), array([0]))]
+    >>> SupervisedLearning(2, 2).From_episode_to_bit([('Q', 'b')])
+    (array([0, 1, 0, 0, 0, 0, 0]), array([1]))
     """
-    one_episode_split = self.Episode_split(one_episode)
-    one_episode_bit = []
-    for X, y in one_episode_split:
-      if (len(X)-1) % self.num_players == target_player :
-        y_bit = self.make_y(y)
-        X_bit = self.make_X(X)
-        one_episode_bit.append((X_bit, y_bit))
+    for X, y in one_s_a_set:
+      y_bit = self.make_y(y)
+      X_bit = self.make_X(X)
 
-    return one_episode_bit
+    return (X_bit, y_bit)
 
   def make_y(self, y):
     if y == "p":
@@ -132,20 +121,6 @@ class SupervisedLearning:
     return X_bit
 
 
-  def Episode_split(self, one_episode):
-    """return list
-    >>> SupervisedLearning(2, 2).Episode_split('QKbp')
-    [('Q', 'b'), ('Kb', 'p')]
-    >>> SupervisedLearning(2, 2).Episode_split('KQpbp')
-    [('K', 'p'), ('Qp', 'b'), ('Kpb', 'p')]
-    """
-    one_episode_split = []
-    action_history = one_episode[self.num_players:]
-    for idx, ai in enumerate(action_history):
-      s = one_episode[idx%self.num_players] + action_history[:idx]
-      a = ai
-      one_episode_split.append((s,a))
 
-    return one_episode_split
 
 doctest.testmod()

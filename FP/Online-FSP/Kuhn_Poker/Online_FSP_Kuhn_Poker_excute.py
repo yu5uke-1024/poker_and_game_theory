@@ -20,18 +20,18 @@ import Online_FSP_Kuhn_Poker_trainer
 
 #config
 config = dict(
-  iterations = 10**1,
+  iterations = 10**6,
   num_players = 2,
   eta = 0.1,
-  memory_size_rl = 100,
-  memory_size_sl = 100,
-  wandb_save =  False
+  memory_size_rl = 30,
+  memory_size_sl = 10**3,
+  wandb_save =  True
 )
 
 
 
 if config["wandb_save"]:
-  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="nfsp")
+  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="online-fsp")
   wandb.config.update(config)
 
 
@@ -52,7 +52,7 @@ kuhn_trainer.train(
 
 
 #result
-"""
+
 print("")
 print("avg_utility", kuhn_trainer.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(config["num_players"])]))
 print("final_exploitability", list(kuhn_trainer.exploitability_list.items())[-1])
@@ -71,8 +71,7 @@ for key, value in sorted(kuhn_trainer.best_response_strategy.items()):
 df1 = pd.DataFrame(result_dict_br.values(), index=result_dict_br.keys(), columns=['Pass_br', "Bet_br"])
 df1.index.name = "Node"
 
-#print(pd.concat([df, df1], axis=1))
+print(pd.concat([df, df1], axis=1))
 
 
 doctest.testmod()
-"""

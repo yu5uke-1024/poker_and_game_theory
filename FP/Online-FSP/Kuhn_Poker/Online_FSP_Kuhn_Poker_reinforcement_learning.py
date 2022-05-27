@@ -63,54 +63,40 @@ class ReinforcementLearning:
     return one_episode_split
 
 
-  def RL_train(self, memory, target_player, update_strategy, q_value, k, rl_algo):
+  def RL_train(self, memory, target_player, update_strategy, q_value, k):
     self.alpha = 0.05/ (1+0.003*(k**0.5))
-    self.T = 1 / (1+ 0.02*(k**0.5))
     self.epsilon = 0.6/((k+1)**0.5)
 
 
-    for one_episode in memory:
-      one_episode_split = self.Episode_split(one_episode)
-      for trainsition in one_episode_split:
-        s, a, r, s_prime = trainsition[0], trainsition[1], trainsition[2], trainsition[3]
-        if (len(s) -1) % self.num_players == target_player:
-          s_idx = self.player_q_state[target_player][s]
-          a_idx = self.action_id[a]
+    for trainsition in memory:
+      s, a, r, s_prime = trainsition[0], trainsition[1], trainsition[2], trainsition[3]
+      if (len(s) -1) % self.num_players == target_player:
+        s_idx = self.player_q_state[target_player][s]
+        a_idx = self.action_id[a]
 
-          if s_prime == None:
-            q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r - q_value[s_idx][a_idx])
-          else:
-            s_prime_idx = self.player_q_state[target_player][s_prime]
-            q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r + self.gamma*max(q_value[s_prime_idx]) - q_value[s_idx][a_idx])
+        if s_prime == None:
+          q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r - q_value[s_idx][a_idx])
+        else:
+          s_prime_idx = self.player_q_state[target_player][s_prime]
+          q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r + self.gamma*max(q_value[s_prime_idx]) - q_value[s_idx][a_idx])
 
 
     state_space = len(self.player_q_state[target_player])
     action_space = len(self.action_id)
 
-    if rl_algo == "boltzmann":
-      q_value_boltzmann = np.zeros((state_space,action_space))
-      for si in range(state_space):
-        for ai in range(action_space):
-          q_value_boltzmann[si][ai] = math.exp(q_value[si][ai]/self.T)
-
-      for state, idx in self.player_q_state[target_player].items():
-        update_strategy[state] = q_value_boltzmann[self.player_q_state[target_player][state]] / sum(q_value_boltzmann[self.player_q_state[target_player][state]])
-
-
-    elif rl_algo == "epsilon-greedy":
-      for state, idx in self.player_q_state[target_player].items():
-        if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
-          action = np.random.randint(action_space)
-          if action == 0:
-            update_strategy[state] = np.array([1, 0], dtype=float)
-          else:
-            update_strategy[state] = np.array([0, 1], dtype=float)
-
+    for state, idx in self.player_q_state[target_player].items():
+      if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
+        action = np.random.randint(action_space)
+        if action == 0:
+          update_strategy[state] = np.array([1, 0], dtype=float)
         else:
-          if q_value[self.player_q_state[target_player][state]][0] > q_value[self.player_q_state[target_player][state]][1]:
-            update_strategy[state] = np.array([1, 0], dtype=float)
-          else:
-            update_strategy[state] = np.array([0, 1], dtype=float)
+          update_strategy[state] = np.array([0, 1], dtype=float)
+
+      else:
+        if q_value[self.player_q_state[target_player][state]][0] > q_value[self.player_q_state[target_player][state]][1]:
+          update_strategy[state] = np.array([1, 0], dtype=float)
+        else:
+          update_strategy[state] = np.array([0, 1], dtype=float)
 
 
 doctest.testmod()
