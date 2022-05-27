@@ -71,7 +71,13 @@ for key, value in sorted(kuhn_trainer.best_response_strategy.items()):
 df1 = pd.DataFrame(result_dict_br.values(), index=result_dict_br.keys(), columns=['Pass_br', "Bet_br"])
 df1.index.name = "Node"
 
-print(pd.concat([df, df1], axis=1))
+df2 = pd.concat([df, df1], axis=1)
+if config["wandb_save"]:
+  tbl = wandb.Table(data=df2)
+  tbl.add_column("Node", [i for i in df2.index])
+  wandb.log({"table:":tbl})
+else:
+  print(df2)
 
 
 doctest.testmod()
