@@ -338,10 +338,19 @@ class KuhnTrainer:
     for iteration_t in tqdm(range(int(self.train_iterations))):
 
       if pseudo_code == "batch_FSP":
+
         GD.generate_data1(self.avg_strategy, n, self.M_RL)
 
-        for player_i in range(self.NUM_PLAYERS):
-          RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
+        if rl_algo == "dfs":
+            self.infoSets_dict = {}
+            for target_player in range(self.NUM_PLAYERS):
+              self.create_infoSets("", target_player, 1.0)
+            best_response_strategy = {}
+            for best_response_player_i in range(self.NUM_PLAYERS):
+              self.calc_best_response_value(best_response_strategy, best_response_player_i, "", 1)
+        else:
+          for player_i in range(self.NUM_PLAYERS):
+            RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
 
         GD.generate_data2(self.avg_strategy, self.best_response_strategy, m, self.M_RL, self.M_SL)
 
@@ -356,11 +365,20 @@ class KuhnTrainer:
       elif pseudo_code == "general_FSP":
         eta = 1/(iteration_t+2)
         D = GD.generate_data0(self.avg_strategy, self.best_response_strategy, n, m, eta)
+
         for player_i in range(self.NUM_PLAYERS):
           self.M_SL[player_i].extend(D[player_i])
           self.M_RL[player_i].extend(D[player_i])
 
-          RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
+          if rl_algo == "dfs":
+            self.infoSets_dict = {}
+            for target_player in range(self.NUM_PLAYERS):
+              self.create_infoSets("", target_player, 1.0)
+            best_response_strategy = {}
+            for best_response_player_i in range(self.NUM_PLAYERS):
+              self.calc_best_response_value(best_response_strategy, best_response_player_i, "", 1)
+          else:
+              RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
 
           if sl_algo == "cnt":
             SL.SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
