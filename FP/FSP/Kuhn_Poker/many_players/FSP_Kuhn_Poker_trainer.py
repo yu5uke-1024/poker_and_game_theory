@@ -390,6 +390,7 @@ class KuhnTrainer:
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
         self.avg_utility_list[iteration_t] = self.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(self.NUM_PLAYERS)])
 
+
         self.optimality_gap = 0
         self.infoSets_dict = {}
         for target_player in range(self.NUM_PLAYERS):
