@@ -33,6 +33,8 @@ config = dict(
 if config["wandb_save"]:
   wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="online-fsp")
   wandb.config.update(config)
+  wandb.define_metric("exploitability", summary="last")
+  wandb.define_metric("avg_utility", summary="last")
 
 
 #train

@@ -345,9 +345,9 @@ class KuhnTrainer:
             self.infoSets_dict = {}
             for target_player in range(self.NUM_PLAYERS):
               self.create_infoSets("", target_player, 1.0)
-            best_response_strategy = {}
+            self.best_response_strategy = {}
             for best_response_player_i in range(self.NUM_PLAYERS):
-              self.calc_best_response_value(best_response_strategy, best_response_player_i, "", 1)
+              self.calc_best_response_value(self.best_response_strategy, best_response_player_i, "", 1)
         else:
           for player_i in range(self.NUM_PLAYERS):
             RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
@@ -374,9 +374,9 @@ class KuhnTrainer:
             self.infoSets_dict = {}
             for target_player in range(self.NUM_PLAYERS):
               self.create_infoSets("", target_player, 1.0)
-            best_response_strategy = {}
+            self.best_response_strategy = {}
             for best_response_player_i in range(self.NUM_PLAYERS):
-              self.calc_best_response_value(best_response_strategy, best_response_player_i, "", 1)
+              self.calc_best_response_value(self.best_response_strategy, best_response_player_i, "", 1)
           else:
               RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
 

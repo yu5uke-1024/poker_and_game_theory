@@ -63,7 +63,7 @@ kuhn_trainer.train(
 
 #result
 if not config["wandb_save"]:
-  print("avg_utility", list(kuhn_trainer.exploitability_list.items())[-1])
+  print("avg_utility", list(kuhn_trainer.avg_utility_list.items())[-1])
   print("final_exploitability", list(kuhn_trainer.exploitability_list.items())[-1])
 
 
