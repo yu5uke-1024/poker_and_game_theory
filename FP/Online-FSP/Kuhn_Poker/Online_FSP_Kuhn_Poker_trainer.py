@@ -17,7 +17,7 @@ import wandb
 
 import Online_FSP_Kuhn_Poker_supervised_learning
 import Online_FSP_Kuhn_Poker_reinforcement_learning
-
+import Online_FSP_Kuhn_Poker_generate_data
 
 
 class KuhnTrainer:
@@ -326,9 +326,11 @@ class KuhnTrainer:
     if self.sigma_strategy_bit[player] == 0:
       self.M_SL[player].append((s, a))
     if len(self.M_SL[player]) != 0:
-      #self.SL.SL_train_MLP(self.M_SL[player], player, self.avg_strategy)
-      self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
-      self.M_SL[player] = []
+      if self.sl_algo == "cnt":
+        self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
+        self.M_SL[player] = []
+      elif self.sl_algo == "mlp":
+        self.SL.SL_train_MLP(self.M_SL[player], player, self.avg_strategy)
 
 
     self.RL.RL_train(self.M_RL[player], player, self.best_response_strategy, self.Q_value[player], iteration_t)
@@ -341,10 +343,11 @@ class KuhnTrainer:
 
 
   #KuhnTrainer main method
-  def train(self, eta, memory_size_rl, memory_size_sl,  wandb_save):
+  def train(self, eta, memory_size_rl, memory_size_sl,  wandb_save, sl_algo):
     self.exploitability_list = {}
     self.avg_utility_list = {}
     self.eta = eta
+    self.sl_algo = sl_algo
 
     self.M_SL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
     self.M_RL = [deque([], maxlen=memory_size_rl) for _ in range(self.NUM_PLAYERS)]
@@ -368,7 +371,7 @@ class KuhnTrainer:
 
     self.RL = Online_FSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS)
     self.SL = Online_FSP_Kuhn_Poker_supervised_learning.SupervisedLearning(self.NUM_PLAYERS, self.NUM_ACTIONS)
-
+    self.GD = Online_FSP_Kuhn_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS)
 
 
     for iteration_t in tqdm(range(int(self.train_iterations))):
@@ -398,11 +401,24 @@ class KuhnTrainer:
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
         self.avg_utility_list[iteration_t] = self.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(self.NUM_PLAYERS)])
 
+        self.optimality_gap = 0
+        self.infoSets_dict = {}
+        for target_player in range(self.NUM_PLAYERS):
+          self.create_infoSets("", target_player, 1.0)
+        self.best_response_strategy_dfs = {}
+        for best_response_player_i in range(self.NUM_PLAYERS):
+          self.calc_best_response_value(self.best_response_strategy_dfs, best_response_player_i, "", 1)
+
+        for player_i in range(self.NUM_PLAYERS):
+          self.optimality_gap += 1/2 * (self.GD.calculate_optimal_gap_best_response_strategy(self.best_response_strategy_dfs, self.avg_strategy, player_i)
+           - self.GD.calculate_optimal_gap_best_response_strategy(self.best_response_strategy, self.avg_strategy, player_i))
+
+
         if wandb_save:
-          wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t]})
+          wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
 
 
-    print(self.N_count)
+    #print(self.N_count)
     if wandb_save:
       wandb.save()
 

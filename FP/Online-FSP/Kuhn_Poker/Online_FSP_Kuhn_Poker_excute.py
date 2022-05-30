@@ -20,18 +20,19 @@ import Online_FSP_Kuhn_Poker_trainer
 
 #config
 config = dict(
-  iterations = 10**5,
+  iterations = 10**6,
   num_players = 2,
   eta = 0.1,
+  sl_algo = ["cnt", "mlp"][0],
   memory_size_rl = 30,
   memory_size_sl = 10**3,
-  wandb_save =  True
+  wandb_save = True
 )
 
 
 
 if config["wandb_save"]:
-  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="online-fsp")
+  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="online_fsp_{}".format(config["sl_algo"]))
   wandb.config.update(config)
   wandb.define_metric("exploitability", summary="last")
   wandb.define_metric("avg_utility", summary="last")
@@ -49,7 +50,8 @@ kuhn_trainer.train(
   eta = config["eta"],
   memory_size_rl = config["memory_size_rl"],
   memory_size_sl = config["memory_size_sl"],
-  wandb_save = config["wandb_save"]
+  wandb_save = config["wandb_save"],
+  sl_algo = config["sl_algo"]
   )
 
 
