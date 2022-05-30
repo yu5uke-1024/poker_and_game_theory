@@ -83,6 +83,9 @@ class SupervisedLearning:
         y = clf.predict_proba(node_bit_X).ravel()
         update_strategy[node_X] = y
 
+      print(update_strategy)
+
+
 
   def From_episode_to_bit(self, one_episode, target_player):
     """return list

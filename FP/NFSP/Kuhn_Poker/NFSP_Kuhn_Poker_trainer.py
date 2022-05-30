@@ -15,6 +15,9 @@ from sklearn.neural_network import MLPClassifier
 from collections import deque
 import wandb
 
+import NFSP_Kuhn_Poker_supervised_learning
+import NFSP_Kuhn_Poker_reinforcement_learning
+import NFSP_Kuhn_Poker_generate_data
 
 
 class KuhnTrainer:
@@ -25,18 +28,6 @@ class KuhnTrainer:
     self.avg_strategy = {}
     self.card_rank = self.make_rank(self.NUM_PLAYERS)
 
-
-    self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
-    self.infoSets_dict = {}
-
-    for target_player in range(self.NUM_PLAYERS):
-      self.create_infoSets("", target_player, 1.0)
-
-    self.epsilon_greedy_q_strategy = copy.deepcopy(self.avg_strategy)
-
-    # q_value
-    self.Q_value = [np.zeros((len(self.infoSets_dict_player[i]),2)) for i in range(self.NUM_PLAYERS)]
-    self.player_q_state = self.make_each_player_state_idx()
 
 
   def make_rank(self, num_players):
@@ -293,27 +284,15 @@ class KuhnTrainer:
     return nodeUtil
 
 
-  def make_each_player_state_idx(self):
-    """return string
-    >>> KuhnTrainer().make_each_player_state_idx()
-    [{'J': 0, 'Jpb': 1, 'Q': 2, 'Qpb': 3, 'K': 4, 'Kpb': 5}, {'Qp': 0, 'Qb': 1, 'Kp': 2, 'Kb': 3, 'Jp': 4, 'Jb': 5}]
-    """
-    #Q-state for each player
-    player_q_state = [{} for _ in range(self.NUM_PLAYERS)]
-    for player_i, player_i_state in enumerate(self.infoSets_dict_player):
-      for idx, j in enumerate(player_i_state):
-        player_q_state[player_i][j] = idx
-    return player_q_state
 
-
-  def one_episode(self, history):
+  def train_one_episode(self, history, iteration_t):
     plays = len(history)
     player = plays % self.NUM_PLAYERS
 
     s = history[player] + history[self.NUM_PLAYERS:]
 
     if self.sigma_strategy_bit[player] == 0:
-      sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.epsilon_greedy_q_strategy[s])
+      sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.epsilon_greedy_q_learning_strategy[s])
     elif self.sigma_strategy_bit[player] == 1:
       sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.avg_strategy[s])
 
@@ -321,46 +300,81 @@ class KuhnTrainer:
     a = ("p" if sampling_action == 0 else "b")
     Nexthistory = history + ("p" if sampling_action == 0 else "b")
 
-    if self.sigma_strategy_bit[player] == 0:
-      self.M_SL[player].append((s, a))
 
+    next_transition = []
     if self.whether_terminal_states(Nexthistory):
-      print(Nexthistory)
       r = self.Return_payoff_for_terminal_states(Nexthistory, player)
       s_prime = None
       self.M_RL[player].append((s, a, r, s_prime))
-      return s, a, r, s_prime, Nexthistory
+      next_transition = [s, a, r, s_prime, Nexthistory]
+
 
     else:
-      other_s, other_a, other_r, other_s_prime, other_histroy = self.one_episode(Nexthistory)
+      other_s, other_a, other_r, other_s_prime, other_histroy = self.train_one_episode(Nexthistory, iteration_t)
 
       if self.whether_terminal_states(other_histroy):
-
         r = self.Return_payoff_for_terminal_states(other_histroy, player)
         s_prime = None
         self.M_RL[player].append((s, a, r, s_prime))
-        return s, a, r, s_prime, other_histroy
+        next_transition = [s, a, r, s_prime, other_histroy]
       else:
         r = 0
         s_prime = other_histroy[player] + other_histroy[self.NUM_PLAYERS:]
         self.M_RL[player].append((s, a, r, s_prime))
-        return s, a, r, s_prime, other_histroy
+        next_transition = [s, a, r, s_prime, other_histroy]
+
+
+    if self.sigma_strategy_bit[player] == 0:
+      self.M_SL[player].append((s, a))
+
+
+    if len(self.M_SL[player]) != 0:
+      self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy)
+
+
+    #self.RL.RL_train_DQN(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy)
+    self.infoSets_dict = {}
+    for target_player in range(self.NUM_PLAYERS):
+      self.create_infoSets("", target_player, 1.0)
+    self.epsilon_greedy_q_learning_strategy = {}
+    for best_response_player_i in range(self.NUM_PLAYERS):
+      self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
+
+
+    return next_transition
+
+
+
+
 
 
 
   #KuhnTrainer main method
   def train(self, eta, memory_size_rl, memory_size_sl,  wandb_save):
     self.exploitability_list = {}
+    self.avg_utility_list = {}
     self.eta = eta
 
     self.M_SL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
     self.M_RL = [deque([], maxlen=memory_size_rl) for _ in range(self.NUM_PLAYERS)]
 
+    self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
+    self.infoSets_dict = {}
+
+    for target_player in range(self.NUM_PLAYERS):
+      self.create_infoSets("", target_player, 1.0)
+
+    self.epsilon_greedy_q_learning_strategy = copy.deepcopy(self.avg_strategy)
+
+
+
+    self.RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS)
+    self.SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(self.NUM_PLAYERS, self.NUM_ACTIONS)
+    self.GD = NFSP_Kuhn_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS)
 
 
     for iteration_t in tqdm(range(int(self.train_iterations))):
       self.epsilon = 0.6/((iteration_t+1)**0.5)
-
 
 
       #0 → epsilon_greedy_q_strategy, 1 → avg_strategy
@@ -372,29 +386,39 @@ class KuhnTrainer:
           self.sigma_strategy_bit[player_i] = 1
 
 
-      not_episode_end_bit = True
       cards = self.card_distribution(self.NUM_PLAYERS)
       random.shuffle(cards)
       history = "".join(cards[:self.NUM_PLAYERS])
 
-      self.one_episode(history)
+      self.train_one_episode(history, iteration_t)
 
-      print(self.M_RL)
-      print(self.M_SL)
-
-      self.M_SL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
-      self.M_RL = [deque([], maxlen=memory_size_rl) for _ in range(self.NUM_PLAYERS)]
+      #print(self.M_SL)
 
 
-      #if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
-      #  self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
+      if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
+        self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
+        self.avg_utility_list[iteration_t] = self.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(self.NUM_PLAYERS)])
 
-      #  if wandb_save:
-      #    wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
+        self.optimality_gap = 0
+        self.infoSets_dict = {}
+        for target_player in range(self.NUM_PLAYERS):
+          self.create_infoSets("", target_player, 1.0)
+        self.best_response_strategy_dfs = {}
+        for best_response_player_i in range(self.NUM_PLAYERS):
+          self.calc_best_response_value(self.best_response_strategy_dfs, best_response_player_i, "", 1)
+
+        for player_i in range(self.NUM_PLAYERS):
+          self.optimality_gap += 1/2 * (self.GD.calculate_optimal_gap_best_response_strategy(self.best_response_strategy_dfs, self.avg_strategy, player_i)
+           - self.GD.calculate_optimal_gap_best_response_strategy(self.epsilon_greedy_q_learning_strategy, self.avg_strategy, player_i))
 
 
-    #if wandb_save:
-    #  wandb.save()
+        if wandb_save:
+          wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
+
+
+    #print(self.N_count)
+    if wandb_save:
+      wandb.save()
 
 
 doctest.testmod()

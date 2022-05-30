@@ -13,19 +13,92 @@ import copy
 from sklearn.neural_network import MLPClassifier
 from collections import deque
 
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+
 import warnings
 warnings.filterwarnings('ignore')
 
 
-
-
 class SupervisedLearning:
-  def __init__(self, num_players=2, num_actions=2):
+  def __init__(self, num_players=2, num_actions=2,):
     self.num_players = num_players
     self.num_actions = num_actions
-    self.max_len_X_bit = (self.num_players + 1) + 2*(self.num_players *2 - 2)
+    self.num_states = (self.num_players + 1) + 2*(self.num_players *2 - 2)
 
     self.card_order  = self.make_card_order(self.num_players)
+
+    self.config = dict(
+      hidden_units_num= 64,
+      lr = 0.01,
+      epochs = 10,
+      sampling_num = 1000
+    )
+
+    self.sl_network = SL_Network(state_num=self.num_states, hidden_units_num=self.config["hidden_units_num"])
+    self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.config["lr"])
+    self.loss_fn = nn.BCELoss()
+
+
+  def whether_put_memory_i(self, i, d, k):
+    if i <= k:
+      self.new_memory[i] = d
+    else:
+      r = random.randint(1, i)
+      if r <= k:
+        self.new_memory[r] = d
+
+
+
+  def reservoir_sampling(self, memory, k):
+    self.new_memory = [None for _ in range(k)]
+    for i in range(len(memory)):
+      self.whether_put_memory_i(i, memory[i], k)
+
+    return self.new_memory
+
+
+  def SL_learn(self, memory, player, update_strategy):
+
+    #train
+    self.sl_network.train()
+
+    for _ in range(self.config["epochs"]):
+      self.optimizer.zero_grad()
+
+      samples = self.reservoir_sampling(memory, self.config["sampling_num"])
+
+      train_X = np.array([])
+      train_y = np.array([])
+      for one_s_a_set in samples:
+        if one_s_a_set is not None:
+          train_i = self.From_episode_to_bit([one_s_a_set])
+          train_X = np.append(train_X, train_i[0])
+          train_y = np.append(train_y, train_i[1])
+
+
+      inputs = torch.from_numpy(train_X).float().reshape(-1,self.num_states)
+      targets = torch.from_numpy(train_y).float().reshape(-1,1)
+
+      outputs = self.sl_network.forward(inputs).reshape(-1,1)
+
+      loss = self.loss_fn(outputs, targets)
+      loss.backward()
+      self.optimizer.step()
+
+
+
+    # eval
+    self.sl_network.eval()
+    for node_X , _ in update_strategy.items():
+      inputs_eval = torch.from_numpy(self.make_X(node_X)).float().reshape(-1,self.num_states)
+      y = self.sl_network.forward(inputs_eval).detach().numpy()
+
+      #tensor → numpy
+      update_strategy[node_X] = np.array([1-y[0][0], y[0][0]])
+
 
 
   def make_card_order(self, num_players):
@@ -40,66 +113,17 @@ class SupervisedLearning:
 
     return card_order
 
-  # exploitability: 収束する
-  def SL_train_AVG(self, memory, target_player, strategy, n_count):
-    for one_episode in memory:
-      one_episode_split = self.Episode_split(one_episode)
 
-      for X, y in one_episode_split:
-        if (len(X)-1) % self.num_players == target_player :
-          if y == "p":
-            n_count[X] += np.array([1.0, 0.0], dtype=float)
-          else:
-            n_count[X] += np.array([0.0, 1.0], dtype=float)
-
-    for node_X , action_prob in n_count.items():
-        strategy[node_X] = n_count[node_X] / np.sum(action_prob)
-
-
-    return strategy
-
-
-  # exploitability: 収束しない
-  def SL_train_MLP(self, memory, target_player, update_strategy):
-
-      train_X = np.array([])
-      train_y = np.array([])
-      for one_episode in memory:
-        train = self.From_episode_to_bit(one_episode, target_player)
-        for train_i in train:
-          train_X = np.append(train_X, train_i[0])
-          train_y = np.append(train_y, train_i[1])
-
-      train_X = train_X.reshape(-1, self.max_len_X_bit)
-      train_y = train_y.reshape(-1, 1)
-      #print(train_X.shape, train_y.shape)
-
-      #モデル構築 多層パーセプトロン
-      clf = MLPClassifier(hidden_layer_sizes=(200,))
-      clf.fit(train_X, train_y)
-
-      for node_X , _ in update_strategy.items():
-        node_bit_X = self.make_X(node_X).reshape(-1, self.max_len_X_bit)
-        y = clf.predict_proba(node_bit_X).ravel()
-        update_strategy[node_X] = y
-
-
-  def From_episode_to_bit(self, one_episode, target_player):
+  def From_episode_to_bit(self, one_s_a_set):
     """return list
-    >>> SupervisedLearning(2, 2).From_episode_to_bit('QKbp', 0)
-    [(array([0, 1, 0, 0, 0, 0, 0]), array([1]))]
-    >>> SupervisedLearning(2, 2).From_episode_to_bit('QKbp', 1)
-    [(array([0, 0, 1, 0, 1, 0, 0]), array([0]))]
+    >>> SupervisedLearning(2, 2).From_episode_to_bit([('Q', 'b')])
+    (array([0, 1, 0, 0, 0, 0, 0]), array([1]))
     """
-    one_episode_split = self.Episode_split(one_episode)
-    one_episode_bit = []
-    for X, y in one_episode_split:
-      if (len(X)-1) % self.num_players == target_player :
-        y_bit = self.make_y(y)
-        X_bit = self.make_X(X)
-        one_episode_bit.append((X_bit, y_bit))
+    for X, y in one_s_a_set:
+      y_bit = self.make_y(y)
+      X_bit = self.make_X(X)
 
-    return one_episode_bit
+    return (X_bit, y_bit)
 
   def make_y(self, y):
     if y == "p":
@@ -110,7 +134,7 @@ class SupervisedLearning:
 
   def make_X(self, X):
 
-    X_bit = np.array([0 for _ in range(self.max_len_X_bit)])
+    X_bit = np.array([0 for _ in range(self.num_states)])
     X_bit[self.card_order[X[0]]] = 1
 
     for idx, Xi in enumerate(X[1:]):
@@ -132,20 +156,26 @@ class SupervisedLearning:
     return X_bit
 
 
-  def Episode_split(self, one_episode):
-    """return list
-    >>> SupervisedLearning(2, 2).Episode_split('QKbp')
-    [('Q', 'b'), ('Kb', 'p')]
-    >>> SupervisedLearning(2, 2).Episode_split('KQpbp')
-    [('K', 'p'), ('Qp', 'b'), ('Kpb', 'p')]
-    """
-    one_episode_split = []
-    action_history = one_episode[self.num_players:]
-    for idx, ai in enumerate(action_history):
-      s = one_episode[idx%self.num_players] + action_history[:idx]
-      a = ai
-      one_episode_split.append((s,a))
 
-    return one_episode_split
+
+class SL_Network(nn.Module):
+    def __init__(self, state_num, hidden_units_num):
+
+        super(SL_Network, self).__init__()
+        self.state_num = state_num
+
+        self.hidden_units_num = hidden_units_num
+        self.fc1 = nn.Linear(self.state_num, self.hidden_units_num)
+        self.fc2 = nn.Linear(self.hidden_units_num, 1)
+
+
+
+
+    def forward(self, x):
+        h1 = F.relu(self.fc1(x))
+        output = F.sigmoid(self.fc2(h1))
+        return output
+
+
 
 doctest.testmod()

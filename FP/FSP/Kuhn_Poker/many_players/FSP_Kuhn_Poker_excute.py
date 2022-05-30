@@ -20,16 +20,16 @@ import FSP_Kuhn_Poker_trainer
 
 #config
 config = dict(
-  iterations = 10**6,
+  iterations = 10**3,
   num_players = 2,
   n= 2,
   m= 1,
   memory_size_rl= 30,
   memory_size_sl= 1000,
   rl_algo = ["epsilon-greedy", "boltzmann", "dfs"][2],
-  sl_algo = ["cnt", "mlp"][0],
+  sl_algo = ["cnt", "mlp"][1],
   pseudo_code = ["general_FSP", "batch_FSP"][1],
-  wandb_save =  True
+  wandb_save =  False
   )
 
 

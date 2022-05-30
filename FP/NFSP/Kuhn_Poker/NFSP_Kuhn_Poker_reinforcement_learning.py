@@ -1,20 +1,15 @@
 #ライブラリ
-from calendar import c
-from cmath import exp
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import random
-import itertools
-from collections import defaultdict
-import sys
-from tqdm import tqdm
-import time
 import doctest
-import copy
-from sklearn.neural_network import MLPClassifier
 from collections import deque
-import math
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
 
 import NFSP_Kuhn_Poker_trainer
 
@@ -26,91 +21,28 @@ class ReinforcementLearning:
     self.num_players = num_players
     self.num_actions = num_actions
     self.action_id = {"p":0, "b":1}
-    self.player_q_state = self.make_each_player_state_idx(infoSet_dict_player)
     self.kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(num_players=self.num_players)
+    self.max_len_X_bit = (self.num_players + 1) + 2*(self.num_players *2 - 2)
+
+
+  def RL_train_DQN(self, memory, target_player, strategy):
+    pass
 
 
 
-  def make_each_player_state_idx(self, infoSet_dict_player):
-    #Q-state for each player
-    player_q_state = [{} for _ in range(self.num_players)]
-    for player_i, player_i_state in enumerate(infoSet_dict_player):
-      for idx, j in enumerate(player_i_state):
-        player_q_state[player_i][j] = idx
-    return player_q_state
+class DQN(nn.Module):
 
+    def __init__(self, state_num, action_num, hidde_units_num):
+        super(DQN, self).__init__()
+        self.hidden_units_num = hidde_units_num
+        self.fc1 = nn.Linear(state_num, self.hidden_units_num)
+        self.fc2 = nn.Linear(self.hidden_units_num, action_num)
 
-  def Episode_split(self, one_episode):
-    """return list
-    >>> ReinforcementLearning([],2, 2).Episode_split('QKbp')
-    [('Q', 'b', 1, None), ('Kb', 'p', -1, None)]
-    >>> ReinforcementLearning([], 2, 2).Episode_split('KJpbb')
-    [('K', 'p', 0, 'Kpb'), ('Jp', 'b', -2, None), ('Kpb', 'b', 2, None)]
-    """
-    one_episode_split = []
-    action_history = one_episode[self.num_players:]
-    for idx, ai in enumerate(action_history):
-      s = one_episode[idx%self.num_players] + action_history[:idx]
-      a = ai
-      if (idx + self.num_players) <= len(action_history) - 1 :
-        s_prime = one_episode[idx%self.num_players] + action_history[:idx+self.num_players]
-        r = 0
-      else:
-        s_prime = None
-        r = self.kuhn_trainer.Return_payoff_for_terminal_states(one_episode, idx%self.num_players)
+    def forward(self, x):
+        h1 = F.relu(self.fc1(x))
+        output = self.fc2(h1)
+        return output
 
-      one_episode_split.append((s, a, r, s_prime))
-    return one_episode_split
-
-
-  def RL_train(self, memory, target_player, update_strategy, q_value, k, rl_algo):
-    self.alpha = 0.05/ (1+0.003*(k**0.5))
-    self.T = 1 / (1+ 0.02*(k**0.5))
-    self.epsilon = 0.6/((k+1)**0.5)
-
-
-    for one_episode in memory:
-      one_episode_split = self.Episode_split(one_episode)
-      for trainsition in one_episode_split:
-        s, a, r, s_prime = trainsition[0], trainsition[1], trainsition[2], trainsition[3]
-        if (len(s) -1) % self.num_players == target_player:
-          s_idx = self.player_q_state[target_player][s]
-          a_idx = self.action_id[a]
-
-          if s_prime == None:
-            q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r - q_value[s_idx][a_idx])
-          else:
-            s_prime_idx = self.player_q_state[target_player][s_prime]
-            q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r + self.gamma*max(q_value[s_prime_idx]) - q_value[s_idx][a_idx])
-
-
-    state_space = len(self.player_q_state[target_player])
-    action_space = len(self.action_id)
-
-    if rl_algo == "boltzmann":
-      q_value_boltzmann = np.zeros((state_space,action_space))
-      for si in range(state_space):
-        for ai in range(action_space):
-          q_value_boltzmann[si][ai] = math.exp(q_value[si][ai]/self.T)
-
-      for state, idx in self.player_q_state[target_player].items():
-        update_strategy[state] = q_value_boltzmann[self.player_q_state[target_player][state]] / sum(q_value_boltzmann[self.player_q_state[target_player][state]])
-
-
-    elif rl_algo == "epsilon-greedy":
-      for state, idx in self.player_q_state[target_player].items():
-        if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
-          action = np.random.randint(action_space)
-          if action == 0:
-            update_strategy[state] = np.array([1, 0], dtype=float)
-          else:
-            update_strategy[state] = np.array([0, 1], dtype=float)
-
-        else:
-          if q_value[self.player_q_state[target_player][state]][0] > q_value[self.player_q_state[target_player][state]][1]:
-            update_strategy[state] = np.array([1, 0], dtype=float)
-          else:
-            update_strategy[state] = np.array([0, 1], dtype=float)
 
 
 doctest.testmod()
