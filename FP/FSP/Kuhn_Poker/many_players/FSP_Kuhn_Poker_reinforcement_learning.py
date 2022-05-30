@@ -1,6 +1,4 @@
 #ライブラリ
-from calendar import c
-from cmath import exp
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -40,6 +38,7 @@ class ReinforcementLearning:
     return player_q_state
 
 
+
   def Episode_split(self, one_episode):
     """return list
     >>> ReinforcementLearning([],2, 2).Episode_split('QKbp')
@@ -69,6 +68,12 @@ class ReinforcementLearning:
     self.epsilon = 0.6/((k+1)**0.5)
 
 
+    #print(memory, len(memory))
+    #print(random.sample(memory, min(30, len(memory))))
+
+    #replay_sample_list = random.sample(memory, min(30, len(memory)))
+
+    #memory → replay_sample_list
     for one_episode in memory:
       one_episode_split = self.Episode_split(one_episode)
       for trainsition in one_episode_split:

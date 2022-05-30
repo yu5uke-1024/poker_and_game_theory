@@ -123,4 +123,48 @@ class GenerateData:
     return self.one_episode(nextHistory, strategy)
 
 
+  def calculate_optimal_gap_best_response_strategy(self, strategy1, strategy2, target_player):
+    strategy1_player_list = self.strategy_split_player(strategy1)
+    strategy2_player_list = self.strategy_split_player(strategy2)
+    return self.calculate_avg_utility_for_strategy("", 0, 0, [1.0 for _ in range(self.num_players)], strategy1_player_list, strategy2_player_list)
+
+
+  def calculate_avg_utility_for_strategy(self, history, target_player_i, iteration_t, p_list, strategy1_player_list, strategy2_player_list):
+    plays = len(history)
+    player = plays % self.num_players
+
+    if self.kuhn_trainer.whether_terminal_states(history):
+      return self.kuhn_trainer.Return_payoff_for_terminal_states(history, target_player_i)
+
+    elif self.kuhn_trainer.whether_chance_node(history):
+      cards = self.kuhn_trainer.card_distribution(self.num_players)
+      cards_candicates = [list(cards_candicate) for cards_candicate in itertools.permutations(cards)]
+      utility_sum = 0
+      for cards_i in cards_candicates:
+        nextHistory = "".join(cards_i[:self.num_players])
+        utility_sum +=  (1/len(cards_candicates))* self.calculate_avg_utility_for_strategy(nextHistory, target_player_i, iteration_t, p_list, strategy1_player_list, strategy2_player_list)
+      return utility_sum
+
+    infoSet = history[player] + history[self.num_players:]
+
+    if player == target_player_i:
+      strategy = strategy1_player_list[player][infoSet]
+    else:
+      strategy = strategy2_player_list[player][infoSet]
+
+    util_list = np.array([0 for _ in range(self.num_actions)], dtype=float)
+    nodeUtil = 0
+
+    for ai in range(self.num_actions):
+      nextHistory = history + ("p" if ai == 0 else "b")
+
+      p_change = np.array([1 for _ in range(self.num_players)], dtype=float)
+      p_change[player] = strategy[ai]
+
+      util_list[ai] = self.calculate_avg_utility_for_strategy(nextHistory, target_player_i, iteration_t, p_list * p_change, strategy1_player_list, strategy2_player_list)
+
+      nodeUtil += strategy[ai] * util_list[ai]
+
+    return nodeUtil
+
 doctest.testmod()

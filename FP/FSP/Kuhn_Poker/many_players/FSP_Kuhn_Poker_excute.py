@@ -29,8 +29,7 @@ config = dict(
   rl_algo = ["epsilon-greedy", "boltzmann", "dfs"][0],
   sl_algo = ["cnt", "mlp"][0],
   pseudo_code = ["general_FSP", "batch_FSP"][1],
-  wandb_save =  True
-)
+  wandb_save =  True)
 
 
 

@@ -390,8 +390,28 @@ class KuhnTrainer:
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
         self.avg_utility_list[iteration_t] = self.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(self.NUM_PLAYERS)])
 
+        self.optimality_gap = 0
+        self.infoSets_dict = {}
+        for target_player in range(self.NUM_PLAYERS):
+          self.create_infoSets("", target_player, 1.0)
+        self.best_response_strategy_dfs = {}
+        for best_response_player_i in range(self.NUM_PLAYERS):
+          self.calc_best_response_value(self.best_response_strategy_dfs, best_response_player_i, "", 1)
+
+        for player_i in range(self.NUM_PLAYERS):
+          self.optimality_gap += 1/2 * ( GD.calculate_optimal_gap_best_response_strategy(self.best_response_strategy_dfs, self.avg_strategy, player_i)
+           - GD.calculate_optimal_gap_best_response_strategy(self.best_response_strategy, self.avg_strategy, player_i))
+
+        """
+        print("")
+        for i in range(self.NUM_PLAYERS):
+          for ii, jj in zip(RL.player_q_state[i].keys(), self.Q_value[i]):
+            print(ii, jj)
+        print("")
+        """
+
         if wandb_save:
-          wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t]})
+          wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
 
 
     self.show_plot("FSP")
