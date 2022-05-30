@@ -536,13 +536,13 @@ class KuhnTrainer:
 #config
 config = dict(
   algo = ["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"][2],
-  train_iterations = 10**5,
+  train_iterations = 10**6,
   num_players =  2,
   wandb_save = True
 )
 
 if config["wandb_save"]:
-  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="cfr_{}".format(config["algo"]))
+  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="{}".format(config["algo"]))
   wandb.define_metric("exploitability", summary="last")
   wandb.define_metric("avg_utility", summary="last")
 

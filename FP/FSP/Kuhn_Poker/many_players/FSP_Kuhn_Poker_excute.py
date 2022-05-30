@@ -26,15 +26,16 @@ config = dict(
   m= 1,
   memory_size_rl= 30,
   memory_size_sl= 1000,
-  rl_algo = ["epsilon-greedy", "boltzmann", "dfs"][2],
+  rl_algo = ["epsilon-greedy", "boltzmann", "dfs"][0],
   sl_algo = ["cnt", "mlp"][0],
   pseudo_code = ["general_FSP", "batch_FSP"][1],
-  wandb_save =  True)
+  wandb_save =  True
+  )
 
 
 
 if config["wandb_save"]:
-  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="fsp_{}_{}_{}".format(config["rl_algo"], config["sl_algo"], config["pseudo_code"]))
+  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="{}_{}_{}".format(config["rl_algo"], config["sl_algo"], config["pseudo_code"]))
   wandb.config.update(config)
   wandb.define_metric("exploitability", summary="last")
   wandb.define_metric("avg_utility", summary="last")

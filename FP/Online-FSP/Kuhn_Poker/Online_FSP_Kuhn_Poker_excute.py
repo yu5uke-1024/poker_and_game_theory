@@ -32,7 +32,7 @@ config = dict(
 
 
 if config["wandb_save"]:
-  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="online_fsp_{}".format(config["sl_algo"]))
+  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="{}_online_FSP".format(config["sl_algo"]))
   wandb.config.update(config)
   wandb.define_metric("exploitability", summary="last")
   wandb.define_metric("avg_utility", summary="last")
