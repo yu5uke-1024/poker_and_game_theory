@@ -323,6 +323,7 @@ class KuhnTrainer:
         self.M_RL[player].append((s, a, r, s_prime))
         next_transition = [s, a, r, s_prime, other_histroy]
 
+
     if self.sigma_strategy_bit[player] == 0:
       self.M_SL[player].append((s, a))
     if len(self.M_SL[player]) != 0:
@@ -390,7 +391,6 @@ class KuhnTrainer:
       cards = self.card_distribution(self.NUM_PLAYERS)
       random.shuffle(cards)
       history = "".join(cards[:self.NUM_PLAYERS])
-
 
       self.train_one_episode(history, iteration_t)
 
