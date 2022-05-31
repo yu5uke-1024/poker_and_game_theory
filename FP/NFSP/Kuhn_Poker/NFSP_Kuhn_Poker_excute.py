@@ -19,7 +19,7 @@ import NFSP_Kuhn_Poker_trainer
 
 #config
 config = dict(
-  iterations = 10**4,
+  iterations = 10**5,
   num_players = 2,
   eta = 0.1,
   memory_size_rl = 10**3,

@@ -58,39 +58,48 @@ class ReinforcementLearning:
       return
 
     for _ in range(self.config_rl["epochs"]):
+      self.optimizer.zero_grad()
       samples = random.sample(memory, self.config_rl["sampling_num"])
 
       train_states = np.array([])
       train_actions = np.array([])
       train_rewards = np.array([])
       train_next_states = np.array([])
+      train_done = np.array([])
 
       for s, a, r, s_prime in samples:
         s_bit = self.make_state_bit(s)
         a_bit = self.make_action_bit(a)
         s_prime_bit = self.make_state_bit(s_prime)
+        if s_prime == None:
+          done = 1
+        else:
+          done = 0
 
         train_states = np.append(train_states, s_bit)
         train_actions = np.append(train_actions, a_bit)
         train_rewards = np.append(train_rewards, r)
         train_next_states = np.append(train_next_states, s_prime_bit)
+        train_done = np.append(train_done, done)
 
       train_states = torch.from_numpy(train_states).float().reshape(-1,self.num_states)
       train_actions = torch.from_numpy(train_actions).float().reshape(-1,1)
       train_rewards = torch.from_numpy(train_rewards).float().reshape(-1,1)
       train_next_states = torch.from_numpy(train_next_states).float().reshape(-1,self.num_states)
+      train_done = torch.from_numpy(train_done).float().reshape(-1,1)
 
       outputs = self.deep_q_network_target(train_next_states).detach().max(axis=1)[0].unsqueeze(1)
 
 
-      q_targets = train_rewards + self.config_rl["gamma"] * outputs
+      q_targets = train_rewards + (1 - train_done) * self.config_rl["gamma"] * outputs
 
       q_now = self.deep_q_network(train_states)
       q_now = q_now.gather(1, train_actions.type(torch.int64))
 
+
       loss = F.mse_loss(q_targets, q_now)
 
-      self.optimizer.zero_grad()
+
       loss.backward()
       self.optimizer.step()
 
@@ -101,21 +110,22 @@ class ReinforcementLearning:
     #eval
     self.deep_q_network.eval()
     for node_X , _ in update_strategy.items():
-      inputs_eval = torch.from_numpy(self.make_state_bit(node_X)).float().reshape(-1,self.num_states)
-      y = self.deep_q_network.forward(inputs_eval).detach().numpy()
+      if (len(node_X)-1) % self.num_players == target_player :
+        inputs_eval = torch.from_numpy(self.make_state_bit(node_X)).float().reshape(-1,self.num_states)
+        y = self.deep_q_network.forward(inputs_eval).detach().numpy()
 
-      if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
-        action = np.random.randint(self.num_actions)
-        if action == 0:
-          update_strategy[node_X] = np.array([1, 0], dtype=float)
-        else:
-          update_strategy[node_X] = np.array([0, 1], dtype=float)
+        if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
+          action = np.random.randint(self.num_actions)
+          if action == 0:
+            update_strategy[node_X] = np.array([1, 0], dtype=float)
+          else:
+            update_strategy[node_X] = np.array([0, 1], dtype=float)
 
-      else:
-        if 1-y[0][0] > y[0][0]:
-          update_strategy[node_X] = np.array([1, 0], dtype=float)
         else:
-          update_strategy[node_X] = np.array([0, 1], dtype=float)
+          if y[0][0] > y[0][1]:
+            update_strategy[node_X] = np.array([1, 0], dtype=float)
+          else:
+            update_strategy[node_X] = np.array([0, 1], dtype=float)
 
 
 
