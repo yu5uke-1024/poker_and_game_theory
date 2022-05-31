@@ -620,7 +620,7 @@ class LeducTrainer:
     GD = FSP_Leduc_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS, self.infoset_action_player_dict)
 
 
-    for iteration_t in tqdm(range(int(self.train_iterations))):
+    for iteration_t in tqdm(range(1, int(self.train_iterations)+1)):
       if pseudo_code == "batch_FSP":
         GD.generate_data1(self.avg_strategy, n, self.M_RL)
 
@@ -646,7 +646,7 @@ class LeducTrainer:
 
 
       elif pseudo_code == "general_FSP":
-        eta = 1/(iteration_t+2)
+        eta = 1/(iteration_t+1)
         D = GD.generate_data0(self.avg_strategy, self.best_response_strategy, n, m, eta)
 
         for player_i in range(self.NUM_PLAYERS):
@@ -663,7 +663,7 @@ class LeducTrainer:
             SL.SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
 
 
-      if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
+      if iteration_t in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
 
         if wandb_save:

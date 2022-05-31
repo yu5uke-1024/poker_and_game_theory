@@ -375,8 +375,7 @@ class KuhnTrainer:
     self.GD = NFSP_Kuhn_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS)
 
 
-    for iteration_t in tqdm(range(int(self.train_iterations))):
-      self.epsilon = 0.6/((iteration_t+1)**0.5)
+    for iteration_t in tqdm(range(1, int(self.train_iterations)+1)):
 
 
       #0 → epsilon_greedy_q_strategy, 1 → avg_strategy
@@ -396,7 +395,7 @@ class KuhnTrainer:
 
 
 
-      if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
+      if iteration_t in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
         self.avg_utility_list[iteration_t] = self.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(self.NUM_PLAYERS)])
 

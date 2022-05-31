@@ -392,7 +392,7 @@ class KuhnTrainer:
   def train(self, method):
     self.exploitability_list = {}
     self.avg_utility_list = {}
-    for iteration_t in tqdm(range(int(self.train_iterations))):
+    for iteration_t in tqdm(range(1, int(self.train_iterations)+1)):
       for target_player_i in range(self.NUM_PLAYERS):
 
         p_list = np.array([1 for _ in range(self.NUM_PLAYERS)], dtype=float)
@@ -408,7 +408,7 @@ class KuhnTrainer:
           self.outcome_sampling_MCCFR("", target_player_i, iteration_t, p_list, 1)
 
       #calculate expolitability
-      if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
+      if iteration_t in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
         self.avg_utility_list[iteration_t] = self.eval_strategy(target_player_i=0)
 

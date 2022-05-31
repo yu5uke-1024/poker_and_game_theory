@@ -335,7 +335,7 @@ class KuhnTrainer:
     GD = FSP_Kuhn_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS)
 
 
-    for iteration_t in tqdm(range(int(self.train_iterations))):
+    for iteration_t in tqdm(range(1, int(self.train_iterations)+1)):
 
       if pseudo_code == "batch_FSP":
 
@@ -352,6 +352,8 @@ class KuhnTrainer:
           for player_i in range(self.NUM_PLAYERS):
             RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
 
+
+
         GD.generate_data2(self.avg_strategy, self.best_response_strategy, m, self.M_RL, self.M_SL)
 
         for player_i in range(self.NUM_PLAYERS):
@@ -363,7 +365,7 @@ class KuhnTrainer:
 
 
       elif pseudo_code == "general_FSP":
-        eta = 1/(iteration_t+2)
+        eta = 1/(iteration_t+1)
         D = GD.generate_data0(self.avg_strategy, self.best_response_strategy, n, m, eta)
 
         for player_i in range(self.NUM_PLAYERS):
@@ -382,11 +384,13 @@ class KuhnTrainer:
 
           if sl_algo == "cnt":
             SL.SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
+            self.M_SL[player_i] = []
+
           elif sl_algo == "mlp":
             SL.SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
 
 
-      if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
+      if iteration_t in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
         self.avg_utility_list[iteration_t] = self.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(self.NUM_PLAYERS)])
 
@@ -403,16 +407,20 @@ class KuhnTrainer:
           self.optimality_gap += 1/2 * ( GD.calculate_optimal_gap_best_response_strategy(self.best_response_strategy_dfs, self.avg_strategy, player_i)
            - GD.calculate_optimal_gap_best_response_strategy(self.best_response_strategy, self.avg_strategy, player_i))
 
-        """
-        print("")
-        for i in range(self.NUM_PLAYERS):
-          for ii, jj in zip(RL.player_q_state[i].keys(), self.Q_value[i]):
-            print(ii, jj)
-        print("")
-        """
+        #if self.optimality_gap != 0:
+          #print(self.best_response_strategy_dfs)
+          #print(self.best_response_strategy)
+          """
+          print("")
+          for i in range(self.NUM_PLAYERS):
+            for ii, jj in zip(RL.player_q_state[i].keys(), self.Q_value[i]):
+              print(ii, jj)
+          print("")
+          """
 
         if wandb_save:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
+
 
 
     self.show_plot("FSP")

@@ -65,20 +65,27 @@ class ReinforcementLearning:
 
   def RL_train(self, memory, target_player, update_strategy, q_value, k):
     self.alpha = 0.05/ (1+0.003*(k**0.5))
-    self.epsilon = 0.6/((k+1)**0.5)
+    self.epsilon = 0.06/(k**0.5)
+    self.epochs = 1
+    self.sample_num = 30
 
+    for _ in range(self.epochs):
+      if len(memory) <= self.sample_num:
+        return
 
-    for trainsition in memory:
-      s, a, r, s_prime = trainsition[0], trainsition[1], trainsition[2], trainsition[3]
-      if (len(s) -1) % self.num_players == target_player:
-        s_idx = self.player_q_state[target_player][s]
-        a_idx = self.action_id[a]
+      replay_sample_list = random.sample(memory, self.sample_num)
 
-        if s_prime == None:
-          q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r - q_value[s_idx][a_idx])
-        else:
-          s_prime_idx = self.player_q_state[target_player][s_prime]
-          q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r + self.gamma*max(q_value[s_prime_idx]) - q_value[s_idx][a_idx])
+      for trainsition in replay_sample_list:
+        s, a, r, s_prime = trainsition[0], trainsition[1], trainsition[2], trainsition[3]
+        if (len(s) -1) % self.num_players == target_player:
+          s_idx = self.player_q_state[target_player][s]
+          a_idx = self.action_id[a]
+
+          if s_prime == None:
+            q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r - q_value[s_idx][a_idx])
+          else:
+            s_prime_idx = self.player_q_state[target_player][s_prime]
+            q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r + self.gamma*max(q_value[s_prime_idx]) - q_value[s_idx][a_idx])
 
 
     state_space = len(self.player_q_state[target_player])

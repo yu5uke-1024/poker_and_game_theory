@@ -51,7 +51,7 @@ class ReinforcementLearning:
 
     self.deep_q_network.train()
     self.deep_q_network_target.eval()
-    self.epsilon = 0.6/((k+1)**0.5)
+    self.epsilon = 0.06/(k**0.5)
 
     # train
     if len(memory) < self.config_rl["sampling_num"]:

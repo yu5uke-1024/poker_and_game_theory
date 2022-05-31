@@ -80,7 +80,7 @@ class ReinforcementLearning:
   def RL_train(self, memory, target_player, update_strategy, q_value, k, rl_algo):
     self.alpha = 0.05/ (1+0.003*(k**0.5))
     self.T = 1 / (1+ 0.02*(k**0.5))
-    self.epsilon = 0.6/((k+1)**0.5)
+    self.epsilon = 0.6/(k**0.5)
 
 
 
