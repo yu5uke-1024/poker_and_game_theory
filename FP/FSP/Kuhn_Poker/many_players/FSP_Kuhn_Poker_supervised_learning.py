@@ -79,11 +79,10 @@ class SupervisedLearning:
       clf.fit(train_X, train_y)
 
       for node_X , _ in update_strategy.items():
-        node_bit_X = self.make_X(node_X).reshape(-1, self.max_len_X_bit)
-        y = clf.predict_proba(node_bit_X).ravel()
-        update_strategy[node_X] = y
-
-      print(update_strategy)
+        if (len(node_X)-1) % self.num_players == target_player :
+          node_bit_X = self.make_X(node_X).reshape(-1, self.max_len_X_bit)
+          y = clf.predict_proba(node_bit_X).ravel()
+          update_strategy[node_X] = y
 
 
 

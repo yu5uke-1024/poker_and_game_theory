@@ -332,14 +332,16 @@ class KuhnTrainer:
       self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy)
 
 
-    #self.RL.RL_train_DQN(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy)
+    self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
+
+    """
     self.infoSets_dict = {}
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
     self.epsilon_greedy_q_learning_strategy = {}
     for best_response_player_i in range(self.NUM_PLAYERS):
       self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
-
+    """
 
     return next_transition
 
@@ -392,7 +394,6 @@ class KuhnTrainer:
 
       self.train_one_episode(history, iteration_t)
 
-      #print(self.M_SL)
 
 
       if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
@@ -416,7 +417,7 @@ class KuhnTrainer:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
 
 
-    #print(self.N_count)
+
     if wandb_save:
       wandb.save()
 

@@ -10,7 +10,6 @@ from tqdm import tqdm
 import time
 import doctest
 import copy
-from sklearn.neural_network import MLPClassifier
 from collections import deque
 import wandb
 
@@ -23,7 +22,7 @@ config = dict(
   iterations = 10**4,
   num_players = 2,
   eta = 0.1,
-  memory_size_rl = 30,
+  memory_size_rl = 10**3,
   memory_size_sl = 10**4,
   wandb_save = True
 )
@@ -56,7 +55,7 @@ kuhn_trainer.train(
 
 #result
 if not config["wandb_save"]:
-  print("avg_utility", list(kuhn_trainer.exploitability_list.items())[-1])
+  print("avg_utility", list(kuhn_trainer.avg_utility_list.items())[-1])
   print("final_exploitability", list(kuhn_trainer.exploitability_list.items())[-1])
 
 

@@ -5,21 +5,16 @@ import matplotlib.pyplot as plt
 import random
 import itertools
 from collections import defaultdict
-import sys
 from tqdm import tqdm
 import time
 import doctest
 import copy
-from sklearn.neural_network import MLPClassifier
 from collections import deque
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-
-import warnings
-warnings.filterwarnings('ignore')
 
 
 class SupervisedLearning:
@@ -30,24 +25,24 @@ class SupervisedLearning:
 
     self.card_order  = self.make_card_order(self.num_players)
 
-    self.config = dict(
+    self.config_sl = dict(
       hidden_units_num= 64,
       lr = 0.01,
       epochs = 10,
-      sampling_num = 1000
+      sampling_num = 100
     )
 
-    self.sl_network = SL_Network(state_num=self.num_states, hidden_units_num=self.config["hidden_units_num"])
-    self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.config["lr"])
+    self.sl_network = SL_Network(state_num=self.num_states, hidden_units_num=self.config_sl["hidden_units_num"])
+    self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.config_sl["lr"])
     self.loss_fn = nn.BCELoss()
 
 
   def whether_put_memory_i(self, i, d, k):
-    if i <= k:
+    if i < k:
       self.new_memory[i] = d
     else:
       r = random.randint(1, i)
-      if r <= k:
+      if r < k:
         self.new_memory[r] = d
 
 
@@ -60,15 +55,15 @@ class SupervisedLearning:
     return self.new_memory
 
 
-  def SL_learn(self, memory, player, update_strategy):
+  def SL_learn(self, memory, target_player, update_strategy):
 
     #train
     self.sl_network.train()
 
-    for _ in range(self.config["epochs"]):
+    for _ in range(self.config_sl["epochs"]):
       self.optimizer.zero_grad()
 
-      samples = self.reservoir_sampling(memory, self.config["sampling_num"])
+      samples = self.reservoir_sampling(memory, self.config_sl["sampling_num"])
 
       train_X = np.array([])
       train_y = np.array([])
@@ -93,11 +88,14 @@ class SupervisedLearning:
     # eval
     self.sl_network.eval()
     for node_X , _ in update_strategy.items():
-      inputs_eval = torch.from_numpy(self.make_X(node_X)).float().reshape(-1,self.num_states)
-      y = self.sl_network.forward(inputs_eval).detach().numpy()
+      if (len(node_X)-1) % self.num_players == target_player :
+        inputs_eval = torch.from_numpy(self.make_X(node_X)).float().reshape(-1,self.num_states)
+        y = self.sl_network.forward(inputs_eval).detach().numpy()
 
-      #tensor → numpy
-      update_strategy[node_X] = np.array([1-y[0][0], y[0][0]])
+        #tensor → numpy
+        update_strategy[node_X] = np.array([1-y[0][0], y[0][0]])
+
+
 
 
 
@@ -170,10 +168,9 @@ class SL_Network(nn.Module):
 
 
 
-
     def forward(self, x):
         h1 = F.relu(self.fc1(x))
-        output = F.sigmoid(self.fc2(h1))
+        output = torch.sigmoid(self.fc2(h1))
         return output
 
 
