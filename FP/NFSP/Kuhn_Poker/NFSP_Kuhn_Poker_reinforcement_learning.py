@@ -1,4 +1,5 @@
-#ライブラリ
+
+# _________________________________ Library _________________________________
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,40 +12,46 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
-import NFSP_Kuhn_Poker_trainer
+# _________________________________ RL NN class _________________________________
+class DQN(nn.Module):
+
+    def __init__(self, state_num, action_num, hidden_units_num):
+        super(DQN, self).__init__()
+        self.hidden_units_num = hidden_units_num
+        self.fc1 = nn.Linear(state_num, self.hidden_units_num)
+        self.fc2 = nn.Linear(self.hidden_units_num, action_num)
+
+    def forward(self, x):
+        h1 = F.relu(self.fc1(x))
+        output = self.fc2(h1)
+        return output
 
 
-
+# _________________________________ RL class _________________________________
 class ReinforcementLearning:
-  def __init__(self, infoSet_dict_player, num_players, num_actions):
-    self.gamma = 1
-    self.num_players = num_players
-    self.num_actions = num_actions
+  def __init__(self, num_players, hidden_units_num, lr, epochs, sampling_num, gamma, tau, kuhn_trainer_for_rl):
+    self.NUM_PLAYERS = num_players
+    self.num_actions = 2
     self.action_id = {"p":0, "b":1}
-    self.kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(num_players=self.num_players)
-    self.num_states = (self.num_players + 1) + 2*(self.num_players *2 - 2)
+    self.STATE_BIT_LEN = (self.NUM_PLAYERS + 1) + 2*(self.NUM_PLAYERS *2 - 2)
+    self.hidden_units_num = hidden_units_num
+    self.lr = lr
+    self.epochs = epochs
+    self.sampling_num = sampling_num
+    self.gamma = gamma
+    self.tau = tau
+    self.card_rank  = kuhn_trainer_for_rl.card_rank
 
-    self.card_order  = self.make_card_order(self.num_players)
 
-    self.config_rl = dict(
-      hidden_units_num= 64,
-      lr = 0.1,
-      epochs = 10,
-      sampling_num = 30,
-      gamma = 1.0,
-      tau = 0.1
-    )
-
-    self.deep_q_network = DQN(state_num = self.num_states, action_num = self.num_actions, hidden_units_num = self.config_rl["hidden_units_num"])
-    self.deep_q_network_target = DQN(state_num = self.num_states, action_num = self.num_actions, hidden_units_num = self.config_rl["hidden_units_num"])
+    self.deep_q_network = DQN(state_num = self.STATE_BIT_LEN, action_num = self.num_actions, hidden_units_num = self.hidden_units_num)
+    self.deep_q_network_target = DQN(state_num = self.STATE_BIT_LEN, action_num = self.num_actions, hidden_units_num = self.hidden_units_num)
 
 
     for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
         target_param.data.copy_(param.data)
 
 
-
-    self.optimizer = optim.SGD(self.deep_q_network.parameters(), lr=self.config_rl["lr"])
+    self.optimizer = optim.SGD(self.deep_q_network.parameters(), lr=self.lr)
 
 
   def RL_learn(self, memory, target_player, update_strategy, k):
@@ -55,12 +62,12 @@ class ReinforcementLearning:
     self.update_frequency = 100
 
     # train
-    if len(memory) < self.config_rl["sampling_num"]:
+    if len(memory) < self.sampling_num:
       return
 
-    for _ in range(self.config_rl["epochs"]):
+    for _ in range(self.epochs):
       self.optimizer.zero_grad()
-      samples = random.sample(memory, self.config_rl["sampling_num"])
+      samples = random.sample(memory, self.sampling_num)
 
       train_states = np.array([])
       train_actions = np.array([])
@@ -83,16 +90,16 @@ class ReinforcementLearning:
         train_next_states = np.append(train_next_states, s_prime_bit)
         train_done = np.append(train_done, done)
 
-      train_states = torch.from_numpy(train_states).float().reshape(-1,self.num_states)
+      train_states = torch.from_numpy(train_states).float().reshape(-1,self.STATE_BIT_LEN)
       train_actions = torch.from_numpy(train_actions).float().reshape(-1,1)
       train_rewards = torch.from_numpy(train_rewards).float().reshape(-1,1)
-      train_next_states = torch.from_numpy(train_next_states).float().reshape(-1,self.num_states)
+      train_next_states = torch.from_numpy(train_next_states).float().reshape(-1,self.STATE_BIT_LEN)
       train_done = torch.from_numpy(train_done).float().reshape(-1,1)
 
       outputs = self.deep_q_network_target(train_next_states).detach().max(axis=1)[0].unsqueeze(1)
 
 
-      q_targets = train_rewards + (1 - train_done) * self.config_rl["gamma"] * outputs
+      q_targets = train_rewards + (1 - train_done) * self.gamma * outputs
 
       q_now = self.deep_q_network(train_states)
       q_now = q_now.gather(1, train_actions.type(torch.int64))
@@ -113,8 +120,8 @@ class ReinforcementLearning:
     #eval
     self.deep_q_network.eval()
     for node_X , _ in update_strategy.items():
-      if (len(node_X)-1) % self.num_players == target_player :
-        inputs_eval = torch.from_numpy(self.make_state_bit(node_X)).float().reshape(-1,self.num_states)
+      if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
+        inputs_eval = torch.from_numpy(self.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
         y = self.deep_q_network.forward(inputs_eval).detach().numpy()
 
         if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
@@ -132,26 +139,12 @@ class ReinforcementLearning:
 
 
 
-
-
   def parameter_update(self):
     for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
       target_param.data.copy_(
-          self.config_rl["tau"] * param.data + (1.0 - self.config_rl["tau"]) * target_param.data)
+          self.tau * param.data + (1.0 - self.tau) * target_param.data)
 
 
-
-  def make_card_order(self, num_players):
-    """return dict
-    >>> SupervisedLearning().make_card_order(2) == {'J':0, 'Q':1, 'K':2}
-    True
-    """
-    card = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
-    card_order = {}
-    for i in range(num_players+1):
-      card_order[card[11-num_players+i]] =  i
-
-    return card_order
 
 
   def make_action_bit(self, y):
@@ -164,17 +157,17 @@ class ReinforcementLearning:
 
   def make_state_bit(self, X):
 
-    X_bit = np.array([0 for _ in range(self.num_states)])
+    X_bit = np.array([0 for _ in range(self.STATE_BIT_LEN)])
 
     if X != None:
 
-      X_bit[self.card_order[X[0]]] = 1
+      X_bit[self.card_rank[X[0]]] = 1
 
       for idx, Xi in enumerate(X[1:]):
         if Xi == "p":
-          X_bit[(self.num_players+1) + 2*idx] = 1
+          X_bit[(self.NUM_PLAYERS+1) + 2*idx] = 1
         else:
-          X_bit[(self.num_players+1) + 2*idx +1] = 1
+          X_bit[(self.NUM_PLAYERS+1) + 2*idx +1] = 1
 
     return X_bit
 
@@ -191,18 +184,7 @@ class ReinforcementLearning:
 
 
 
-class DQN(nn.Module):
 
-    def __init__(self, state_num, action_num, hidden_units_num):
-        super(DQN, self).__init__()
-        self.hidden_units_num = hidden_units_num
-        self.fc1 = nn.Linear(state_num, self.hidden_units_num)
-        self.fc2 = nn.Linear(self.hidden_units_num, action_num)
-
-    def forward(self, x):
-        h1 = F.relu(self.fc1(x))
-        output = self.fc2(h1)
-        return output
 
 
 

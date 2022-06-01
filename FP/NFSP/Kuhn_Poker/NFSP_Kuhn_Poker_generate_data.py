@@ -1,26 +1,26 @@
-#Library
+
+# _________________________________ Library _________________________________
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import random
 import itertools
 from collections import defaultdict
-import sys
 from tqdm import tqdm
 import time
 import doctest
 import copy
-from sklearn.neural_network import MLPClassifier
 from collections import deque
 
-import NFSP_Kuhn_Poker_trainer
 
+
+# _________________________________ GD class _________________________________
 
 class GenerateData:
-  def __init__(self, num_players, num_actions):
-    self.num_players = num_players
-    self.num_actions = num_actions
-    self.kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(num_players=self.num_players)
+  def __init__(self, num_players, kuhn_trainer_for_gd):
+    self.NUM_PLAYERS = num_players
+    self.num_actions = 2
+    self.kuhn_trainer = kuhn_trainer_for_gd
 
 
   def generate_data0(self, pi_strategy, beta_strategy, n, m, eta):
@@ -38,8 +38,8 @@ class GenerateData:
       D_history.append(ni_episode)
 
 
-    D_history_list = [[] for _ in range(self.num_players)]
-    for player_i in range(self.num_players):
+    D_history_list = [[] for _ in range(self.NUM_PLAYERS)]
+    for player_i in range(self.NUM_PLAYERS):
       for mi in range(m):
         mi_episode = self.one_episode("", self.strategy_uion(beta_strategy_player_list, sigma_strategy_player_list, player_i))
         D_history_list[player_i].append(mi_episode)
@@ -55,7 +55,7 @@ class GenerateData:
       ni_episode = self.one_episode("", self.strategy_uion(pi_strategy_player_list, pi_strategy_player_list, 0))
       D_history.append(ni_episode)
 
-    for player_i in range(self.num_players):
+    for player_i in range(self.NUM_PLAYERS):
       M_rl[player_i].extend(D_history)
 
 
@@ -64,7 +64,7 @@ class GenerateData:
     pi_strategy_player_list = self.strategy_split_player(pi_strategy)
     beta_strategy_player_list = self.strategy_split_player(beta_strategy)
 
-    for player_i in range(self.num_players):
+    for player_i in range(self.NUM_PLAYERS):
       for mi in range(m):
         mi_episode = self.one_episode("", self.strategy_uion(beta_strategy_player_list, pi_strategy_player_list, player_i))
         M_rl[player_i].extend([mi_episode])
@@ -77,10 +77,10 @@ class GenerateData:
     >>> GenerateData(2, 2).strategy_split_player({'J':[1,2], 'Jp':[2,3]}) == [{'J':[1,2]}, {'Jp':[2,3]}]
     True
     """
-    strategy_player_list = [{} for _ in range(self.num_players)]
+    strategy_player_list = [{} for _ in range(self.NUM_PLAYERS)]
 
     for infoset, avg_strategy in strategy.items():
-        player = (len(infoset)-1) % self.num_players
+        player = (len(infoset)-1) % self.NUM_PLAYERS
         strategy_player_list[player][infoset] = avg_strategy
     return strategy_player_list
 
@@ -105,18 +105,18 @@ class GenerateData:
 
   def one_episode(self, history, strategy):
     plays = len(history)
-    player = plays % self.num_players
+    player = plays % self.NUM_PLAYERS
 
     if self.kuhn_trainer.whether_terminal_states(history):
       return history
 
     elif self.kuhn_trainer.whether_chance_node(history):
-      cards = self.kuhn_trainer.card_distribution(self.num_players)
+      cards = self.kuhn_trainer.card_distribution(self.NUM_PLAYERS)
       random.shuffle(cards)
-      nextHistory = "".join(cards[:self.num_players])
+      nextHistory = "".join(cards[:self.NUM_PLAYERS])
       return self.one_episode(nextHistory, strategy)
 
-    infoSet = history[player] + history[self.num_players:]
+    infoSet = history[player] + history[self.NUM_PLAYERS:]
 
     sampling_action = np.random.choice(list(range(self.num_actions)), p=strategy[infoSet])
     nextHistory = history + ("p" if sampling_action == 0 else "b")
@@ -126,26 +126,26 @@ class GenerateData:
   def calculate_optimal_gap_best_response_strategy(self, strategy1, strategy2, target_player):
     strategy1_player_list = self.strategy_split_player(strategy1)
     strategy2_player_list = self.strategy_split_player(strategy2)
-    return self.calculate_avg_utility_for_strategy("", 0, 0, [1.0 for _ in range(self.num_players)], strategy1_player_list, strategy2_player_list)
+    return self.calculate_avg_utility_for_strategy("", 0, 0, [1.0 for _ in range(self.NUM_PLAYERS)], strategy1_player_list, strategy2_player_list)
 
 
   def calculate_avg_utility_for_strategy(self, history, target_player_i, iteration_t, p_list, strategy1_player_list, strategy2_player_list):
     plays = len(history)
-    player = plays % self.num_players
+    player = plays % self.NUM_PLAYERS
 
     if self.kuhn_trainer.whether_terminal_states(history):
       return self.kuhn_trainer.Return_payoff_for_terminal_states(history, target_player_i)
 
     elif self.kuhn_trainer.whether_chance_node(history):
-      cards = self.kuhn_trainer.card_distribution(self.num_players)
+      cards = self.kuhn_trainer.card_distribution(self.NUM_PLAYERS)
       cards_candicates = [list(cards_candicate) for cards_candicate in itertools.permutations(cards)]
       utility_sum = 0
       for cards_i in cards_candicates:
-        nextHistory = "".join(cards_i[:self.num_players])
+        nextHistory = "".join(cards_i[:self.NUM_PLAYERS])
         utility_sum +=  (1/len(cards_candicates))* self.calculate_avg_utility_for_strategy(nextHistory, target_player_i, iteration_t, p_list, strategy1_player_list, strategy2_player_list)
       return utility_sum
 
-    infoSet = history[player] + history[self.num_players:]
+    infoSet = history[player] + history[self.NUM_PLAYERS:]
 
     if player == target_player_i:
       strategy = strategy1_player_list[player][infoSet]
@@ -158,7 +158,7 @@ class GenerateData:
     for ai in range(self.num_actions):
       nextHistory = history + ("p" if ai == 0 else "b")
 
-      p_change = np.array([1 for _ in range(self.num_players)], dtype=float)
+      p_change = np.array([1 for _ in range(self.NUM_PLAYERS)], dtype=float)
       p_change[player] = strategy[ai]
 
       util_list[ai] = self.calculate_avg_utility_for_strategy(nextHistory, target_player_i, iteration_t, p_list * p_change, strategy1_player_list, strategy2_player_list)

@@ -1,30 +1,52 @@
-#Library
+
+# _________________________________ Library _________________________________
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import random
 import itertools
-from collections import defaultdict
-import sys
-from tqdm import tqdm
 import time
 import doctest
 import copy
-from collections import deque
 import wandb
 
+from collections import defaultdict
+from tqdm import tqdm
+from collections import deque
+
 import NFSP_Kuhn_Poker_trainer
+import NFSP_Kuhn_Poker_supervised_learning
+import NFSP_Kuhn_Poker_reinforcement_learning
+import NFSP_Kuhn_Poker_generate_data
 
 
+# _________________________________ config _________________________________
 
-#config
 config = dict(
-  iterations = 10**5,
+  iterations = 10**4,
   num_players = 2,
+  wandb_save = True,
+
+
+  #train
   eta = 0.1,
   memory_size_rl = 10**3,
   memory_size_sl = 10**3,
-  wandb_save = True
+
+  #sl
+  sl_hidden_units_num= 64,
+  sl_lr = 0.01,
+  sl_epochs = 10,
+  sl_sampling_num = 100,
+
+  #rl
+  rl_hidden_units_num= 64,
+  rl_lr = 0.1,
+  rl_epochs = 10,
+  rl_sampling_num = 30,
+  rl_gamma = 1.0,
+  rl_tau = 0.1
 )
 
 
@@ -36,24 +58,58 @@ if config["wandb_save"]:
   wandb.define_metric("avg_utility", summary="last")
 
 
-#train
+# _________________________________ train _________________________________
 
 kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(
   train_iterations = config["iterations"],
-  num_players= config["num_players"]
+  num_players= config["num_players"],
+  wandb_save = config["wandb_save"]
   )
+
+
+kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
+  num_players= config["num_players"],
+  hidden_units_num = config["rl_hidden_units_num"],
+  lr = config["rl_lr"],
+  epochs = config["rl_epochs"],
+  sampling_num = config["rl_sampling_num"],
+  gamma = config["rl_gamma"],
+  tau = config["rl_tau"],
+  kuhn_trainer_for_rl = kuhn_trainer
+  )
+
+
+kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
+  num_players= config["num_players"],
+  hidden_units_num= config["sl_hidden_units_num"],
+  lr = config["sl_lr"],
+  epochs = config["sl_epochs"],
+  sampling_num = config["sl_sampling_num"],
+  kuhn_trainer_for_sl = kuhn_trainer
+)
+
+
+
+kuhn_GD = NFSP_Kuhn_Poker_generate_data.GenerateData(
+  num_players= config["num_players"],
+  kuhn_trainer_for_gd= kuhn_trainer)
+
+
 
 
 kuhn_trainer.train(
   eta = config["eta"],
   memory_size_rl = config["memory_size_rl"],
   memory_size_sl = config["memory_size_sl"],
-  wandb_save = config["wandb_save"],
+
+  rl_module= kuhn_RL,
+  sl_module= kuhn_SL,
+  gd_module= kuhn_GD
   )
 
 
+# _________________________________ result _________________________________
 
-#result
 if not config["wandb_save"]:
   print("avg_utility", list(kuhn_trainer.avg_utility_list.items())[-1])
   print("final_exploitability", list(kuhn_trainer.exploitability_list.items())[-1])

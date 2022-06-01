@@ -1,4 +1,5 @@
-#ライブラリ
+
+# _________________________________ Library _________________________________
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -16,25 +17,83 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
+# _________________________________ SL NN class _________________________________
+class SL_Network(nn.Module):
+    def __init__(self, state_num, hidden_units_num):
+        super(SL_Network, self).__init__()
+        self.state_num = state_num
+        self.hidden_units_num = hidden_units_num
 
+        self.fc1 = nn.Linear(self.state_num, self.hidden_units_num)
+        self.fc2 = nn.Linear(self.hidden_units_num, 1)
+
+
+    def forward(self, x):
+        h1 = F.relu(self.fc1(x))
+        output = torch.sigmoid(self.fc2(h1))
+        return output
+
+
+# _________________________________ SL class _________________________________
 class SupervisedLearning:
-  def __init__(self, num_players=2, num_actions=2,):
-    self.num_players = num_players
-    self.num_actions = num_actions
-    self.num_states = (self.num_players + 1) + 2*(self.num_players *2 - 2)
+  def __init__(self, num_players, hidden_units_num, lr, epochs, sampling_num, kuhn_trainer_for_sl):
 
-    self.card_order  = self.make_card_order(self.num_players)
+    self.NUM_PLAYERS = num_players
+    self.STATE_BIN_LEN = (self.NUM_PLAYERS + 1) + 2*(self.NUM_PLAYERS *2 - 2)
+    self.hidden_units_num = hidden_units_num
+    self.lr = lr
+    self.epochs = epochs
+    self.sampling_num = sampling_num
 
-    self.config_sl = dict(
-      hidden_units_num= 64,
-      lr = 0.01,
-      epochs = 10,
-      sampling_num = 100
-    )
+    self.card_rank  = kuhn_trainer_for_sl.card_rank
 
-    self.sl_network = SL_Network(state_num=self.num_states, hidden_units_num=self.config_sl["hidden_units_num"])
-    self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.config_sl["lr"])
+
+    self.sl_network = SL_Network(state_num=self.STATE_BIN_LEN, hidden_units_num=self.hidden_units_num)
+    self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.lr)
     self.loss_fn = nn.BCELoss()
+
+
+
+  def SL_learn(self, memory, target_player, update_strategy):
+
+    #train
+    self.sl_network.train()
+
+    for _ in range(self.epochs):
+      self.optimizer.zero_grad()
+
+      samples = self.reservoir_sampling(memory, self.sampling_num)
+
+      train_X = np.array([])
+      train_y = np.array([])
+      for one_s_a_set in samples:
+        if one_s_a_set is not None:
+          train_i = self.From_episode_to_bit([one_s_a_set])
+          train_X = np.append(train_X, train_i[0])
+          train_y = np.append(train_y, train_i[1])
+
+
+      inputs = torch.from_numpy(train_X).float().reshape(-1,self.STATE_BIN_LEN)
+      targets = torch.from_numpy(train_y).float().reshape(-1,1)
+
+      outputs = self.sl_network.forward(inputs).reshape(-1,1)
+
+      loss = self.loss_fn(outputs, targets)
+      loss.backward()
+      self.optimizer.step()
+
+
+
+    # eval
+    self.sl_network.eval()
+    for node_X , _ in update_strategy.items():
+      if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
+        inputs_eval = torch.from_numpy(self.make_X(node_X)).float().reshape(-1,self.STATE_BIN_LEN)
+        y = self.sl_network.forward(inputs_eval).detach().numpy()
+
+        #tensor → numpy
+        update_strategy[node_X] = np.array([1-y[0][0], y[0][0]])
+
 
 
   def whether_put_memory_i(self, i, d, k):
@@ -55,61 +114,6 @@ class SupervisedLearning:
     return self.new_memory
 
 
-  def SL_learn(self, memory, target_player, update_strategy):
-
-    #train
-    self.sl_network.train()
-
-    for _ in range(self.config_sl["epochs"]):
-      self.optimizer.zero_grad()
-
-      samples = self.reservoir_sampling(memory, self.config_sl["sampling_num"])
-
-      train_X = np.array([])
-      train_y = np.array([])
-      for one_s_a_set in samples:
-        if one_s_a_set is not None:
-          train_i = self.From_episode_to_bit([one_s_a_set])
-          train_X = np.append(train_X, train_i[0])
-          train_y = np.append(train_y, train_i[1])
-
-
-      inputs = torch.from_numpy(train_X).float().reshape(-1,self.num_states)
-      targets = torch.from_numpy(train_y).float().reshape(-1,1)
-
-      outputs = self.sl_network.forward(inputs).reshape(-1,1)
-
-      loss = self.loss_fn(outputs, targets)
-      loss.backward()
-      self.optimizer.step()
-
-
-
-    # eval
-    self.sl_network.eval()
-    for node_X , _ in update_strategy.items():
-      if (len(node_X)-1) % self.num_players == target_player :
-        inputs_eval = torch.from_numpy(self.make_X(node_X)).float().reshape(-1,self.num_states)
-        y = self.sl_network.forward(inputs_eval).detach().numpy()
-
-        #tensor → numpy
-        update_strategy[node_X] = np.array([1-y[0][0], y[0][0]])
-
-
-
-
-
-  def make_card_order(self, num_players):
-    """return dict
-    >>> SupervisedLearning().make_card_order(2) == {'J':0, 'Q':1, 'K':2}
-    True
-    """
-    card = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
-    card_order = {}
-    for i in range(num_players+1):
-      card_order[card[11-num_players+i]] =  i
-
-    return card_order
 
 
   def From_episode_to_bit(self, one_s_a_set):
@@ -123,6 +127,7 @@ class SupervisedLearning:
 
     return (X_bit, y_bit)
 
+
   def make_y(self, y):
     if y == "p":
       y_bit = np.array([0])
@@ -130,16 +135,17 @@ class SupervisedLearning:
       y_bit = np.array([1])
     return y_bit
 
+
   def make_X(self, X):
 
-    X_bit = np.array([0 for _ in range(self.num_states)])
-    X_bit[self.card_order[X[0]]] = 1
+    X_bit = np.array([0 for _ in range(self.STATE_BIN_LEN)])
+    X_bit[self.card_rank[X[0]]] = 1
 
     for idx, Xi in enumerate(X[1:]):
       if Xi == "p":
-        X_bit[(self.num_players+1) + 2*idx] = 1
+        X_bit[(self.NUM_PLAYERS+1) + 2*idx] = 1
       else:
-        X_bit[(self.num_players+1) + 2*idx +1] = 1
+        X_bit[(self.NUM_PLAYERS+1) + 2*idx +1] = 1
 
     return X_bit
 
@@ -152,27 +158,6 @@ class SupervisedLearning:
     elif X0 == "K":
       X_bit[2] = 1
     return X_bit
-
-
-
-
-class SL_Network(nn.Module):
-    def __init__(self, state_num, hidden_units_num):
-
-        super(SL_Network, self).__init__()
-        self.state_num = state_num
-
-        self.hidden_units_num = hidden_units_num
-        self.fc1 = nn.Linear(self.state_num, self.hidden_units_num)
-        self.fc2 = nn.Linear(self.hidden_units_num, 1)
-
-
-
-    def forward(self, x):
-        h1 = F.relu(self.fc1(x))
-        output = torch.sigmoid(self.fc2(h1))
-        return output
-
 
 
 doctest.testmod()
