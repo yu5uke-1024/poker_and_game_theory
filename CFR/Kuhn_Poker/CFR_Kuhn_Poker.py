@@ -535,7 +535,7 @@ class KuhnTrainer:
 
 #config
 config = dict(
-  algo = ["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"][2],
+  algo = ["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"][3],
   train_iterations = 10**6,
   num_players =  2,
   wandb_save = True

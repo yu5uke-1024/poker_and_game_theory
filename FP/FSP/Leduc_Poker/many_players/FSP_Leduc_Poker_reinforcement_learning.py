@@ -81,38 +81,37 @@ class ReinforcementLearning:
     self.alpha = 0.05/ (1+0.003*(k**0.5))
     self.T = 1 / (1+ 0.02*(k**0.5))
     self.epsilon = 0.6/(k**0.5)
+    self.epochs = 1
+    self.sample_num = 30
 
+    for _ in range(self.epochs):
+      if len(memory) <= self.sample_num:
+        return
 
+      replay_sample_list = random.sample(memory, self.sample_num)
 
-    for one_episode in memory:
+      for one_episode in replay_sample_list:
 
-      #print("")
-      #print(one_episode, target_player)
+        one_episode_split = self.Episode_split(one_episode)
+        for trainsition in one_episode_split:
+          s, a, r, s_prime = trainsition[0], trainsition[1], trainsition[2], trainsition[3]
+          if self.infoset_action_player_dict[s] == target_player :
+            s_idx = self.player_q_state[target_player][s]
+            a_idx = self.ACTION_DICT_verse[a]
 
-      one_episode_split = self.Episode_split(one_episode)
-      for trainsition in one_episode_split:
-        s, a, r, s_prime = trainsition[0], trainsition[1], trainsition[2], trainsition[3]
-        if self.infoset_action_player_dict[s] == target_player :
-          s_idx = self.player_q_state[target_player][s]
-          a_idx = self.ACTION_DICT_verse[a]
+            if s_prime == None:
+              q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r - q_value[s_idx][a_idx])
 
-          if s_prime == None:
-            #print("before:", s, a, q_value[s_idx][a_idx], r, s_prime)
-            q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r - q_value[s_idx][a_idx])
+            else:
+              s_prime_idx = self.player_q_state[target_player][s_prime]
 
-          else:
-            s_prime_idx = self.player_q_state[target_player][s_prime]
+              q_value_s__prime_max = q_value[s_prime_idx][self.node_possible_action[s_prime][0]]
+              for ai in self.node_possible_action[s_prime]:
+                if q_value_s__prime_max <= q_value[s_prime_idx][ai]:
+                  q_value_s__prime_max = q_value[s_prime_idx][ai]
 
-            q_value_s__prime_max = q_value[s_prime_idx][self.node_possible_action[s_prime][0]]
-            for ai in self.node_possible_action[s_prime]:
-              if q_value_s__prime_max <= q_value[s_prime_idx][ai]:
-                q_value_s__prime_max = q_value[s_prime_idx][ai]
+              q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r + self.gamma*q_value_s__prime_max- q_value[s_idx][a_idx])
 
-            #print("before:", s, a, q_value[s_idx][a_idx], r, s_prime, q_value[s_prime_idx], q_value_s__prime_max)
-
-            q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r + self.gamma*q_value_s__prime_max- q_value[s_idx][a_idx])
-
-          #print("after:", s, a, q_value[s_idx][a_idx])
 
 
 

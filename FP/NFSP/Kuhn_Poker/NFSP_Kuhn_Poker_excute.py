@@ -23,7 +23,7 @@ config = dict(
   num_players = 2,
   eta = 0.1,
   memory_size_rl = 10**3,
-  memory_size_sl = 10**4,
+  memory_size_sl = 10**3,
   wandb_save = True
 )
 

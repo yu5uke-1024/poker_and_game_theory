@@ -624,14 +624,16 @@ class LeducTrainer:
       if pseudo_code == "batch_FSP":
         GD.generate_data1(self.avg_strategy, n, self.M_RL)
 
-        #for target_player in range(self.NUM_PLAYERS):
-        #  self.create_infoSets("", target_player, 1.0)
-        #self.best_response_strategy = {}
-        #for best_response_player_i in range(self.NUM_PLAYERS):
-        #    self.calc_best_response_value(self.best_response_strategy, best_response_player_i, "", 1)
-
-        for player_i in range(self.NUM_PLAYERS):
-          RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
+        if rl_algo == "dfs":
+                self.infoSets_dict = {}
+                for target_player in range(self.NUM_PLAYERS):
+                  self.create_infoSets("", target_player, 1.0)
+                self.best_response_strategy = {}
+                for best_response_player_i in range(self.NUM_PLAYERS):
+                  self.calc_best_response_value(self.best_response_strategy, best_response_player_i, "", 1)
+        else:
+          for player_i in range(self.NUM_PLAYERS):
+            RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
 
 
 
@@ -653,8 +655,15 @@ class LeducTrainer:
           self.M_SL[player_i].extend(D[player_i])
           self.M_RL[player_i].extend(D[player_i])
 
-
-          RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
+          if rl_algo == "dfs":
+                self.infoSets_dict = {}
+                for target_player in range(self.NUM_PLAYERS):
+                  self.create_infoSets("", target_player, 1.0)
+                self.best_response_strategy = {}
+                for best_response_player_i in range(self.NUM_PLAYERS):
+                  self.calc_best_response_value(self.best_response_strategy, best_response_player_i, "", 1)
+          else:
+            RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
 
 
           if sl_algo == "cnt":

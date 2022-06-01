@@ -646,7 +646,7 @@ class LeducTrainer:
   #KuhnTrainer main method
   def train(self, method):
     self.exploitability_list = {}
-    for iteration_t in tqdm(range(int(self.train_iterations))):
+    for iteration_t in tqdm(range(1, int(self.train_iterations)+1)):
       for target_player_i in range(self.NUM_PLAYERS):
 
         p_list = np.array([1 for _ in range(self.NUM_PLAYERS)], dtype=float)
@@ -662,25 +662,13 @@ class LeducTrainer:
           self.outcome_sampling_MCCFR("", target_player_i, iteration_t, p_list, 1)
 
       #calculate expolitability
-      if iteration_t in [int(j)-1 for j in np.logspace(1, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
+      if iteration_t in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
-        if wandb_save:
+        if config["wandb_save"]:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
 
-    self.show_plot(method)
 
 
-
-  def show_plot(self, method):
-    plt.scatter(list(self.exploitability_list.keys()), list(self.exploitability_list.values()), label=method)
-    plt.plot(list(self.exploitability_list.keys()), list(self.exploitability_list.values()))
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.xlabel("iterations")
-    plt.ylabel("exploitability")
-    plt.legend(loc = "lower left")
-    if wandb_save:
-      wandb.save()
 
 
   # evaluate average strategy
@@ -831,21 +819,25 @@ class LeducTrainer:
 
 
 #config
-algorithm_candicates = ["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"]
-algo = algorithm_candicates[3]
-train_iterations = 10**6
-num_players =  2
-wandb_save = True
+config = dict(
+  algo = ["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"][1] ,
+  train_iterations = 10**6,
+  num_players =  2,
+  wandb_save = True
+)
 
-if wandb_save:
-  wandb.init(project="Leduc_Poker_{}players".format(num_players), name="cfr_{}".format(algo))
+if config["wandb_save"]:
+  wandb.init(project="Leduc_Poker_{}players".format(config["num_players"]), name="cfr_{}".format(config["algo"]))
+  wandb.define_metric("exploitability", summary="last")
+  wandb.define_metric("avg_utility", summary="last")
 
 
 #train
-leduc_trainer = LeducTrainer(train_iterations=train_iterations, num_players=num_players)
-leduc_trainer.train(algo)
+leduc_trainer = LeducTrainer(train_iterations=config["train_iterations"], num_players=config["num_players"])
+leduc_trainer.train(config["algo"])
 
-print("avg util:", leduc_trainer.eval_strategy(0))
+if not config["wandb_save"]:
+  print("avg util:", leduc_trainer.eval_strategy(0))
 
 
 pd.set_option('display.max_rows', None)
@@ -855,7 +847,14 @@ for key, value in sorted(leduc_trainer.nodeMap.items()):
 
 df = pd.DataFrame(result_dict.values(), index=result_dict.keys(), columns=["Fold", "Call", "Raise"])
 df.index.name = "Node"
-print(df)
+
+if config["wandb_save"]:
+  tbl = wandb.Table(data=df)
+  tbl.add_column("Node", [i for i in df.index])
+  wandb.log({"table:":tbl})
+  wandb.save()
+else:
+  print(df)
 
 
 # calculate random strategy_profile exploitability

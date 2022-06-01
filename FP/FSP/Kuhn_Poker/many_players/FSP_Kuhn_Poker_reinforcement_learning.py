@@ -25,7 +25,10 @@ class ReinforcementLearning:
     self.num_actions = num_actions
     self.action_id = {"p":0, "b":1}
     self.player_q_state = self.make_each_player_state_idx(infoSet_dict_player)
+    #[{'J': 0, 'Jpb': 1, 'Q': 2, 'Qpb': 3, 'K': 4, 'Kpb': 5}, {'Qp': 0, 'Qb': 1, 'Kp': 2, 'Kb': 3, 'Jp': 4, 'Jb': 5}]
+
     self.kuhn_trainer = FSP_Kuhn_Poker_trainer.KuhnTrainer(num_players=self.num_players)
+
 
 
 
@@ -69,13 +72,13 @@ class ReinforcementLearning:
     self.epochs = 1
     self.sample_num = 30
 
+
     for _ in range(self.epochs):
       if len(memory) <= self.sample_num:
         return
 
       replay_sample_list = random.sample(memory, self.sample_num)
 
-      #memory → replay_sample_list
       for one_episode in replay_sample_list:
         one_episode_split = self.Episode_split(one_episode)
         for trainsition in one_episode_split:
@@ -89,6 +92,7 @@ class ReinforcementLearning:
             else:
               s_prime_idx = self.player_q_state[target_player][s_prime]
               q_value[s_idx][a_idx] = q_value[s_idx][a_idx]  + self.alpha*(r + self.gamma*max(q_value[s_prime_idx]) - q_value[s_idx][a_idx])
+
 
 
     state_space = len(self.player_q_state[target_player])
