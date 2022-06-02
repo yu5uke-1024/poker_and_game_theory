@@ -1,11 +1,13 @@
 
 # _________________________________ Library _________________________________
+import imp
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import random
 import doctest
 from collections import deque
+import wandb
 
 import torch
 import torch.nn as nn
@@ -29,7 +31,8 @@ class DQN(nn.Module):
 
 # _________________________________ RL class _________________________________
 class ReinforcementLearning:
-  def __init__(self, num_players, hidden_units_num, lr, epochs, sampling_num, gamma, tau, kuhn_trainer_for_rl):
+  def __init__(self, train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, gamma, tau, update_frequency, kuhn_trainer_for_rl):
+    self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
     self.num_actions = 2
     self.action_id = {"p":0, "b":1}
@@ -40,7 +43,9 @@ class ReinforcementLearning:
     self.sampling_num = sampling_num
     self.gamma = gamma
     self.tau = tau
-    self.card_rank  = kuhn_trainer_for_rl.card_rank
+    self.update_frequency = update_frequency
+    self.kuhn_trainer = kuhn_trainer_for_rl
+    self.card_rank  = self.kuhn_trainer.card_rank
 
 
     self.deep_q_network = DQN(state_num = self.STATE_BIT_LEN, action_num = self.num_actions, hidden_units_num = self.hidden_units_num)
@@ -59,15 +64,16 @@ class ReinforcementLearning:
     self.deep_q_network.train()
     self.deep_q_network_target.eval()
     self.epsilon = 0.06/(k**0.5)
-    self.update_frequency = 100
 
-    # train
+
     if len(memory) < self.sampling_num:
       return
 
+    total_loss = 0
+    # train
     for _ in range(self.epochs):
       self.optimizer.zero_grad()
-      samples = random.sample(memory, self.sampling_num)
+      samples = random.sample(memory, min(self.sampling_num, len(memory)))
 
       train_states = np.array([])
       train_actions = np.array([])
@@ -76,9 +82,9 @@ class ReinforcementLearning:
       train_done = np.array([])
 
       for s, a, r, s_prime in samples:
-        s_bit = self.make_state_bit(s)
-        a_bit = self.make_action_bit(a)
-        s_prime_bit = self.make_state_bit(s_prime)
+        s_bit = self.kuhn_trainer.make_state_bit(s)
+        a_bit = self.kuhn_trainer.make_action_bit(a)
+        s_prime_bit = self.kuhn_trainer.make_state_bit(s_prime)
         if s_prime == None:
           done = 1
         else:
@@ -107,6 +113,7 @@ class ReinforcementLearning:
 
       loss = F.mse_loss(q_targets, q_now)
 
+      total_loss += loss.item()
 
       loss.backward()
       self.optimizer.step()
@@ -115,13 +122,15 @@ class ReinforcementLearning:
     if k % self.update_frequency ==  0:
       self.parameter_update()
 
-
+    if k in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
+      if self.kuhn_trainer.wandb_save:
+        wandb.log({'iteration': k, 'loss_rl': total_loss/self.epochs})
 
     #eval
     self.deep_q_network.eval()
     for node_X , _ in update_strategy.items():
       if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
-        inputs_eval = torch.from_numpy(self.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
+        inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
         y = self.deep_q_network.forward(inputs_eval).detach().numpy()
 
         if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
@@ -143,45 +152,6 @@ class ReinforcementLearning:
     for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
       target_param.data.copy_(
           self.tau * param.data + (1.0 - self.tau) * target_param.data)
-
-
-
-
-  def make_action_bit(self, y):
-    if y == "p":
-      y_bit = np.array([0])
-    else:
-      y_bit = np.array([1])
-    return y_bit
-
-
-  def make_state_bit(self, X):
-
-    X_bit = np.array([0 for _ in range(self.STATE_BIT_LEN)])
-
-    if X != None:
-
-      X_bit[self.card_rank[X[0]]] = 1
-
-      for idx, Xi in enumerate(X[1:]):
-        if Xi == "p":
-          X_bit[(self.NUM_PLAYERS+1) + 2*idx] = 1
-        else:
-          X_bit[(self.NUM_PLAYERS+1) + 2*idx +1] = 1
-
-    return X_bit
-
-
-  def first_bit(self, X0, X_bit):
-    if X0 == "J":
-      X_bit[0] = 1
-    elif X0 == "Q":
-      X_bit[1] = 1
-    elif X0 == "K":
-      X_bit[2] = 1
-    return X_bit
-
-
 
 
 

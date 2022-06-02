@@ -16,25 +16,14 @@ import wandb
 
 # _________________________________ Train class _________________________________
 class KuhnTrainer:
-  def __init__(self, train_iterations, num_players, wandb_save):
+  def __init__(self, train_iterations=10, num_players=2, wandb_save=False):
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
     self.NUM_ACTIONS = 2
+    self.STATE_BIT_LEN = (self.NUM_PLAYERS + 1) + 2*(self.NUM_PLAYERS *2 - 2)
     self.wandb_save = wandb_save
-    self.card_rank = self.make_rank(self.NUM_PLAYERS)
+    self.card_rank = self.make_rank()
     self.avg_strategy = {}
-
-
-  def make_rank(self, num_players):
-    """return dict
-    >>> KuhnTrainer().make_rank(2) == {'J':1, 'Q':2, 'K':3}
-    True
-    """
-    card_rank = {}
-    card = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
-    for i in range(num_players+1):
-      card_rank[card[11-num_players+i]] =  i+1
-    return card_rank
 
 
 # _________________________________ Train main method _________________________________
@@ -75,6 +64,7 @@ class KuhnTrainer:
       cards = self.card_distribution(self.NUM_PLAYERS)
       random.shuffle(cards)
       history = "".join(cards[:self.NUM_PLAYERS])
+
 
       self.train_one_episode(history, iteration_t)
 
@@ -146,19 +136,20 @@ class KuhnTrainer:
 
 
     if len(self.M_SL[player]) != 0:
-      self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy)
+      self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
 
 
-    self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
 
-    """
+    #self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
+
+
     self.infoSets_dict = {}
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
     self.epsilon_greedy_q_learning_strategy = {}
     for best_response_player_i in range(self.NUM_PLAYERS):
       self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
-    """
+
 
     return next_transition
 
@@ -404,6 +395,68 @@ class KuhnTrainer:
       nodeUtil += strategy[ai] * util_list[ai]
 
     return nodeUtil
+
+
+
+  def make_rank(self):
+    """return dict
+    >>> KuhnTrainer().make_rank() == {'J':0, 'Q':1, 'K':2}
+    True
+    """
+    card_rank = {}
+    card = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
+    for i in range(self.NUM_PLAYERS+1):
+      card_rank[card[11-self.NUM_PLAYERS+i]] =  i
+    return card_rank
+
+
+
+  def from_episode_to_bit(self, one_s_a_set):
+    """return list
+    >>> KuhnTrainer().from_episode_to_bit([('Q', 'b')])
+    (array([0, 1, 0, 0, 0, 0, 0]), array([1]))
+    """
+    for X, y in one_s_a_set:
+      y_bit = self.make_action_bit(y)
+      X_bit = self.make_state_bit(X)
+
+    return (X_bit, y_bit)
+
+
+
+  def make_action_bit(self, y):
+    if y == "p":
+      y_bit = np.array([0])
+    else:
+      y_bit = np.array([1])
+    return y_bit
+
+
+  def make_state_bit(self, X):
+    """return list
+    >>> KuhnTrainer().make_state_bit("J")
+    array([1, 0, 0, 0, 0, 0, 0])
+    >>> KuhnTrainer().make_state_bit("Kb")
+    array([0, 0, 1, 0, 1, 0, 0])
+    """
+    X_bit = np.array([0 for _ in range(self.STATE_BIT_LEN)])
+
+    if X != None:
+
+      X_bit[self.card_rank[X[0]]] = 1
+
+      for idx, Xi in enumerate(X[1:]):
+        if Xi == "p":
+          X_bit[(self.NUM_PLAYERS+1) + 2*idx] = 1
+        else:
+          X_bit[(self.NUM_PLAYERS+1) + 2*idx +1] = 1
+
+    return X_bit
+
+
+
+
+
 
 
 

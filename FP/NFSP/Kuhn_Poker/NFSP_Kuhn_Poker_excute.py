@@ -24,21 +24,21 @@ import NFSP_Kuhn_Poker_generate_data
 # _________________________________ config _________________________________
 
 config = dict(
-  iterations = 10**4,
+  iterations = 10**5,
   num_players = 2,
   wandb_save = True,
 
 
   #train
   eta = 0.1,
-  memory_size_rl = 10**3,
-  memory_size_sl = 10**3,
+  memory_size_rl = 1000,
+  memory_size_sl = 1000,
 
   #sl
   sl_hidden_units_num= 64,
-  sl_lr = 0.01,
-  sl_epochs = 10,
-  sl_sampling_num = 100,
+  sl_lr = 0.1,
+  sl_epochs = 1,
+  sl_sampling_num = 30,
 
   #rl
   rl_hidden_units_num= 64,
@@ -46,7 +46,8 @@ config = dict(
   rl_epochs = 10,
   rl_sampling_num = 30,
   rl_gamma = 1.0,
-  rl_tau = 0.1
+  rl_tau = 0.1,
+  rl_update_frequency = 100
 )
 
 
@@ -68,6 +69,7 @@ kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(
 
 
 kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
+  train_iterations = config["iterations"],
   num_players= config["num_players"],
   hidden_units_num = config["rl_hidden_units_num"],
   lr = config["rl_lr"],
@@ -75,11 +77,13 @@ kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
   sampling_num = config["rl_sampling_num"],
   gamma = config["rl_gamma"],
   tau = config["rl_tau"],
+  update_frequency = config["rl_update_frequency"],
   kuhn_trainer_for_rl = kuhn_trainer
   )
 
 
 kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
+  train_iterations = config["iterations"],
   num_players= config["num_players"],
   hidden_units_num= config["sl_hidden_units_num"],
   lr = config["sl_lr"],
