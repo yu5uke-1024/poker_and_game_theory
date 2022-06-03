@@ -10,6 +10,7 @@ import time
 import doctest
 import copy
 import wandb
+import datetime
 
 from collections import defaultdict
 from tqdm import tqdm
@@ -31,14 +32,14 @@ config = dict(
 
   #train
   eta = 0.1,
-  memory_size_rl = 100000,
-  memory_size_sl = 10000,
+  memory_size_rl = 100,
+  memory_size_sl = 1000,
 
   #sl
-  sl_hidden_units_num= 64,
-  sl_lr = 0.1,
-  sl_epochs = 1,
-  sl_sampling_num = 100,
+  sl_hidden_units_num= 32,
+  sl_lr = 0.001,
+  sl_epochs = 2,
+  sl_sampling_num = 128,
 
   #rl
   rl_hidden_units_num= 64,
@@ -47,13 +48,15 @@ config = dict(
   rl_sampling_num = 30,
   rl_gamma = 1.0,
   rl_tau = 0.1,
-  rl_update_frequency = 100
+  rl_update_frequency = 100,
+  sl_algo = ["cnt", "mlp"][1] ,
+  rl_algo = ["dfs", "dqn"][0]
 )
 
 
 
 if config["wandb_save"]:
-  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="NFSP")
+  wandb.init(project="Kuhn_Poker_{}players_{}.{}".format(config["num_players"], datetime.datetime.now().month, datetime.datetime.now().day), name="NFSP_{}_{}".format(config["rl_algo"], config["sl_algo"]))
   wandb.config.update(config)
   wandb.define_metric("exploitability", summary="last")
   wandb.define_metric("avg_utility", summary="last")
@@ -114,7 +117,8 @@ kuhn_trainer.train(
   eta = config["eta"],
   memory_size_rl = config["memory_size_rl"],
   memory_size_sl = config["memory_size_sl"],
-
+  rl_algo = config["rl_algo"],
+  sl_algo = config["sl_algo"],
   rl_module= kuhn_RL,
   sl_module= [kuhn_SL0, kuhn_SL1],
   gd_module= kuhn_GD

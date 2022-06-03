@@ -11,14 +11,14 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-
+import datetime
 from collections import defaultdict
 from tqdm import tqdm
 from collections import deque
 
+print(datetime.datetime.now().month)
 
-
-
+"""
 NUM_ACTIONS = 2
 NUM_PLAYERS = 2
 STATE_BIT_LEN = (NUM_PLAYERS + 1) + 2*(NUM_PLAYERS *2 - 2)
@@ -60,3 +60,4 @@ a = torch.from_numpy(np.array([0, 1 ,0 ,0 ,1, 0, 0], dtype="float")).float().res
 b = np.exp( np.array(sl_network.forward(a).reshape(-1,2).detach().numpy()[0]) )
 
 print(b)
+"""

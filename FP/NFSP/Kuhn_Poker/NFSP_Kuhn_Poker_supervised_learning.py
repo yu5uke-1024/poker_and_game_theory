@@ -1,5 +1,6 @@
 
 # _________________________________ Library _________________________________
+from turtle import update
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -30,18 +31,20 @@ class SL_Network(nn.Module):
         self.hidden_units_num = hidden_units_num
 
         self.fc1 = nn.Linear(self.state_num, self.hidden_units_num)
-        self.fc2 = nn.Linear(self.hidden_units_num, 2)
+        self.fc2 = nn.Linear(self.hidden_units_num, 1)
         #self.fc3 = nn.Linear(self.state_num, 1)
 
-
-        self.softmax = nn.LogSoftmax(dim=1)
+        self.dropout = nn.Dropout(0.2)
+        self.logsoftmax = nn.LogSoftmax(dim=1)
 
 
     def forward(self, x):
-        h1 = F.relu(self.fc1(x))
-        output = self.softmax(self.fc2(h1))
+        #h1 = F.relu(self.fc1(x))
+        h1 = F.leaky_relu(self.fc1(x))
 
-        #output = torch.sigmoid(self.fc3(x))
+        #output = self.fc2(h1)
+        #h2 = self.dropout(h1)
+        output = torch.sigmoid(self.fc2(h1))
 
 
         return output
@@ -66,9 +69,15 @@ class SupervisedLearning:
 
 
     self.sl_network = SL_Network(state_num=self.STATE_BIT_LEN, hidden_units_num=self.hidden_units_num)
-    self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.lr)
-    self.loss_fn = nn.BCELoss()
 
+    #self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.lr, weight_decay=5*(10**(-4)))
+    self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.lr)
+
+
+
+
+    self.loss_fn = nn.BCELoss()
+    #self.loss_fn = nn.CrossEntropyLoss()
 
 
   def SL_learn(self, memory, target_player, update_strategy, iteration_t):
@@ -76,15 +85,16 @@ class SupervisedLearning:
     #train
     self.sl_network.train()
 
-    if len(memory) < self.sampling_num:
-      return
+    #if len(memory) < self.sampling_num:
+    #  return
 
     total_loss = 0
 
 
     for _ in range(self.epochs):
 
-      samples = self.reservoir_sampling(memory, self.sampling_num)
+      samples = self.reservoir_sampling(memory, min(self.sampling_num, len(memory)))
+      random.shuffle(samples)
 
 
       train_X = np.array([])
@@ -98,28 +108,25 @@ class SupervisedLearning:
 
           #print(one_s_a_set, train_i)
 
+      #print("")
       #print(samples)
       inputs = torch.from_numpy(train_X).float().reshape(-1,self.STATE_BIT_LEN)
-      targets = torch.from_numpy(train_y).float().reshape(-1,2)
+      targets = torch.from_numpy(train_y).float().reshape(-1, 1)
 
-      outputs = self.sl_network.forward(inputs).reshape(-1,2)
+      outputs = self.sl_network.forward(inputs)
+
 
       #print("")
-      #print(inputs)
-      #print(targets)
-      #print(outputs)
+      #print(inputs.shape)
+      #print(targets.shape)
+      #print(outputs.shape)
       #print("")
-      #a = torch.from_numpy(np.array([1, 0 ,0 ,0 ,0, 0, 0], dtype="float")).float().reshape(-1,self.STATE_BIT_LEN)
-      #b = self.sl_network.forward(a).reshape(-1,1)
 
-      #print(b)
+      #loss = - (targets * outputs).sum(dim=-1).mean()
+      loss = self.loss_fn(outputs, targets)
 
-      #print(targets, outputs)
+      #print(outputs, targets, loss)
 
-      loss = - (targets * outputs).sum(dim=-1).mean()
-      # #exit()
-
-      #loss = self.loss_fn(outputs, targets)
 
       self.optimizer.zero_grad()
       loss.backward()
@@ -132,10 +139,13 @@ class SupervisedLearning:
       if self.kuhn_trainer.wandb_save:
         wandb.log({'iteration': iteration_t, 'loss_sl': total_loss/self.epochs})
 
+        #print(update_strategy)
+
+
 
 
     # eval
-    #self.sl_network.eval()
+    self.sl_network.eval()
     with torch.no_grad():
       for node_X , _ in update_strategy.items():
         if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
@@ -143,17 +153,19 @@ class SupervisedLearning:
 
           y = self.sl_network.forward(inputs_eval).detach().numpy()[0]
 
+          update_strategy[node_X] = np.array([1-y[0], y[0]])
+          print(update_strategy[node_X])
+          #update_strategy[node_X] = np.array(np.exp(y))
 
-          update_strategy[node_X] = np.array(np.exp(y))
 
 
-  def whether_put_memory_i(self, i, d, k):
+  def whether_put_memory_i(self, i, data, k):
     if i < k:
-      self.new_memory[i] = d
+      self.new_memory[i] = data
     else:
       r = random.randint(1, i)
       if r < k:
-        self.new_memory[r] = d
+        self.new_memory[r] = data
 
 
 
@@ -164,6 +176,21 @@ class SupervisedLearning:
 
     return self.new_memory
 
+
+  def SL_train_AVG(self, memory, target_player, strategy, n_count):
+    for one_s_a_set in memory:
+      for X, y in [one_s_a_set]:
+        if (len(X)-1) % self.NUM_PLAYERS == target_player :
+          if y == "p":
+            n_count[X] += np.array([1.0, 0.0], dtype=float)
+          else:
+            n_count[X] += np.array([0.0, 1.0], dtype=float)
+
+    for node_X , action_prob in n_count.items():
+        strategy[node_X] = n_count[node_X] / np.sum(action_prob)
+
+
+    return strategy
 
 
 doctest.testmod()

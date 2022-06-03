@@ -33,10 +33,12 @@ class KuhnTrainer:
 
 
 # _________________________________ Train main method _________________________________
-  def train(self, eta, memory_size_rl, memory_size_sl, rl_module, sl_module, gd_module):
+  def train(self, eta, memory_size_rl, memory_size_sl, rl_algo, sl_algo, rl_module, sl_module, gd_module):
     self.exploitability_list = {}
     self.avg_utility_list = {}
     self.eta = eta
+    self.rl_algo = rl_algo
+    self.sl_algo = sl_algo
 
     self.M_SL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
     self.M_RL = [deque([], maxlen=memory_size_rl) for _ in range(self.NUM_PLAYERS)]
@@ -54,6 +56,10 @@ class KuhnTrainer:
     self.SL = sl_module
     self.GD = gd_module
 
+    self.N_count = copy.deepcopy(self.avg_strategy)
+    for node, cn in self.N_count.items():
+      self.N_count[node] = np.array([1.0 for _ in range(self.NUM_ACTIONS)], dtype=float)
+
 
     for iteration_t in tqdm(range(1, int(self.train_iterations)+1)):
 
@@ -65,6 +71,7 @@ class KuhnTrainer:
           self.sigma_strategy_bit[player_i] = 0
         else:
           self.sigma_strategy_bit[player_i] = 1
+
 
 
       cards = self.card_distribution(self.NUM_PLAYERS)
@@ -96,7 +103,7 @@ class KuhnTrainer:
         if self.wandb_save:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
 
-          print(self.avg_strategy)
+    #print(self.M_RL)
 
 
 
@@ -148,19 +155,24 @@ class KuhnTrainer:
 
     if len(self.M_SL[player]) != 0:
 
-      self.SL[player].SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
+      if self.sl_algo == "mlp":
+        self.SL[player].SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
+      elif self.sl_algo == "cnt":
+        self.SL[player].SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
+        self.M_SL[player] = []
 
+    if self.rl_algo == "dqn":
+      self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
+    elif self.rl_algo == "dfs":
+      self.infoSets_dict = {}
+      for target_player in range(self.NUM_PLAYERS):
+        self.create_infoSets("", target_player, 1.0)
+      self.epsilon_greedy_q_learning_strategy = {}
+      for best_response_player_i in range(self.NUM_PLAYERS):
+        self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
 
+      #print(self.epsilon_greedy_q_learning_strategy)
 
-    #self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
-
-
-    self.infoSets_dict = {}
-    for target_player in range(self.NUM_PLAYERS):
-      self.create_infoSets("", target_player, 1.0)
-    self.epsilon_greedy_q_learning_strategy = {}
-    for best_response_player_i in range(self.NUM_PLAYERS):
-      self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
 
 
     return next_transition
@@ -429,7 +441,7 @@ class KuhnTrainer:
     (array([0, 1, 0, 0, 0, 0, 0]), array([1]))
     """
     for X, y in one_s_a_set:
-      y_bit = self.make_action_bit_for_sl(y)
+      y_bit = self.make_action_bit(y)
       X_bit = self.make_state_bit(X)
 
     return (X_bit, y_bit)

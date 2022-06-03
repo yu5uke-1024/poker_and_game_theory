@@ -335,6 +335,15 @@ class KuhnTrainer:
 
 
     self.RL.RL_train(self.M_RL[player], player, self.best_response_strategy, self.Q_value[player], iteration_t)
+    #print(self.M_RL[player])
+    """
+    self.infoSets_dict = {}
+    for target_player in range(self.NUM_PLAYERS):
+      self.create_infoSets("", target_player, 1.0)
+    self.best_response_strategy = {}
+    for best_response_player_i in range(self.NUM_PLAYERS):
+      self.calc_best_response_value(self.best_response_strategy, best_response_player_i, "", 1)
+    """
     return next_transition
 
 
@@ -361,6 +370,8 @@ class KuhnTrainer:
 
     self.best_response_strategy = copy.deepcopy(self.avg_strategy)
 
+
+
     self.N_count = copy.deepcopy(self.avg_strategy)
     for node, cn in self.N_count.items():
       self.N_count[node] = np.array([1.0 for _ in range(self.NUM_ACTIONS)], dtype=float)
@@ -383,6 +394,7 @@ class KuhnTrainer:
           self.sigma_strategy_bit[player_i] = 0
         else:
           self.sigma_strategy_bit[player_i] = 1
+
 
 
       cards = self.card_distribution(self.NUM_PLAYERS)
@@ -415,9 +427,8 @@ class KuhnTrainer:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
 
 
-    #print(self.N_count)
-    if wandb_save:
-      wandb.save()
+    #print(self.M_RL)
+
 
 
 doctest.testmod()

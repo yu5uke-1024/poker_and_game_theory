@@ -20,10 +20,10 @@ import Online_FSP_Kuhn_Poker_trainer
 
 #config
 config = dict(
-  iterations = 10**6,
+  iterations = 10**5,
   num_players = 2,
   eta = 0.1,
-  sl_algo = ["cnt", "mlp"][0],
+  sl_algo = ["cnt", "mlp"][1],
   memory_size_rl= 10**3,
   memory_size_sl= 10**3,
   wandb_save = True
