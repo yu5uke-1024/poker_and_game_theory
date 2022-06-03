@@ -13,6 +13,12 @@ import copy
 from collections import deque
 import wandb
 
+import torch
+import torch.nn as nn
+
+
+
+
 
 # _________________________________ Train class _________________________________
 class KuhnTrainer:
@@ -90,6 +96,11 @@ class KuhnTrainer:
         if self.wandb_save:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
 
+          print(self.avg_strategy)
+
+
+
+
 
 # _________________________________ Train second main method _________________________________
   def train_one_episode(self, history, iteration_t):
@@ -136,7 +147,8 @@ class KuhnTrainer:
 
 
     if len(self.M_SL[player]) != 0:
-      self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
+
+      self.SL[player].SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
 
 
 
@@ -417,10 +429,19 @@ class KuhnTrainer:
     (array([0, 1, 0, 0, 0, 0, 0]), array([1]))
     """
     for X, y in one_s_a_set:
-      y_bit = self.make_action_bit(y)
+      y_bit = self.make_action_bit_for_sl(y)
       X_bit = self.make_state_bit(X)
 
     return (X_bit, y_bit)
+
+
+  def make_action_bit_for_sl(self, y):
+    if y == "p":
+      y_bit = np.array([1.0 , 0.0], dtype="float")
+    else:
+      y_bit = np.array([0.0 , 1.0], dtype="float")
+    return y_bit
+
 
 
 

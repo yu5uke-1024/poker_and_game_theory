@@ -24,26 +24,26 @@ import NFSP_Kuhn_Poker_generate_data
 # _________________________________ config _________________________________
 
 config = dict(
-  iterations = 10**5,
+  iterations = 10**6,
   num_players = 2,
   wandb_save = True,
 
 
   #train
   eta = 0.1,
-  memory_size_rl = 1000,
-  memory_size_sl = 1000,
+  memory_size_rl = 100000,
+  memory_size_sl = 10000,
 
   #sl
   sl_hidden_units_num= 64,
   sl_lr = 0.1,
   sl_epochs = 1,
-  sl_sampling_num = 30,
+  sl_sampling_num = 100,
 
   #rl
   rl_hidden_units_num= 64,
   rl_lr = 0.1,
-  rl_epochs = 10,
+  rl_epochs = 1,
   rl_sampling_num = 30,
   rl_gamma = 1.0,
   rl_tau = 0.1,
@@ -82,7 +82,7 @@ kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
   )
 
 
-kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
+kuhn_SL0 = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   hidden_units_num= config["sl_hidden_units_num"],
@@ -92,6 +92,15 @@ kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
   kuhn_trainer_for_sl = kuhn_trainer
 )
 
+kuhn_SL1 = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
+  train_iterations = config["iterations"],
+  num_players= config["num_players"],
+  hidden_units_num= config["sl_hidden_units_num"],
+  lr = config["sl_lr"],
+  epochs = config["sl_epochs"],
+  sampling_num = config["sl_sampling_num"],
+  kuhn_trainer_for_sl = kuhn_trainer
+)
 
 
 kuhn_GD = NFSP_Kuhn_Poker_generate_data.GenerateData(
@@ -107,7 +116,7 @@ kuhn_trainer.train(
   memory_size_sl = config["memory_size_sl"],
 
   rl_module= kuhn_RL,
-  sl_module= kuhn_SL,
+  sl_module= [kuhn_SL0, kuhn_SL1],
   gd_module= kuhn_GD
   )
 

@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import random
+import math
 import itertools
 from collections import defaultdict
 from tqdm import tqdm
@@ -29,12 +30,20 @@ class SL_Network(nn.Module):
         self.hidden_units_num = hidden_units_num
 
         self.fc1 = nn.Linear(self.state_num, self.hidden_units_num)
-        self.fc2 = nn.Linear(self.hidden_units_num, 1)
+        self.fc2 = nn.Linear(self.hidden_units_num, 2)
+        #self.fc3 = nn.Linear(self.state_num, 1)
+
+
+        self.softmax = nn.LogSoftmax(dim=1)
 
 
     def forward(self, x):
         h1 = F.relu(self.fc1(x))
-        output = torch.sigmoid(self.fc2(h1))
+        output = self.softmax(self.fc2(h1))
+
+        #output = torch.sigmoid(self.fc3(x))
+
+
         return output
 
 
@@ -44,6 +53,7 @@ class SupervisedLearning:
 
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
+    self.NUM_ACTIONS = 2
     self.STATE_BIT_LEN = (self.NUM_PLAYERS + 1) + 2*(self.NUM_PLAYERS *2 - 2)
     self.hidden_units_num = hidden_units_num
     self.lr = lr
@@ -71,8 +81,8 @@ class SupervisedLearning:
 
     total_loss = 0
 
+
     for _ in range(self.epochs):
-      self.optimizer.zero_grad()
 
       samples = self.reservoir_sampling(memory, self.sampling_num)
 
@@ -88,16 +98,30 @@ class SupervisedLearning:
 
           #print(one_s_a_set, train_i)
 
-
+      #print(samples)
       inputs = torch.from_numpy(train_X).float().reshape(-1,self.STATE_BIT_LEN)
-      targets = torch.from_numpy(train_y).float().reshape(-1,1)
+      targets = torch.from_numpy(train_y).float().reshape(-1,2)
 
-      outputs = self.sl_network.forward(inputs).reshape(-1,1)
-
+      outputs = self.sl_network.forward(inputs).reshape(-1,2)
 
       #print("")
+      #print(inputs)
+      #print(targets)
+      #print(outputs)
+      #print("")
+      #a = torch.from_numpy(np.array([1, 0 ,0 ,0 ,0, 0, 0], dtype="float")).float().reshape(-1,self.STATE_BIT_LEN)
+      #b = self.sl_network.forward(a).reshape(-1,1)
 
-      loss = self.loss_fn(outputs, targets)
+      #print(b)
+
+      #print(targets, outputs)
+
+      loss = - (targets * outputs).sum(dim=-1).mean()
+      # #exit()
+
+      #loss = self.loss_fn(outputs, targets)
+
+      self.optimizer.zero_grad()
       loss.backward()
       self.optimizer.step()
 
@@ -111,15 +135,16 @@ class SupervisedLearning:
 
 
     # eval
-    self.sl_network.eval()
-    for node_X , _ in update_strategy.items():
-      if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
-        inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
-        y = self.sl_network.forward(inputs_eval).detach().numpy()
+    #self.sl_network.eval()
+    with torch.no_grad():
+      for node_X , _ in update_strategy.items():
+        if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
+          inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
 
-        #tensor → numpy
-        update_strategy[node_X] = np.array([1-y[0][0], y[0][0]])
+          y = self.sl_network.forward(inputs_eval).detach().numpy()[0]
 
+
+          update_strategy[node_X] = np.array(np.exp(y))
 
 
   def whether_put_memory_i(self, i, d, k):
