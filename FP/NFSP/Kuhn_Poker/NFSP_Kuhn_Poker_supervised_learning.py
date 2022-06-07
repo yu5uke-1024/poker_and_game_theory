@@ -148,9 +148,11 @@ class SupervisedLearning:
 
           y = self.sl_network.forward(inputs_eval).detach().numpy()[0]
 
-          update_strategy[node_X] = np.array([1-y[0], y[0]])
-          #print(update_strategy[node_X])
-          #update_strategy[node_X] = np.array(np.exp(y))
+          update_strategy[node_X] = np.array([1.0-y[0], y[0]])
+
+
+
+            #update_strategy[node_X] = np.array(np.exp(y))
 
 
 

@@ -25,7 +25,7 @@ import NFSP_Kuhn_Poker_generate_data
 # _________________________________ config _________________________________
 
 config = dict(
-  iterations = 100000,
+  iterations = 30000,
   num_players = 2,
   wandb_save = True,
 
@@ -38,7 +38,7 @@ config = dict(
   #sl
   sl_hidden_units_num= 32,
   sl_lr = 0.001,
-  sl_epochs = 10,
+  sl_epochs = 2,
   sl_sampling_num = 128,
 
   #rl

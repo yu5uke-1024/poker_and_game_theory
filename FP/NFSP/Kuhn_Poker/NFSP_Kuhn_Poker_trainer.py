@@ -87,6 +87,7 @@ class KuhnTrainer:
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
         self.avg_utility_list[iteration_t] = self.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(self.NUM_PLAYERS)])
 
+
         self.optimality_gap = 0
         self.infoSets_dict = {}
         for target_player in range(self.NUM_PLAYERS):
@@ -98,7 +99,6 @@ class KuhnTrainer:
         for player_i in range(self.NUM_PLAYERS):
           self.optimality_gap += 1/2 * (self.GD.calculate_optimal_gap_best_response_strategy(self.best_response_strategy_dfs, self.avg_strategy, player_i)
            - self.GD.calculate_optimal_gap_best_response_strategy(self.epsilon_greedy_q_learning_strategy, self.avg_strategy, player_i))
-
 
         if self.wandb_save:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
