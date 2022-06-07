@@ -334,16 +334,20 @@ class KuhnTrainer:
         self.SL.SL_train_MLP(self.M_SL[player], player, self.avg_strategy)
 
 
-    self.RL.RL_train(self.M_RL[player], player, self.best_response_strategy, self.Q_value[player], iteration_t)
-    #print(self.M_RL[player])
-    """
-    self.infoSets_dict = {}
-    for target_player in range(self.NUM_PLAYERS):
-      self.create_infoSets("", target_player, 1.0)
-    self.best_response_strategy = {}
-    for best_response_player_i in range(self.NUM_PLAYERS):
-      self.calc_best_response_value(self.best_response_strategy, best_response_player_i, "", 1)
-    """
+    if self.rl_algo == "q_learning":
+      self.RL.RL_train(self.M_RL[player], player, self.best_response_strategy, self.Q_value[player], iteration_t)
+    elif self.rl_algo == "dfs":
+      self.infoSets_dict = {}
+      for target_player in range(self.NUM_PLAYERS):
+        self.create_infoSets("", target_player, 1.0)
+      self.best_response_strategy = {}
+      for best_response_player_i in range(self.NUM_PLAYERS):
+        self.calc_best_response_value(self.best_response_strategy, best_response_player_i, "", 1)
+
+
+
+
+
     return next_transition
 
 
@@ -353,11 +357,12 @@ class KuhnTrainer:
 
 
   #KuhnTrainer main method
-  def train(self, eta, memory_size_rl, memory_size_sl,  wandb_save, sl_algo):
+  def train(self, eta, memory_size_rl, memory_size_sl,  wandb_save, rl_algo, sl_algo):
     self.exploitability_list = {}
     self.avg_utility_list = {}
     self.eta = eta
     self.sl_algo = sl_algo
+    self.rl_algo = rl_algo
 
     self.M_SL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
     self.M_RL = [deque([], maxlen=memory_size_rl) for _ in range(self.NUM_PLAYERS)]

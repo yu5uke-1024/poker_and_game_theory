@@ -25,7 +25,7 @@ import NFSP_Kuhn_Poker_generate_data
 # _________________________________ config _________________________________
 
 config = dict(
-  iterations = 10**6,
+  iterations = 100000,
   num_players = 2,
   wandb_save = True,
 
@@ -38,7 +38,7 @@ config = dict(
   #sl
   sl_hidden_units_num= 32,
   sl_lr = 0.001,
-  sl_epochs = 2,
+  sl_epochs = 10,
   sl_sampling_num = 128,
 
   #rl
@@ -49,14 +49,14 @@ config = dict(
   rl_gamma = 1.0,
   rl_tau = 0.1,
   rl_update_frequency = 100,
-  sl_algo = ["cnt", "mlp"][1] ,
+  sl_algo = ["cnt", "mlp"][1],
   rl_algo = ["dfs", "dqn"][0]
 )
 
 
 
 if config["wandb_save"]:
-  wandb.init(project="Kuhn_Poker_{}players_{}.{}".format(config["num_players"], datetime.datetime.now().month, datetime.datetime.now().day), name="NFSP_{}_{}".format(config["rl_algo"], config["sl_algo"]))
+  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="{}_{}_NFSP".format(config["rl_algo"], config["sl_algo"]))
   wandb.config.update(config)
   wandb.define_metric("exploitability", summary="last")
   wandb.define_metric("avg_utility", summary="last")
@@ -85,7 +85,7 @@ kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
   )
 
 
-kuhn_SL0 = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
+kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   hidden_units_num= config["sl_hidden_units_num"],
@@ -93,22 +93,15 @@ kuhn_SL0 = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
   epochs = config["sl_epochs"],
   sampling_num = config["sl_sampling_num"],
   kuhn_trainer_for_sl = kuhn_trainer
-)
+  )
 
-kuhn_SL1 = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
-  train_iterations = config["iterations"],
-  num_players= config["num_players"],
-  hidden_units_num= config["sl_hidden_units_num"],
-  lr = config["sl_lr"],
-  epochs = config["sl_epochs"],
-  sampling_num = config["sl_sampling_num"],
-  kuhn_trainer_for_sl = kuhn_trainer
-)
+
 
 
 kuhn_GD = NFSP_Kuhn_Poker_generate_data.GenerateData(
   num_players= config["num_players"],
-  kuhn_trainer_for_gd= kuhn_trainer)
+  kuhn_trainer_for_gd= kuhn_trainer
+  )
 
 
 
@@ -120,7 +113,7 @@ kuhn_trainer.train(
   rl_algo = config["rl_algo"],
   sl_algo = config["sl_algo"],
   rl_module= kuhn_RL,
-  sl_module= [kuhn_SL0, kuhn_SL1],
+  sl_module= kuhn_SL,
   gd_module= kuhn_GD
   )
 

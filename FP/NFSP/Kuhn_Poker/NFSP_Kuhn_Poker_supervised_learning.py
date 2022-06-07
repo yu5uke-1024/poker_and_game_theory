@@ -44,6 +44,7 @@ class SL_Network(nn.Module):
 
         #output = self.fc2(h1)
         #h2 = self.dropout(h1)
+
         output = torch.sigmoid(self.fc2(h1))
 
 
@@ -72,8 +73,6 @@ class SupervisedLearning:
 
     #self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.lr, weight_decay=5*(10**(-4)))
     self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.lr)
-
-
 
 
     self.loss_fn = nn.BCELoss()
@@ -116,12 +115,6 @@ class SupervisedLearning:
       outputs = self.sl_network.forward(inputs)
 
 
-      #print("")
-      #print(inputs.shape)
-      #print(targets.shape)
-      #print(outputs.shape)
-      #print("")
-
       #loss = - (targets * outputs).sum(dim=-1).mean()
       loss = self.loss_fn(outputs, targets)
 
@@ -139,7 +132,9 @@ class SupervisedLearning:
       if self.kuhn_trainer.wandb_save:
         wandb.log({'iteration': iteration_t, 'loss_sl': total_loss/self.epochs})
 
-        #print(update_strategy)
+        #for node_X , _ in update_strategy.items():
+          #if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
+            #print(node_X, update_strategy[node_X])
 
 
 
@@ -154,7 +149,7 @@ class SupervisedLearning:
           y = self.sl_network.forward(inputs_eval).detach().numpy()[0]
 
           update_strategy[node_X] = np.array([1-y[0], y[0]])
-          print(update_strategy[node_X])
+          #print(update_strategy[node_X])
           #update_strategy[node_X] = np.array(np.exp(y))
 
 

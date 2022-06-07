@@ -103,7 +103,8 @@ class KuhnTrainer:
         if self.wandb_save:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
 
-    #print(self.M_RL)
+
+        #print(self.epsilon_greedy_q_learning_strategy["J"], self.avg_strategy["J"])
 
 
 
@@ -156,9 +157,9 @@ class KuhnTrainer:
     if len(self.M_SL[player]) != 0:
 
       if self.sl_algo == "mlp":
-        self.SL[player].SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
+        self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
       elif self.sl_algo == "cnt":
-        self.SL[player].SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
+        self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
         self.M_SL[player] = []
 
     if self.rl_algo == "dqn":
