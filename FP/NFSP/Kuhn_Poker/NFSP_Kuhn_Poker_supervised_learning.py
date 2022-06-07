@@ -132,9 +132,16 @@ class SupervisedLearning:
       if self.kuhn_trainer.wandb_save:
         wandb.log({'iteration': iteration_t, 'loss_sl': total_loss/self.epochs})
 
+
         #for node_X , _ in update_strategy.items():
           #if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
             #print(node_X, update_strategy[node_X])
+
+
+      #print(iteration_t, self.optimizer.param_groups[0]["lr"])
+      #if len(str(iteration_t)) == 5:
+      #  self.optimizer.param_groups[0]["lr"] = 10**(-8)
+
 
 
 
