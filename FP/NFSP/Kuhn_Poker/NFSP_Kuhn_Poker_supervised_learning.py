@@ -138,9 +138,6 @@ class SupervisedLearning:
             #print(node_X, update_strategy[node_X])
 
 
-      #print(iteration_t, self.optimizer.param_groups[0]["lr"])
-      #if len(str(iteration_t)) == 5:
-      #  self.optimizer.param_groups[0]["lr"] = 10**(-8)
 
 
 

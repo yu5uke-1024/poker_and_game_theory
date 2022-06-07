@@ -142,6 +142,7 @@ class KuhnTrainer:
         r = self.Return_payoff_for_terminal_states(other_histroy, player)
         s_prime = None
         self.M_RL[player].append((s, a, r, s_prime))
+        other_histroy = other_histroy[:-1]
         next_transition = [s, a, r, s_prime, other_histroy]
       else:
         r = 0
@@ -176,6 +177,7 @@ class KuhnTrainer:
 
 
 
+    #print(next_transition)
     return next_transition
 
 

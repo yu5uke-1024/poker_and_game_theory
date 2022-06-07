@@ -66,9 +66,6 @@ class ReinforcementLearning:
     self.epsilon = 0.06/(k**0.5)
 
 
-    if len(memory) < self.sampling_num:
-      return
-
     total_loss = 0
     # train
     for _ in range(self.epochs):
@@ -128,23 +125,24 @@ class ReinforcementLearning:
 
     #eval
     self.deep_q_network.eval()
-    for node_X , _ in update_strategy.items():
-      if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
-        inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
-        y = self.deep_q_network.forward(inputs_eval).detach().numpy()
+    with torch.no_grad():
+      for node_X , _ in update_strategy.items():
+        if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
+          inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
+          y = self.deep_q_network.forward(inputs_eval).detach().numpy()
 
-        if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
-          action = np.random.randint(self.num_actions)
-          if action == 0:
-            update_strategy[node_X] = np.array([1, 0], dtype=float)
-          else:
-            update_strategy[node_X] = np.array([0, 1], dtype=float)
+          if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
+            action = np.random.randint(self.num_actions)
+            if action == 0:
+              update_strategy[node_X] = np.array([1, 0], dtype=float)
+            else:
+              update_strategy[node_X] = np.array([0, 1], dtype=float)
 
-        else:
-          if y[0][0] > y[0][1]:
-            update_strategy[node_X] = np.array([1, 0], dtype=float)
           else:
-            update_strategy[node_X] = np.array([0, 1], dtype=float)
+            if y[0][0] > y[0][1]:
+              update_strategy[node_X] = np.array([1, 0], dtype=float)
+            else:
+              update_strategy[node_X] = np.array([0, 1], dtype=float)
 
 
 

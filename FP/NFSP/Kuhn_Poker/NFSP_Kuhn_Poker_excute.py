@@ -27,25 +27,25 @@ import NFSP_Kuhn_Poker_generate_data
 config = dict(
   iterations = 10**5,
   num_players = 2,
-  wandb_save = ["True", "False"][0],
+  wandb_save = [True, False][0],
 
 
   #train
   eta = 0.1,
-  memory_size_rl = 100,
-  memory_size_sl = 1000,
+  memory_size_rl = 10**4,
+  memory_size_sl = 10**5,
 
   #sl
   sl_hidden_units_num= 32,
   sl_lr = 0.001,
-  sl_epochs = 2,
+  sl_epochs = 1,
   sl_sampling_num = 128,
 
   #rl
-  rl_hidden_units_num= 64,
+  rl_hidden_units_num= 32,
   rl_lr = 0.1,
   rl_epochs = 1,
-  rl_sampling_num = 30,
+  rl_sampling_num = 128,
   rl_gamma = 1.0,
   rl_tau = 0.1,
   rl_update_frequency = 100,
