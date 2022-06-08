@@ -105,6 +105,9 @@ class KuhnTrainer:
 
 
         #print(self.epsilon_greedy_q_learning_strategy["J"], self.avg_strategy["J"])
+        #print(self.best_response_strategy_dfs)
+        #print(self.epsilon_greedy_q_learning_strategy)
+
 
 
 

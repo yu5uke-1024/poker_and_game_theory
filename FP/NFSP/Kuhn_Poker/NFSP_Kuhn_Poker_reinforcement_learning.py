@@ -1,6 +1,6 @@
 
 # _________________________________ Library _________________________________
-import imp
+from platform import node
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -69,14 +69,16 @@ class ReinforcementLearning:
     total_loss = 0
     # train
     for _ in range(self.epochs):
-      self.optimizer.zero_grad()
+
       samples = random.sample(memory, min(self.sampling_num, len(memory)))
+
 
       train_states = np.array([])
       train_actions = np.array([])
       train_rewards = np.array([])
       train_next_states = np.array([])
       train_done = np.array([])
+
 
       for s, a, r, s_prime in samples:
         s_bit = self.kuhn_trainer.make_state_bit(s)
@@ -86,6 +88,8 @@ class ReinforcementLearning:
           done = 1
         else:
           done = 0
+
+
 
         train_states = np.append(train_states, s_bit)
         train_actions = np.append(train_actions, a_bit)
@@ -108,6 +112,7 @@ class ReinforcementLearning:
       q_now = q_now.gather(1, train_actions.type(torch.int64))
 
 
+      self.optimizer.zero_grad()
       loss = F.mse_loss(q_targets, q_now)
 
       total_loss += loss.item()
@@ -119,9 +124,12 @@ class ReinforcementLearning:
     if k % self.update_frequency ==  0:
       self.parameter_update()
 
+
     if k in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
       if self.kuhn_trainer.wandb_save:
         wandb.log({'iteration': k, 'loss_rl': total_loss/self.epochs})
+
+
 
     #eval
     self.deep_q_network.eval()
@@ -130,6 +138,7 @@ class ReinforcementLearning:
         if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
           inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
           y = self.deep_q_network.forward(inputs_eval).detach().numpy()
+
 
           if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
             action = np.random.randint(self.num_actions)
@@ -143,6 +152,9 @@ class ReinforcementLearning:
               update_strategy[node_X] = np.array([1, 0], dtype=float)
             else:
               update_strategy[node_X] = np.array([0, 1], dtype=float)
+
+
+          #print(node_X, y)
 
 
 

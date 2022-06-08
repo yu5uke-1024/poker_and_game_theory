@@ -26,7 +26,7 @@ import NFSP_Kuhn_Poker_generate_data
 
 config = dict(
   iterations = 10**5,
-  num_players = 2,
+  num_players = 3,
   wandb_save = [True, False][0],
 
 
@@ -48,7 +48,7 @@ config = dict(
   rl_sampling_num = 128,
   rl_gamma = 1.0,
   rl_tau = 0.1,
-  rl_update_frequency = 100,
+  rl_update_frequency = 300,
   sl_algo = ["cnt", "mlp"][1],
   rl_algo = ["dfs", "dqn"][1]
 )
