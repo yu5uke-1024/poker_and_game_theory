@@ -532,7 +532,7 @@ class KuhnTrainer:
     return exploitability
 
 
-
+"""
 #config
 config = dict(
   algo = ["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"][3],
@@ -572,12 +572,15 @@ if config["wandb_save"]:
 else:
   print(df)
 
+"""
 
-"""
 # calculate random strategy_profile exploitability
-for i in range(2,3):
+for i in range(2,6):
   kuhn_poker_agent = KuhnTrainer(train_iterations=0, num_players=i)
-  print("{}player game:".format(i), kuhn_poker_agent.get_exploitability_dfs())
-"""
+  print("{}player game:".format(i), "random strategy exploitability:", kuhn_poker_agent.get_exploitability_dfs(), "infoset num:", len(kuhn_poker_agent.infoSets_dict))
+
+  upper_bound = (i+1) * (3**(2*i - 2))
+  print("upper_bound:", upper_bound)
+
 
 doctest.testmod()
