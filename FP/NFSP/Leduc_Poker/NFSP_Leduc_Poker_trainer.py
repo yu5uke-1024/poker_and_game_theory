@@ -1,4 +1,5 @@
-#Library
+
+# _________________________________ Library _________________________________
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -9,87 +10,219 @@ from tqdm import tqdm
 import time
 import doctest
 import copy
-from sklearn.neural_network import MLPClassifier
 from collections import deque
 import wandb
 
-
-import FSP_Leduc_Poker_supervised_learning
-import FSP_Leduc_Poker_reinforcement_learning
-import FSP_Leduc_Poker_generate_data
+import torch
+import torch.nn as nn
 
 
 
+
+# _________________________________ Train class _________________________________
 class LeducTrainer:
-  def __init__(self, train_iterations=10**1, num_players =2):
+  def __init__(self, train_iterations=10, num_players=2, wandb_save=False):
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
     self.NUM_ACTIONS = 3
     self.ACTION_DICT = {0:"f", 1:"c", 2:"r"}
+    self.ACTION_DICT_verse = {"f":0, "c":1, "r":2}
+    self.STATE_BIT_LEN = 2* ( (self.NUM_PLAYERS + 1) + 3*(self.NUM_PLAYERS *3 - 2) )
+    self.cards = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
+    self.wandb_save = wandb_save
     self.avg_strategy = {}
     self.node_possible_action = {}
-    self.card_rank = self.make_rank()
     self.history_action_player_dict = {}
+    self.card_rank = self.make_rank()
+    self.card_order  = self.make_card_order()
+    self.card_set = set(self.card_distribution())
 
 
-  def Get_possible_action_by_information_set(self, infoset): #{0:"f", 1:"c", 2:"r"}
-    """return int
-    >>> LeducTrainer().Get_possible_action_by_information_set("JccKc")
-    array([1, 2])
-    >>> LeducTrainer().Get_possible_action_by_information_set("Jr")
-    array([0, 1, 2])
-    >>> LeducTrainer().Get_possible_action_by_information_set("JccJc")
-    array([1, 2])
-    >>> LeducTrainer().Get_possible_action_by_information_set("J")
-    array([1, 2])
-    """
-    infoset_without_hand_card = infoset[1:]
-    if self.card_num_check(infoset_without_hand_card) == 1:
-      private_cards, history_before, community_card, history_after = self.Split_history("??" + infoset_without_hand_card)
-      infoset_without_hand_card = history_after
+# _________________________________ Train main method _________________________________
+  def train(self, eta, memory_size_rl, memory_size_sl, rl_algo, sl_algo, rl_module, sl_module, gd_module):
+    self.exploitability_list = {}
+    self.avg_utility_list = {}
+    self.eta = eta
+    self.rl_algo = rl_algo
+    self.sl_algo = sl_algo
 
-    if  len(infoset_without_hand_card) == 0 or infoset_without_hand_card.count("r") == 0:
-      return np.array([1,2], dtype=int)
-    elif infoset_without_hand_card.count("r") == 1:
-      return np.array([0,1,2], dtype=int)
-    elif infoset_without_hand_card.count("r") == 2:
-      return np.array([0,1], dtype=int)
+    self.M_SL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
+    self.M_RL = [deque([], maxlen=memory_size_rl) for _ in range(self.NUM_PLAYERS)]
 
 
-  def make_rank(self):
-    """return dict
-    >>> LeducTrainer(num_players=2).make_rank() == {"KK":6, "QQ":5, "JJ":4, "KQ":3, "QK":3, "KJ":2, "JK":2, "QJ":1, "JQ":1}
-    True
-    """
-    card_deck = self.card_distribution()
-    card_unique = card_deck[::2]
-    card_rank = {}
-    count = (len(card_unique)-1)*len(card_unique) //2
-    for i in range(len(card_unique)-1,-1, -1):
-      for j in range(i-1, -1, -1):
-            card_rank[card_unique[i] + card_unique[j]] = count
-            card_rank[card_unique[j] + card_unique[i]] = count
-            count -= 1
+    self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
+    self.infoSets_dict = {}
+    self.infoset_action_player_dict = {}
 
-    count = (len(card_unique)-1)*len(card_unique) //2 +1
-    for i in range(len(card_unique)):
-        card_rank[card_unique[i] + card_unique[i]] = count
-        count += 1
+    for target_player in range(self.NUM_PLAYERS):
+      self.create_infoSets("", target_player, 1.0)
 
-    return card_rank
+    self.epsilon_greedy_q_learning_strategy = copy.deepcopy(self.avg_strategy)
 
 
-  def Rank(self, my_card, com_card):
-    """return int
-    >>> LeducTrainer(num_players=2).Rank("J", "Q")
-    1
-    >>> LeducTrainer(num_players=2).Rank("Q", "J")
-    1
-    >>> LeducTrainer(num_players=2).Rank("K", "K")
-    6
-    """
-    hand = my_card + com_card
-    return self.card_rank[hand]
+    self.RL = rl_module
+    self.SL = sl_module
+    self.GD = gd_module
+    self.GD.infoset_action_player_dict = self.infoset_action_player_dict
+    self.SL.infoset_action_player_dict = self.infoset_action_player_dict
+
+
+    # n_count
+    self.N_count = copy.deepcopy(self.avg_strategy)
+    for node, cn in self.N_count.items():
+      self.N_count[node] = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
+      for key_i, valye_i in enumerate(self.avg_strategy[node]):
+        if valye_i != 0:
+          self.N_count[node][key_i] = 1.0
+
+
+    for iteration_t in tqdm(range(1, int(self.train_iterations)+1)):
+
+
+      #0 → epsilon_greedy_q_strategy, 1 → avg_strategy
+      self.sigma_strategy_bit = [-1 for _ in range(self.NUM_PLAYERS)]
+      for player_i in range(self.NUM_PLAYERS):
+        if np.random.uniform() < self.eta:
+          self.sigma_strategy_bit[player_i] = 0
+        else:
+          self.sigma_strategy_bit[player_i] = 1
+
+
+
+      self.cards = self.card_distribution()
+      random.shuffle(self.cards)
+      history = "".join(self.cards[:self.NUM_PLAYERS])
+
+      self.player_last_infoset = [None for _ in range(self.NUM_PLAYERS)]
+      self.train_one_episode(history, iteration_t)
+
+
+
+
+      if iteration_t in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
+        self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
+        self.avg_utility_list[iteration_t] = self.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(self.NUM_PLAYERS)])
+
+
+        self.optimality_gap = 0
+        self.infoSets_dict = {}
+        for target_player in range(self.NUM_PLAYERS):
+          self.create_infoSets("", target_player, 1.0)
+        self.best_response_strategy_dfs = {}
+        for best_response_player_i in range(self.NUM_PLAYERS):
+          self.calc_best_response_value(self.best_response_strategy_dfs, best_response_player_i, "", 1)
+
+        for player_i in range(self.NUM_PLAYERS):
+          self.optimality_gap_i = 1/2 * (self.GD.calculate_optimal_gap_best_response_strategy(self.best_response_strategy_dfs, self.avg_strategy, player_i)
+           - self.GD.calculate_optimal_gap_best_response_strategy(self.epsilon_greedy_q_learning_strategy, self.avg_strategy, player_i))
+
+          self.optimality_gap += self.optimality_gap_i
+
+
+        if self.wandb_save:
+          wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
+
+
+        #print(self.epsilon_greedy_q_learning_strategy["J"], self.avg_strategy["J"])
+        #print(self.best_response_strategy_dfs)
+        #print(self.epsilon_greedy_q_learning_strategy)
+
+
+
+
+
+
+# _________________________________ Train second main method _________________________________
+  def train_one_episode(self, history, iteration_t):
+
+    player = self.action_player(history)
+
+    s = history[player] + history[self.NUM_PLAYERS:]
+
+    self.player_last_infoset[player] = s
+
+    if self.sigma_strategy_bit[player] == 0:
+      sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.epsilon_greedy_q_learning_strategy[s])
+    elif self.sigma_strategy_bit[player] == 1:
+      sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.avg_strategy[s])
+
+
+    a = self.ACTION_DICT[sampling_action]
+    Nexthistory = history + self.ACTION_DICT[sampling_action]
+
+
+
+    next_transition = []
+
+    if self.whether_chance_node(Nexthistory):
+      Nexthistory += self.cards[self.NUM_PLAYERS]
+
+
+
+    if self.whether_terminal_states(Nexthistory):
+      r = self.Return_payoff_for_terminal_states(Nexthistory, player)
+      s_prime = None
+      self.M_RL[player].append((s, a, r, s_prime))
+      next_transition = [s, a, r, s_prime, Nexthistory]
+
+
+    else:
+      other_s, other_a, other_r, other_s_prime, other_history = self.train_one_episode(Nexthistory, iteration_t)
+
+
+      if self.whether_terminal_states(other_history):
+        r = self.Return_payoff_for_terminal_states(other_history, player)
+        s_prime = None
+        self.M_RL[player].append((s, a, r, s_prime))
+        other_history = other_history[:-1]
+        next_transition = [s, a, r, s_prime, other_history]
+      else:
+        r = 0
+        if other_history[-1] in self.card_set:
+          other_history = other_history[:-2]
+        else:
+          other_history = other_history[:-1]
+
+        s_prime = self.player_last_infoset[player]
+        self.M_RL[player].append((s, a, r, s_prime))
+
+        self.player_last_infoset[player] = s
+
+        next_transition = [s, a, r, s_prime, other_history]
+
+
+    if self.sigma_strategy_bit[player] == 0:
+      self.M_SL[player].append((s, a))
+
+
+    if len(self.M_SL[player]) != 0:
+
+      if self.sl_algo == "mlp":
+        self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
+      elif self.sl_algo == "cnt":
+        self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
+        self.M_SL[player] = []
+
+
+    if self.rl_algo == "dqn":
+      self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
+
+    elif self.rl_algo == "dfs":
+
+      self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
+      self.infoSets_dict = {}
+      self.infoset_action_player_dict = {}
+
+      for target_player in range(self.NUM_PLAYERS):
+        self.create_infoSets("", target_player, 1.0)
+      self.epsilon_greedy_q_learning_strategy = {}
+      for best_response_player_i in range(self.NUM_PLAYERS):
+          self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
+
+
+
+    return next_transition
+
 
 
   def card_distribution(self):
@@ -171,6 +304,7 @@ class LeducTrainer:
     return player_action_list, player_money_list_round1, player_money_list_round2, community_card
 
 
+
   def action_player(self, history):
     """return int
     >>> LeducTrainer().action_player("JJc")
@@ -221,7 +355,6 @@ class LeducTrainer:
     -1
     >>> int(LeducTrainer().Return_payoff_for_terminal_states("QKrrf", 0))
     -3
-
     >>> int(LeducTrainer().Return_payoff_for_terminal_states("JJccQcc", 0))
     0
     >>> int(LeducTrainer().Return_payoff_for_terminal_states("JKccQcc", 1))
@@ -289,7 +422,6 @@ class LeducTrainer:
       win_num = len([idx for idx, card_rank in show_down_player_card.items() if card_rank == max_rank])
 
       return int((sum(player_money_list_round1) + sum(player_money_list_round2))/win_num) - player_money_list_round1[target_player_i] - player_money_list_round2[target_player_i]
-
 
 
   # whetther terminal_states
@@ -461,6 +593,7 @@ class LeducTrainer:
         return nodeUtil
 
 
+
   def create_infoSets(self, history, target_player, po):
     player = self.action_player(history)
 
@@ -532,9 +665,9 @@ class LeducTrainer:
 
 
 
+
   def eval_vanilla_CFR(self, history, target_player_i, iteration_t, p_list):
-    if self.card_num_check(history) == self.NUM_PLAYERS + 1:
-      private_cards, history_before, community_card, history_after = self.Split_history(history)
+
 
     player = self.action_player(history)
 
@@ -574,105 +707,120 @@ class LeducTrainer:
     return nodeUtil
 
 
-  def show_plot(self, method):
-    plt.scatter(list(self.exploitability_list.keys()), list(self.exploitability_list.values()), label=method)
-    plt.plot(list(self.exploitability_list.keys()), list(self.exploitability_list.values()))
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.xlabel("iterations")
-    plt.ylabel("exploitability")
-    plt.legend()
-    #plt.show()
+  def Rank(self, my_card, com_card):
+    """return int
+    >>> LeducTrainer(num_players=2).Rank("J", "Q")
+    1
+    >>> LeducTrainer(num_players=2).Rank("Q", "J")
+    1
+    >>> LeducTrainer(num_players=2).Rank("K", "K")
+    6
+    """
+    hand = my_card + com_card
+    return self.card_rank[hand]
+
+
+  def make_rank(self):
+    """return dict
+    >>> LeducTrainer(num_players=2).make_rank() == {"KK":6, "QQ":5, "JJ":4, "KQ":3, "QK":3, "KJ":2, "JK":2, "QJ":1, "JQ":1}
+    True
+    """
+    card_deck = self.card_distribution()
+    card_unique = card_deck[::2]
+    card_rank = {}
+    count = (len(card_unique)-1)*len(card_unique) //2
+    for i in range(len(card_unique)-1,-1, -1):
+      for j in range(i-1, -1, -1):
+            card_rank[card_unique[i] + card_unique[j]] = count
+            card_rank[card_unique[j] + card_unique[i]] = count
+            count -= 1
+
+    count = (len(card_unique)-1)*len(card_unique) //2 +1
+    for i in range(len(card_unique)):
+        card_rank[card_unique[i] + card_unique[i]] = count
+        count += 1
+
+    return card_rank
+
+
+  def Get_possible_action_by_information_set(self, infoset): #{0:"f", 1:"c", 2:"r"}
+    """return int
+    >>> LeducTrainer().Get_possible_action_by_information_set("JccKc")
+    array([1, 2])
+    >>> LeducTrainer().Get_possible_action_by_information_set("Jr")
+    array([0, 1, 2])
+    >>> LeducTrainer().Get_possible_action_by_information_set("JccJc")
+    array([1, 2])
+    >>> LeducTrainer().Get_possible_action_by_information_set("J")
+    array([1, 2])
+    """
+    infoset_without_hand_card = infoset[1:]
+    if self.card_num_check(infoset_without_hand_card) == 1:
+      private_cards, history_before, community_card, history_after = self.Split_history("??" + infoset_without_hand_card)
+      infoset_without_hand_card = history_after
+
+    if  len(infoset_without_hand_card) == 0 or infoset_without_hand_card.count("r") == 0:
+      return np.array([1,2], dtype=int)
+    elif infoset_without_hand_card.count("r") == 1:
+      return np.array([0,1,2], dtype=int)
+    elif infoset_without_hand_card.count("r") == 2:
+      return np.array([0,1], dtype=int)
 
 
 
-  #KuhnTrainer main method
-  def train(self, n, m, memory_size_rl, memory_size_sl, wandb_save, rl_algo, sl_algo, pseudo_code):
-    self.exploitability_list = {}
+  def from_episode_to_bit(self, one_s_a_set):
+    """return list
+    >>> LeducTrainer().from_episode_to_bit([('Q', 'r')])
+    (array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0]), array([2]))
+    """
+    for X, y in one_s_a_set:
+      y_bit = self.make_action_bit(y)
+      X_bit = self.make_state_bit(X)
 
-    self.M_SL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
-    self.M_RL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
-
-    self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
-    self.infoSets_dict = {}
-    self.infoset_action_player_dict = {}
-
-    for target_player in range(self.NUM_PLAYERS):
-      self.create_infoSets("", target_player, 1.0)
-
-
-    self.best_response_strategy = copy.deepcopy(self.avg_strategy)
-
-    # n_count
-    self.N_count = copy.deepcopy(self.avg_strategy)
-    for node, cn in self.N_count.items():
-      self.N_count[node] = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
-      for key_i, valye_i in enumerate(self.avg_strategy[node]):
-        if valye_i != 0:
-          self.N_count[node][key_i] = 1.0
-
-    # q_value
-    self.Q_value = [np.zeros((len(self.infoSets_dict_player[i]),3)) for i in range(self.NUM_PLAYERS)]
-
-
-    RL = FSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action, self.infoset_action_player_dict)
-    SL = FSP_Leduc_Poker_supervised_learning.SupervisedLearning(self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action, self.infoset_action_player_dict)
-    GD = FSP_Leduc_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS, self.infoset_action_player_dict)
-
-
-    for iteration_t in tqdm(range(int(self.train_iterations))):
-      if pseudo_code == "batch_FSP":
-        GD.generate_data1(self.avg_strategy, n, self.M_RL)
-
-        #for target_player in range(self.NUM_PLAYERS):
-        #  self.create_infoSets("", target_player, 1.0)
-        #self.best_response_strategy = {}
-        #for best_response_player_i in range(self.NUM_PLAYERS):
-        #    self.calc_best_response_value(self.best_response_strategy, best_response_player_i, "", 1)
-
-        for player_i in range(self.NUM_PLAYERS):
-          RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
+    return (X_bit, y_bit)
 
 
 
-        GD.generate_data2(self.avg_strategy, self.best_response_strategy, m, self.M_RL, self.M_SL)
-
-        for player_i in range(self.NUM_PLAYERS):
-          if sl_algo == "cnt":
-            SL.SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
-            self.M_SL[player_i] = []
-          elif sl_algo == "mlp":
-            SL.SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
-
-
-      elif pseudo_code == "general_FSP":
-        eta = 1/(iteration_t+2)
-        D = GD.generate_data0(self.avg_strategy, self.best_response_strategy, n, m, eta)
-
-        for player_i in range(self.NUM_PLAYERS):
-          self.M_SL[player_i].extend(D[player_i])
-          self.M_RL[player_i].extend(D[player_i])
+  def make_action_bit(self, y):
+    if y == "f":
+      y_bit = np.array([0])
+    elif y == "c":
+      y_bit = np.array([1])
+    elif y == "r":
+      y_bit = np.array([2])
+    return y_bit
 
 
-          RL.RL_train(self.M_RL[player_i], player_i, self.best_response_strategy, self.Q_value[player_i], iteration_t, rl_algo)
+
+  def make_state_bit(self, X):
+    X_bit = np.array([0 for _ in range(self.STATE_BIT_LEN)])
+
+    if X == None:
+      return X_bit
+    X_bit[self.card_order[X[0]]] = 1
+
+    for idx, Xi in enumerate(X[1:]):
+      if Xi not in self.cards:
+        X_bit[(self.NUM_PLAYERS+1) + 3*idx + self.ACTION_DICT_verse[Xi]] = 1
+      else:
+        com_idx = self.card_order[Xi] + 1
+        X_bit[-com_idx] = 1
+    return X_bit
 
 
-          if sl_algo == "cnt":
-            SL.SL_train_AVG(self.M_SL[player_i], player_i, self.avg_strategy, self.N_count)
-          elif sl_algo == "mlp":
-            SL.SL_train_MLP(self.M_SL[player_i], player_i, self.avg_strategy)
+  def make_card_order(self):
+    """return dict
+    >>> LeducTrainer(num_players=2).make_card_order() == {'J':0, 'Q':1, 'K':2}
+    True
+    >>> LeducTrainer(num_players=3).make_card_order() == {'T':0, 'J':1, 'Q':2, 'K':3}
+    True
+    """
+    card_order = {}
+    for i in range(self.NUM_PLAYERS+1):
+      card_order[self.cards[11-self.NUM_PLAYERS+i]] =  i
 
-
-      if iteration_t in [int(j)-1 for j in np.logspace(0, len(str(self.train_iterations))-1, (len(str(self.train_iterations))-1)*3)] :
-        self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
-
-        if wandb_save:
-          wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
-
-
-    #self.show_plot("FSP")
-    if wandb_save:
-      wandb.save()
+    return card_order
 
 
 doctest.testmod()

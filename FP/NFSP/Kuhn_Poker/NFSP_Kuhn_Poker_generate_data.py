@@ -126,7 +126,9 @@ class GenerateData:
   def calculate_optimal_gap_best_response_strategy(self, strategy1, strategy2, target_player):
     strategy1_player_list = self.strategy_split_player(strategy1)
     strategy2_player_list = self.strategy_split_player(strategy2)
-    return self.calculate_avg_utility_for_strategy("", 0, 0, [1.0 for _ in range(self.NUM_PLAYERS)], strategy1_player_list, strategy2_player_list)
+
+
+    return self.calculate_avg_utility_for_strategy("", target_player, 0, [1.0 for _ in range(self.NUM_PLAYERS)], strategy1_player_list, strategy2_player_list)
 
 
   def calculate_avg_utility_for_strategy(self, history, target_player_i, iteration_t, p_list, strategy1_player_list, strategy2_player_list):

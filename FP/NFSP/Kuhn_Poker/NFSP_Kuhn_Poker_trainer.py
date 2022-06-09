@@ -97,8 +97,11 @@ class KuhnTrainer:
           self.calc_best_response_value(self.best_response_strategy_dfs, best_response_player_i, "", 1)
 
         for player_i in range(self.NUM_PLAYERS):
-          self.optimality_gap += 1/2 * (self.GD.calculate_optimal_gap_best_response_strategy(self.best_response_strategy_dfs, self.avg_strategy, player_i)
+          self.optimality_gap_i = 1/2 * (self.GD.calculate_optimal_gap_best_response_strategy(self.best_response_strategy_dfs, self.avg_strategy, player_i)
            - self.GD.calculate_optimal_gap_best_response_strategy(self.epsilon_greedy_q_learning_strategy, self.avg_strategy, player_i))
+
+
+          self.optimality_gap += self.optimality_gap_i
 
         if self.wandb_save:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
@@ -176,11 +179,7 @@ class KuhnTrainer:
       for best_response_player_i in range(self.NUM_PLAYERS):
         self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
 
-      #print(self.epsilon_greedy_q_learning_strategy)
 
-
-
-    #print(next_transition)
     return next_transition
 
 
