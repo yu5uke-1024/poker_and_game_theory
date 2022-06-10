@@ -171,6 +171,7 @@ class KuhnTrainer:
 
     if self.rl_algo == "dqn":
       self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
+
     elif self.rl_algo == "dfs":
       self.infoSets_dict = {}
       for target_player in range(self.NUM_PLAYERS):

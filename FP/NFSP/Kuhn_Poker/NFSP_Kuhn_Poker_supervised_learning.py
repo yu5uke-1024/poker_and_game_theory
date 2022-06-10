@@ -53,7 +53,7 @@ class SL_Network(nn.Module):
 
 # _________________________________ SL class _________________________________
 class SupervisedLearning:
-  def __init__(self,train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, kuhn_trainer_for_sl):
+  def __init__(self,train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, loss_function, kuhn_trainer_for_sl):
 
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
@@ -75,7 +75,7 @@ class SupervisedLearning:
     self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.lr)
 
 
-    self.loss_fn = nn.BCELoss()
+    self.loss_fn = loss_function
     #self.loss_fn = nn.CrossEntropyLoss()
 
 

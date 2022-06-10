@@ -24,14 +24,14 @@ class DQN(nn.Module):
         self.fc2 = nn.Linear(self.hidden_units_num, action_num)
 
     def forward(self, x):
-        h1 = F.relu(self.fc1(x))
+        h1 = F.leaky_relu(self.fc1(x))
         output = self.fc2(h1)
         return output
 
 
 # _________________________________ RL class _________________________________
 class ReinforcementLearning:
-  def __init__(self, train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, gamma, tau, update_frequency, kuhn_trainer_for_rl):
+  def __init__(self, train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, gamma, tau, update_frequency, loss_function, kuhn_trainer_for_rl):
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
     self.num_actions = 2
@@ -57,6 +57,7 @@ class ReinforcementLearning:
 
 
     self.optimizer = optim.SGD(self.deep_q_network.parameters(), lr=self.lr)
+    self.loss_fn = loss_function
 
 
   def RL_learn(self, memory, target_player, update_strategy, k):
@@ -113,7 +114,7 @@ class ReinforcementLearning:
 
 
       self.optimizer.zero_grad()
-      loss = F.mse_loss(q_targets, q_now)
+      loss =   self.loss_fn(q_targets, q_now)
 
       total_loss += loss.item()
 
@@ -129,6 +130,16 @@ class ReinforcementLearning:
       if self.kuhn_trainer.wandb_save:
         wandb.log({'iteration': k, 'loss_rl': total_loss/self.epochs})
 
+      """
+      self.deep_q_network.eval()
+      with torch.no_grad():
+        for node_X , _ in update_strategy.items():
+          if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
+            inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
+            y = self.deep_q_network.forward(inputs_eval).detach().numpy()
+            print(node_X, y)
+      print("")
+      """
 
 
     #eval
@@ -159,11 +170,17 @@ class ReinforcementLearning:
 
 
   def parameter_update(self):
+
+    # soft update
+    """
     for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
       target_param.data.copy_(
           self.tau * param.data + (1.0 - self.tau) * target_param.data)
+    """
 
-
+    # hard update
+    for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
+      target_param.data.copy_(param.data)
 
 
 

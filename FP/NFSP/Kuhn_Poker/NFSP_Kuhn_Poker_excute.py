@@ -11,6 +11,11 @@ import doctest
 import copy
 import wandb
 import datetime
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+
 
 from collections import defaultdict
 from tqdm import tqdm
@@ -25,9 +30,9 @@ import NFSP_Kuhn_Poker_generate_data
 # _________________________________ config _________________________________
 
 config = dict(
-  iterations = 10**1,
+  iterations = 10**4,
   num_players = 2,
-  wandb_save = [True, False][1],
+  wandb_save = [True, False][0],
 
 
   #train
@@ -40,6 +45,7 @@ config = dict(
   sl_lr = 0.001,
   sl_epochs = 1,
   sl_sampling_num = 128,
+  sl_loss_function = [nn.BCELoss()][0],
 
   #rl
   rl_hidden_units_num= 32,
@@ -48,9 +54,10 @@ config = dict(
   rl_sampling_num = 128,
   rl_gamma = 1.0,
   rl_tau = 0.1,
-  rl_update_frequency = 300,
+  rl_update_frequency = 100,
   sl_algo = ["cnt", "mlp"][1],
-  rl_algo = ["dfs", "dqn"][1]
+  rl_algo = ["dfs", "dqn"][1],
+  rl_loss_function = [F.mse_loss, nn.HuberLoss()][1]
 )
 
 
@@ -81,6 +88,7 @@ kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
   gamma = config["rl_gamma"],
   tau = config["rl_tau"],
   update_frequency = config["rl_update_frequency"],
+  loss_function = config["rl_loss_function"],
   kuhn_trainer_for_rl = kuhn_trainer
   )
 
@@ -92,6 +100,7 @@ kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
   lr = config["sl_lr"],
   epochs = config["sl_epochs"],
   sampling_num = config["sl_sampling_num"],
+  loss_function = config["sl_loss_function"],
   kuhn_trainer_for_sl = kuhn_trainer
   )
 
