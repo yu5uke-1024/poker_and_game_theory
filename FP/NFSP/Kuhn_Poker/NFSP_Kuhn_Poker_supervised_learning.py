@@ -43,9 +43,9 @@ class SL_Network(nn.Module):
         h1 = F.leaky_relu(self.fc1(x))
 
         #output = self.fc2(h1)
-        #h2 = self.dropout(h1)
+        h2 = self.dropout(h1)
 
-        output = torch.sigmoid(self.fc2(h1))
+        output = torch.sigmoid(self.fc2(h2))
 
 
         return output
@@ -92,8 +92,8 @@ class SupervisedLearning:
 
     for _ in range(self.epochs):
 
-      samples = self.reservoir_sampling(memory, min(self.sampling_num, len(memory)))
-      random.shuffle(samples)
+      #samples = self.reservoir_sampling(memory, min(self.sampling_num, len(memory)))
+      samples =  random.sample(memory, min(self.sampling_num, len(memory)))
 
 
       train_X = np.array([])

@@ -30,6 +30,7 @@ class KuhnTrainer:
     self.wandb_save = wandb_save
     self.card_rank = self.make_rank()
     self.avg_strategy = {}
+    self.memory_count_for_sl = 0
 
 
 # _________________________________ Train main method _________________________________
@@ -39,9 +40,11 @@ class KuhnTrainer:
     self.eta = eta
     self.rl_algo = rl_algo
     self.sl_algo = sl_algo
+    self.memory_size_sl = memory_size_sl
+    self.memory_size_rl = memory_size_rl
 
-    self.M_SL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
-    self.M_RL = [deque([], maxlen=memory_size_rl) for _ in range(self.NUM_PLAYERS)]
+    self.M_SL = [[] for _ in range(self.NUM_PLAYERS)]
+    self.M_RL = [deque([], maxlen=self.memory_size_rl) for _ in range(self.NUM_PLAYERS)]
 
     self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
     self.infoSets_dict = {}
@@ -77,7 +80,6 @@ class KuhnTrainer:
       cards = self.card_distribution(self.NUM_PLAYERS)
       random.shuffle(cards)
       history = "".join(cards[:self.NUM_PLAYERS])
-
 
       self.train_one_episode(history, iteration_t)
 
@@ -158,7 +160,7 @@ class KuhnTrainer:
 
 
     if self.sigma_strategy_bit[player] == 0:
-      self.M_SL[player].append((s, a))
+      self.reservior_add(self.M_SL[player],(s, a))
 
 
     if len(self.M_SL[player]) != 0:
@@ -169,8 +171,10 @@ class KuhnTrainer:
         self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
         self.M_SL[player] = []
 
+
     if self.rl_algo == "dqn":
       self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
+
 
     elif self.rl_algo == "dfs":
       self.infoSets_dict = {}
@@ -183,6 +187,16 @@ class KuhnTrainer:
 
     return next_transition
 
+
+  def reservior_add(self, memory, data):
+    if len(memory) < self.memory_size_sl:
+        memory.append(data)
+    else:
+        r = random.randint(0, self.memory_count_for_sl)
+        if r < self.memory_size_sl:
+            memory[r] = data
+
+    self.memory_count_for_sl += 1
 
 
   def card_distribution(self, num_players):

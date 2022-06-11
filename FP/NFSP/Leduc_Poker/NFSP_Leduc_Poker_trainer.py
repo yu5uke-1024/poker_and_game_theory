@@ -45,9 +45,13 @@ class LeducTrainer:
     self.eta = eta
     self.rl_algo = rl_algo
     self.sl_algo = sl_algo
+    self.memory_size_sl = memory_size_sl
+    self.memory_size_rl = memory_size_rl
+    self.memory_count_for_sl = 0
 
-    self.M_SL = [deque([], maxlen=memory_size_sl) for _ in range(self.NUM_PLAYERS)]
-    self.M_RL = [deque([], maxlen=memory_size_rl) for _ in range(self.NUM_PLAYERS)]
+
+    self.M_SL = [[] for _ in range(self.NUM_PLAYERS)]
+    self.M_RL = [deque([], maxlen= self.memory_size_rl) for _ in range(self.NUM_PLAYERS)]
 
 
     self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
@@ -223,6 +227,17 @@ class LeducTrainer:
 
     return next_transition
 
+
+
+  def reservior_add(self, memory, data):
+    if len(memory) < self.memory_size_sl:
+        memory.append(data)
+    else:
+        r = random.randint(0, self.memory_count_for_sl)
+        if r < self.memory_size_sl:
+            memory[r] = data
+
+    self.memory_count_for_sl += 1
 
 
   def card_distribution(self):

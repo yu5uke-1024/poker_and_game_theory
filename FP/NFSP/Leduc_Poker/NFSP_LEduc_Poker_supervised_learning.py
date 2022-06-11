@@ -98,8 +98,8 @@ class SupervisedLearning:
 
     for _ in range(self.epochs):
 
-      samples = self.reservoir_sampling(memory, min(self.sampling_num, len(memory)))
-      random.shuffle(samples)
+      samples =  random.sample(memory, min(self.sampling_num, len(memory)))
+
 
 
       train_X = np.array([])

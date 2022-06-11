@@ -113,13 +113,12 @@ class ReinforcementLearning:
       q_now = q_now.gather(1, train_actions.type(torch.int64))
 
 
-      self.optimizer.zero_grad()
       loss =   self.loss_fn(q_targets, q_now)
-
-      total_loss += loss.item()
-
+      self.optimizer.zero_grad()
       loss.backward()
       self.optimizer.step()
+
+      total_loss += loss.item()
 
 
     if k % self.update_frequency ==  0:

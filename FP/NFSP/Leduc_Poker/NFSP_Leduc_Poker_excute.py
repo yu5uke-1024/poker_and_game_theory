@@ -17,7 +17,7 @@ from tqdm import tqdm
 from collections import deque
 
 import NFSP_Leduc_Poker_trainer
-import NFSP_LEduc_Poker_supervised_learning
+import NFSP_Leduc_Poker_supervised_learning
 import NFSP_Leduc_Poker_reinforcement_learning
 import NFSP_Leduc_Poker_generate_data
 
@@ -25,7 +25,7 @@ import NFSP_Leduc_Poker_generate_data
 # _________________________________ config _________________________________
 
 config = dict(
-  iterations = 10**4,
+  iterations = 10**5,
   num_players = 2,
   wandb_save = [True, False][0],
 
@@ -85,7 +85,7 @@ leduc_RL = NFSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(
   )
 
 
-leduc_SL = NFSP_LEduc_Poker_supervised_learning.SupervisedLearning(
+leduc_SL = NFSP_Leduc_Poker_supervised_learning.SupervisedLearning(
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   hidden_units_num= config["sl_hidden_units_num"],
