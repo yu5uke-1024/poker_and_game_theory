@@ -43,9 +43,9 @@ class SL_Network(nn.Module):
         h1 = F.leaky_relu(self.fc1(x))
 
         #output = self.fc2(h1)
-        #h2 = self.dropout(h1)
+        h2 = self.dropout(h1)
 
-        output = self.fc2(h1)
+        output = self.fc2(h2)
 
 
         return output
@@ -53,7 +53,7 @@ class SL_Network(nn.Module):
 
 # _________________________________ SL class _________________________________
 class SupervisedLearning:
-  def __init__(self,train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, leduc_trainer_for_sl):
+  def __init__(self,train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, leduc_trainer_for_sl, random_seed):
 
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
@@ -63,26 +63,31 @@ class SupervisedLearning:
     self.lr = lr
     self.epochs = epochs
     self.sampling_num = sampling_num
+    self.random_seed = random_seed
 
     self.leduc_trainer = leduc_trainer_for_sl
+
+    self.leduc_trainer.random_seed_fix(random_seed = self.random_seed)
 
     self.card_rank  = self.leduc_trainer.card_rank
 
 
     self.sl_network = SL_Network(state_num=self.STATE_BIT_LEN, hidden_units_num=self.hidden_units_num)
 
-    #self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.lr, weight_decay=5*(10**(-4)))
-    self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.lr)
+    self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.lr, weight_decay=5*(10**(-4)))
+    #self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.lr)
 
     self.softmax = nn.Softmax(dim=1)
 
 
     self.loss_fn = nn.CrossEntropyLoss()
-    #self.loss_fn = nn.CrossEntropyLoss()
+
 
     self.infoset_action_player_dict = {}
     self.ACTION_DICT = {0:"f", 1:"c", 2:"r"}
     self.ACTION_DICT_verse = {"f":0, "c":1, "r":2}
+
+
 
 
   def SL_learn(self, memory, target_player, update_strategy, iteration_t):
@@ -99,7 +104,6 @@ class SupervisedLearning:
     for _ in range(self.epochs):
 
       samples =  random.sample(memory, min(self.sampling_num, len(memory)))
-
 
 
       train_X = np.array([])
@@ -125,6 +129,7 @@ class SupervisedLearning:
 
 
 
+
       loss = self.loss_fn(outputs, targets)
 
       #print(outputs, targets, loss)
@@ -147,19 +152,17 @@ class SupervisedLearning:
             #print(node_X, update_strategy[node_X])
 
 
-
-
-
-
-
     # eval
     self.sl_network.eval()
     with torch.no_grad():
       for node_X , _ in update_strategy.items():
-        if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
+        if self.infoset_action_player_dict[node_X] == target_player :
+
           inputs_eval = torch.from_numpy(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
 
           y = self.softmax(self.sl_network.forward(inputs_eval)).detach().numpy()[0]
+
+
 
 
           possible_action_list = self.leduc_trainer.node_possible_action[node_X]
@@ -175,22 +178,6 @@ class SupervisedLearning:
 
 
 
-  def whether_put_memory_i(self, i, data, k):
-    if i < k:
-      self.new_memory[i] = data
-    else:
-      r = random.randint(1, i)
-      if r < k:
-        self.new_memory[r] = data
-
-
-
-  def reservoir_sampling(self, memory, k):
-    self.new_memory = [None for _ in range(k)]
-    for i in range(len(memory)):
-      self.whether_put_memory_i(i, memory[i], k)
-
-    return self.new_memory
 
 
   def SL_train_AVG(self, memory, target_player, strategy, n_count):

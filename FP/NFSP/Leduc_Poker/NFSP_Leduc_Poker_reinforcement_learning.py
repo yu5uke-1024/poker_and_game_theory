@@ -31,7 +31,7 @@ class DQN(nn.Module):
 
 # _________________________________ RL class _________________________________
 class ReinforcementLearning:
-  def __init__(self, train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, gamma, tau, update_frequency, leduc_trainer_for_rl):
+  def __init__(self, train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, gamma, tau, update_frequency, leduc_trainer_for_rl, random_seed):
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
     self.num_actions = 3
@@ -44,13 +44,17 @@ class ReinforcementLearning:
     self.gamma = gamma
     self.tau = tau
     self.update_frequency = update_frequency
+    self.random_seed = random_seed
+
     self.leduc_trainer = leduc_trainer_for_rl
     self.card_rank  = self.leduc_trainer.card_rank
+    self.infoset_action_player_dict = {}
 
 
     self.deep_q_network = DQN(state_num = self.STATE_BIT_LEN, action_num = self.num_actions, hidden_units_num = self.hidden_units_num)
     self.deep_q_network_target = DQN(state_num = self.STATE_BIT_LEN, action_num = self.num_actions, hidden_units_num = self.hidden_units_num)
 
+    self.leduc_trainer.random_seed_fix(self.random_seed)
 
     for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
         target_param.data.copy_(param.data)
@@ -136,7 +140,7 @@ class ReinforcementLearning:
     self.deep_q_network.eval()
     with torch.no_grad():
       for node_X , _ in update_strategy.items():
-        if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
+        if self.infoset_action_player_dict[node_X] == target_player :
           inputs_eval = torch.from_numpy(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
           y = self.deep_q_network.forward(inputs_eval).detach().numpy()
 

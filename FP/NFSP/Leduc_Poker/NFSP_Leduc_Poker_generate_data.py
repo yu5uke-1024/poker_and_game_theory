@@ -17,12 +17,14 @@ from collections import deque
 # _________________________________ GD class _________________________________
 
 class GenerateData:
-  def __init__(self, num_players, leduc_trainer_for_gd):
+  def __init__(self, num_players, leduc_trainer_for_gd, random_seed):
     self.NUM_PLAYERS = num_players
     self.num_actions = 3
+    self.random_seed = random_seed
 
     self.leduc_trainer = leduc_trainer_for_gd
     self.infoset_action_player_dict = {}
+    self.leduc_trainer.random_seed_fix(self.random_seed)
 
 
   def generate_data0(self, pi_strategy, beta_strategy, n, m, eta):

@@ -21,7 +21,7 @@ import torch.nn as nn
 
 # _________________________________ Train class _________________________________
 class LeducTrainer:
-  def __init__(self, train_iterations=10, num_players=2, wandb_save=False):
+  def __init__(self, random_seed, train_iterations=10, num_players=2, wandb_save=False):
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
     self.NUM_ACTIONS = 3
@@ -33,9 +33,12 @@ class LeducTrainer:
     self.avg_strategy = {}
     self.node_possible_action = {}
     self.history_action_player_dict = {}
+    self.random_seed = random_seed
     self.card_rank = self.make_rank()
     self.card_order  = self.make_card_order()
     self.card_set = set(self.card_distribution())
+
+    self.random_seed_fix(self.random_seed)
 
 
 # _________________________________ Train main method _________________________________
@@ -69,6 +72,7 @@ class LeducTrainer:
     self.GD = gd_module
     self.GD.infoset_action_player_dict = self.infoset_action_player_dict
     self.SL.infoset_action_player_dict = self.infoset_action_player_dict
+    self.RL.infoset_action_player_dict = self.infoset_action_player_dict
 
 
     # n_count
@@ -227,6 +231,11 @@ class LeducTrainer:
 
     return next_transition
 
+
+  def random_seed_fix(self, random_seed):
+      random.seed(random_seed)
+      np.random.seed(random_seed)
+      torch.manual_seed(random_seed)
 
 
   def reservior_add(self, memory, data):

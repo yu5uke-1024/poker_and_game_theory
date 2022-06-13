@@ -25,21 +25,22 @@ import NFSP_Leduc_Poker_generate_data
 # _________________________________ config _________________________________
 
 config = dict(
-  iterations = 10**6,
+  random_seed = 42,
+  iterations = 10**3,
   num_players = 2,
-  wandb_save = [True, False][0],
+  wandb_save = [True, False][1],
 
 
   #train
   eta = 0.1,
-  memory_size_rl = 10**5,
-  memory_size_sl = 10**6,
+  memory_size_rl = 2*(10**5),
+  memory_size_sl = 2*(10**6),
 
   #sl
   sl_hidden_units_num= 64,
   sl_lr = 0.001,
   sl_epochs = 1,
-  sl_sampling_num = 128,
+  sl_sampling_num =128,
 
   #rl
   rl_hidden_units_num= 64,
@@ -49,7 +50,7 @@ config = dict(
   rl_gamma = 1.0,
   rl_tau = 0.1,
   rl_update_frequency = 300,
-  sl_algo = ["cnt", "mlp"][0],
+  sl_algo = ["cnt", "mlp"][1],
   rl_algo = ["dfs", "dqn"][1]
 )
 
@@ -65,6 +66,7 @@ if config["wandb_save"]:
 # _________________________________ train _________________________________
 
 leduc_trainer = NFSP_Leduc_Poker_trainer.LeducTrainer(
+  random_seed = config["random_seed"],
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   wandb_save = config["wandb_save"]
@@ -72,6 +74,7 @@ leduc_trainer = NFSP_Leduc_Poker_trainer.LeducTrainer(
 
 
 leduc_RL = NFSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(
+  random_seed = config["random_seed"],
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   hidden_units_num = config["rl_hidden_units_num"],
@@ -86,6 +89,7 @@ leduc_RL = NFSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(
 
 
 leduc_SL = NFSP_Leduc_Poker_supervised_learning.SupervisedLearning(
+  random_seed = config["random_seed"],
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   hidden_units_num= config["sl_hidden_units_num"],
@@ -99,6 +103,7 @@ leduc_SL = NFSP_Leduc_Poker_supervised_learning.SupervisedLearning(
 
 
 leduc_GD = NFSP_Leduc_Poker_generate_data.GenerateData(
+  random_seed = config["random_seed"],
   num_players= config["num_players"],
   leduc_trainer_for_gd= leduc_trainer
   )
