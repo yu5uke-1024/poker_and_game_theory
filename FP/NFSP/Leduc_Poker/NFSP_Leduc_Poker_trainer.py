@@ -196,7 +196,7 @@ class LeducTrainer:
 
 
     if self.sigma_strategy_bit[player] == 0:
-      self.M_SL[player].append((s, a))
+      self.reservior_add(self.M_SL[player],(s, a))
 
 
     if len(self.M_SL[player]) != 0:
@@ -238,6 +238,7 @@ class LeducTrainer:
             memory[r] = data
 
     self.memory_count_for_sl += 1
+
 
 
   def card_distribution(self):

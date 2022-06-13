@@ -24,7 +24,7 @@ class DQN(nn.Module):
         self.fc2 = nn.Linear(self.hidden_units_num, action_num)
 
     def forward(self, x):
-        h1 = F.relu(self.fc1(x))
+        h1 = F.leaky_relu(self.fc1(x))
         output = self.fc2(h1)
         return output
 
@@ -112,11 +112,12 @@ class ReinforcementLearning:
       q_now = q_now.gather(1, train_actions.type(torch.int64))
 
 
-      self.optimizer.zero_grad()
+
       loss = F.mse_loss(q_targets, q_now)
 
       total_loss += loss.item()
 
+      self.optimizer.zero_grad()
       loss.backward()
       self.optimizer.step()
 
@@ -161,10 +162,16 @@ class ReinforcementLearning:
 
 
   def parameter_update(self):
+    # soft update
+    """
     for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
       target_param.data.copy_(
           self.tau * param.data + (1.0 - self.tau) * target_param.data)
+    """
 
+    # hard update
+    for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
+      target_param.data.copy_(param.data)
 
 
 
