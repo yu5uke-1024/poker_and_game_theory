@@ -95,7 +95,7 @@ class SupervisedLearning:
     #train
     self.sl_network.train()
 
-    if len(memory) < self.sampling_num:
+    if len(memory) < 2:
       return
 
     total_loss = 0
@@ -103,7 +103,7 @@ class SupervisedLearning:
 
     for _ in range(self.epochs):
 
-      samples =  random.sample(memory, self.sampling_num)
+      samples =  random.sample(memory, min(self.sampling_num, len(memory)))
 
 
       train_X = np.array([])

@@ -23,6 +23,8 @@ import torch.nn.functional as F
 
 from NFSP_Kuhn_Poker_trainer import KuhnTrainer
 
+
+
 # _________________________________ SL NN class _________________________________
 class SL_Network(nn.Module):
     def __init__(self, state_num, hidden_units_num):
@@ -54,6 +56,10 @@ class SL_Network(nn.Module):
 # _________________________________ SL class _________________________________
 class SupervisedLearning:
   def __init__(self,train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, loss_function, kuhn_trainer_for_sl):
+
+    #self.device = torch.device('mps') if torch.backends.mps.is_available() else torch.device('cpu')
+
+
 
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
@@ -111,6 +117,7 @@ class SupervisedLearning:
       #print(samples)
       inputs = torch.from_numpy(train_X).float().reshape(-1,self.STATE_BIT_LEN)
       targets = torch.from_numpy(train_y).float().reshape(-1, 1)
+
 
       outputs = self.sl_network.forward(inputs)
 

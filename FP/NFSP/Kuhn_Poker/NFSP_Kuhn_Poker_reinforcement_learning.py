@@ -14,6 +14,9 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
+import warnings
+warnings.filterwarnings('ignore')
+
 # _________________________________ RL NN class _________________________________
 class DQN(nn.Module):
 

@@ -62,7 +62,7 @@ class ReinforcementLearning:
 
     self.optimizer = optim.SGD(self.deep_q_network.parameters(), lr=self.lr)
 
-    self.update_bit = 0
+    self.update_count = 0
 
 
   def RL_learn(self, memory, target_player, update_strategy, k):
@@ -71,10 +71,10 @@ class ReinforcementLearning:
     self.deep_q_network_target.eval()
     self.epsilon = 0.06/(k**0.5)
 
-
     total_loss = 0
     # train
     for _ in range(self.epochs):
+
 
       samples = random.sample(memory, min(self.sampling_num, len(memory)))
 
@@ -134,9 +134,8 @@ class ReinforcementLearning:
 
       total_loss += loss.item()
 
-    if k % self.update_frequency ==  0 and self.update_bit == 0 :
+    if k % self.update_frequency ==  0 :
       self.parameter_update()
-      self.update_bit = 1
 
 
     if k in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
