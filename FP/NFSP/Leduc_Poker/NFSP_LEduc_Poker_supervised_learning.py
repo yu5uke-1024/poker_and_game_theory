@@ -103,7 +103,7 @@ class SupervisedLearning:
 
     for _ in range(self.epochs):
 
-      samples =  random.sample(memory, min(self.sampling_num, len(memory)))
+      samples =  random.sample(memory, self.sampling_num)
 
 
       train_X = np.array([])

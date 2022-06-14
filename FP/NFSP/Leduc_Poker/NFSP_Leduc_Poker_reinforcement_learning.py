@@ -1,6 +1,6 @@
 
 # _________________________________ Library _________________________________
-from platform import node
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -62,6 +62,8 @@ class ReinforcementLearning:
 
     self.optimizer = optim.SGD(self.deep_q_network.parameters(), lr=self.lr)
 
+    self.update_bit = 0
+
 
   def RL_learn(self, memory, target_player, update_strategy, k):
 
@@ -94,7 +96,6 @@ class ReinforcementLearning:
           done = 0
 
 
-
         train_states = np.append(train_states, s_bit)
         train_actions = np.append(train_actions, a_bit)
         train_rewards = np.append(train_rewards, r)
@@ -113,21 +114,29 @@ class ReinforcementLearning:
       q_targets = train_rewards + (1 - train_done) * self.gamma * outputs
 
       q_now = self.deep_q_network(train_states)
-      q_now = q_now.gather(1, train_actions.type(torch.int64))
+      q_now_value = q_now.gather(1, train_actions.type(torch.int64))
 
 
+      loss = F.mse_loss(q_targets, q_now_value)
 
-      loss = F.mse_loss(q_targets, q_now)
+      if torch.isnan(loss):
+        print(outputs)
+        print(q_targets)
+        print(q_now)
+        print(q_now_value)
+        print(train_states)
+        exit()
 
-      total_loss += loss.item()
 
       self.optimizer.zero_grad()
       loss.backward()
       self.optimizer.step()
 
+      total_loss += loss.item()
 
-    if k % self.update_frequency ==  0:
+    if k % self.update_frequency ==  0 and self.update_bit == 0 :
       self.parameter_update()
+      self.update_bit = 1
 
 
     if k in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
@@ -154,14 +163,14 @@ class ReinforcementLearning:
             action_list = self.leduc_trainer.node_possible_action[node_X]
             max_idx = action_list[0]
 
+            #print(node_X, action_list, y)
+
             for ai in action_list:
               if y[0][ai] > y[0][max_idx]:
                 max_idx = ai
             update_strategy[node_X] = np.array([0 for _ in range(self.num_actions)], dtype=float)
             update_strategy[node_X][max_idx] = 1.0
 
-
-          #print(node_X, y)
 
 
 

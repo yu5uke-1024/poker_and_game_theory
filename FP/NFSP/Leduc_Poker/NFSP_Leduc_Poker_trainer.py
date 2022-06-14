@@ -86,7 +86,7 @@ class LeducTrainer:
 
     for iteration_t in tqdm(range(1, int(self.train_iterations)+1)):
 
-
+      self.RL.update_bit = 0
       #0 → epsilon_greedy_q_strategy, 1 → avg_strategy
       self.sigma_strategy_bit = [-1 for _ in range(self.NUM_PLAYERS)]
       for player_i in range(self.NUM_PLAYERS):
@@ -214,6 +214,8 @@ class LeducTrainer:
 
     if self.rl_algo == "dqn":
       self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
+
+
 
     elif self.rl_algo == "dfs":
 
