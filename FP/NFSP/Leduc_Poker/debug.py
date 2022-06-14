@@ -1,12 +1,6 @@
-import torch
-print(torch.__version__)
+import numpy as np
 
+a = [ np.array([1,2]), np.array([1,2,3]), np.array([1,2]), np.array([2,2,3])]
+a_hashable = map(tuple, a)
 
-a = torch.tensor([3])
-device = torch.device("mps")
-a.to(device)
-print(a)
-
-
-device = torch.device('mps') if torch.backends.mps.is_available() else torch.device('cpu')
-print(device)
+print(len(set(a_hashable)))

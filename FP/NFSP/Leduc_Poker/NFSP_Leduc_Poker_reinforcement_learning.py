@@ -62,7 +62,6 @@ class ReinforcementLearning:
 
     self.optimizer = optim.SGD(self.deep_q_network.parameters(), lr=self.lr)
 
-    self.update_count = 0
 
 
   def RL_learn(self, memory, target_player, update_strategy, k):
@@ -95,7 +94,6 @@ class ReinforcementLearning:
         else:
           done = 0
 
-
         train_states = np.append(train_states, s_bit)
         train_actions = np.append(train_actions, a_bit)
         train_rewards = np.append(train_rewards, r)
@@ -111,7 +109,9 @@ class ReinforcementLearning:
       outputs = self.deep_q_network_target(train_next_states).detach().max(axis=1)[0].unsqueeze(1)
 
 
+
       q_targets = train_rewards + (1 - train_done) * self.gamma * outputs
+
 
       q_now = self.deep_q_network(train_states)
       q_now_value = q_now.gather(1, train_actions.type(torch.int64))
@@ -119,12 +119,16 @@ class ReinforcementLearning:
 
       loss = F.mse_loss(q_targets, q_now_value)
 
+
       if torch.isnan(loss):
         print(outputs)
         print(q_targets)
         print(q_now)
         print(q_now_value)
         print(train_states)
+        print(train_actions)
+        print(train_rewards)
+        print(train_next_states)
         exit()
 
 
@@ -136,13 +140,6 @@ class ReinforcementLearning:
 
     if k % self.update_frequency ==  0 :
       self.parameter_update()
-
-
-    if k in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
-      if self.leduc_trainer.wandb_save:
-        wandb.log({'iteration': k, 'loss_rl': total_loss/self.epochs})
-
-
 
     #eval
     self.deep_q_network.eval()
@@ -169,6 +166,21 @@ class ReinforcementLearning:
                 max_idx = ai
             update_strategy[node_X] = np.array([0 for _ in range(self.num_actions)], dtype=float)
             update_strategy[node_X][max_idx] = 1.0
+
+
+    if k in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
+      if self.leduc_trainer.wandb_save:
+        wandb.log({'iteration': k, 'loss_rl': total_loss/self.epochs})
+
+      """
+      for node_X , _ in update_strategy.items():
+        if self.infoset_action_player_dict[node_X] == target_player :
+          inputs_eval = torch.from_numpy(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
+          y = self.deep_q_network.forward(inputs_eval).detach().numpy()
+          print(node_X, y, update_strategy[node_X])
+      """
+
+
 
 
 

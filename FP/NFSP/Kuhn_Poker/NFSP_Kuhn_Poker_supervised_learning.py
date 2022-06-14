@@ -119,13 +119,11 @@ class SupervisedLearning:
       targets = torch.from_numpy(train_y).float().reshape(-1, 1)
 
 
+
       outputs = self.sl_network.forward(inputs)
 
-
-      #loss = - (targets * outputs).sum(dim=-1).mean()
       loss = self.loss_fn(outputs, targets)
 
-      #print(outputs, targets, loss)
 
 
       self.optimizer.zero_grad()
@@ -158,6 +156,7 @@ class SupervisedLearning:
           inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
 
           y = self.sl_network.forward(inputs_eval).detach().numpy()[0]
+
 
           update_strategy[node_X] = np.array([1.0-y[0], y[0]])
 

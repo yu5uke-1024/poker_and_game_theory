@@ -131,6 +131,7 @@ class LeducTrainer:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
 
 
+
         #print(self.epsilon_greedy_q_learning_strategy["J"], self.avg_strategy["J"])
         #print(self.best_response_strategy_dfs)
         #print(self.epsilon_greedy_q_learning_strategy)

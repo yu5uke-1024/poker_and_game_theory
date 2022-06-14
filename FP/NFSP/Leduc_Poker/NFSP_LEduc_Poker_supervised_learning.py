@@ -83,6 +83,7 @@ class SupervisedLearning:
     self.loss_fn = nn.CrossEntropyLoss()
 
 
+
     self.infoset_action_player_dict = {}
     self.ACTION_DICT = {0:"f", 1:"c", 2:"r"}
     self.ACTION_DICT_verse = {"f":0, "c":1, "r":2}
@@ -115,7 +116,6 @@ class SupervisedLearning:
           train_X = np.append(train_X, train_i[0])
           train_y = np.append(train_y, train_i[1])
 
-          #print(one_s_a_set, train_i)
 
       #print("")
       #print(samples)
@@ -146,10 +146,6 @@ class SupervisedLearning:
       if self.leduc_trainer.wandb_save:
         wandb.log({'iteration': iteration_t, 'loss_sl': total_loss/self.epochs})
 
-
-        #for node_X , _ in update_strategy.items():
-          #if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
-            #print(node_X, update_strategy[node_X])
 
 
     # eval
