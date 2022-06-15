@@ -25,6 +25,7 @@ class DQN(nn.Module):
 
     def forward(self, x):
         h1 = F.leaky_relu(self.fc1(x))
+
         output = self.fc2(h1)
         return output
 
@@ -61,6 +62,8 @@ class ReinforcementLearning:
 
 
     self.optimizer = optim.SGD(self.deep_q_network.parameters(), lr=self.lr)
+
+    self.update_count = 0
 
 
 
@@ -119,7 +122,6 @@ class ReinforcementLearning:
 
       loss = F.mse_loss(q_targets, q_now_value)
 
-
       if torch.isnan(loss):
         print(outputs)
         print(q_targets)
@@ -138,7 +140,8 @@ class ReinforcementLearning:
 
       total_loss += loss.item()
 
-    if k % self.update_frequency ==  0 :
+    if self.update_count % self.update_frequency ==  0 :
+      #print(self.update_count)
       self.parameter_update()
 
     #eval
