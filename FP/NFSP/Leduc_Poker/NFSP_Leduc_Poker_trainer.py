@@ -21,13 +21,13 @@ import torch.nn as nn
 
 # _________________________________ Train class _________________________________
 class LeducTrainer:
-  def __init__(self, random_seed, train_iterations=10, num_players=2, wandb_save=False):
+  def __init__(self, random_seed=42, train_iterations=10, num_players=2, wandb_save=False):
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
     self.NUM_ACTIONS = 3
     self.ACTION_DICT = {0:"f", 1:"c", 2:"r"}
     self.ACTION_DICT_verse = {"f":0, "c":1, "r":2}
-    self.STATE_BIT_LEN = 2* ( (self.NUM_PLAYERS + 1) + 3*(self.NUM_PLAYERS *3 - 2) )
+    self.STATE_BIT_LEN = 2* ( (self.NUM_PLAYERS + 1) + 3*(self.NUM_PLAYERS *3 - 2) ) - 3
     self.cards = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
     self.wandb_save = wandb_save
     self.avg_strategy = {}
@@ -240,6 +240,7 @@ class LeducTrainer:
       random.seed(random_seed)
       np.random.seed(random_seed)
       torch.manual_seed(random_seed)
+
 
 
   def reservior_add(self, memory, data):
@@ -801,7 +802,7 @@ class LeducTrainer:
     """return list
     >>> LeducTrainer().from_episode_to_bit([('Q', 'r')])
     (array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-           0, 0, 0, 0, 0, 0, 0, 0]), array([2]))
+           0, 0, 0, 0, 0]), array([2]))
     """
     for X, y in one_s_a_set:
       y_bit = self.make_action_bit(y)
@@ -812,6 +813,10 @@ class LeducTrainer:
 
 
   def make_action_bit(self, y):
+    """return array
+    >>> LeducTrainer().make_action_bit("f")
+    array([0])
+    """
     if y == "f":
       y_bit = np.array([0])
     elif y == "c":
@@ -823,18 +828,41 @@ class LeducTrainer:
 
 
   def make_state_bit(self, X):
+    """return array
+    >>> LeducTrainer().make_state_bit("Q")
+    array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0])
+    >>> LeducTrainer().make_state_bit("KrrcKrr")
+    array([0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1,
+           0, 0, 1, 0, 0])
+    >>> LeducTrainer().make_state_bit("QrrccJrrc")
+    array([0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1,
+           0, 0, 0, 0, 1])
+    """
     X_bit = np.array([0 for _ in range(self.STATE_BIT_LEN)])
 
     if X == None:
       return X_bit
-    X_bit[self.card_order[X[0]]] = 1
 
-    for idx, Xi in enumerate(X[1:]):
+    X_bit[self.card_order[X[0]]] = 1
+    com_bit = -1
+
+    idx_now = 0
+    for Xi in (X[1:]):
       if Xi not in self.cards:
-        X_bit[(self.NUM_PLAYERS+1) + 3*idx + self.ACTION_DICT_verse[Xi]] = 1
+        if com_bit == -1:
+          X_bit[(self.NUM_PLAYERS+1) + 3*idx_now + self.ACTION_DICT_verse[Xi]] = 1
+          idx_now += 1
+        else:
+          X_bit[ - ((self.NUM_PLAYERS+1) + 3*idx_now + self.ACTION_DICT_verse[Xi] + 1)] = 1
+          idx_now += 1
+
       else:
         com_idx = self.card_order[Xi] + 1
         X_bit[-com_idx] = 1
+        com_bit = 1
+        idx_now = 0
+
     return X_bit
 
 

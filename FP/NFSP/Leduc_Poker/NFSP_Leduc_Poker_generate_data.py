@@ -11,7 +11,7 @@ import time
 import doctest
 import copy
 from collections import deque
-
+import torch
 
 
 # _________________________________ GD class _________________________________
@@ -24,7 +24,7 @@ class GenerateData:
 
     self.leduc_trainer = leduc_trainer_for_gd
     self.infoset_action_player_dict = {}
-    self.leduc_trainer.random_seed_fix(self.random_seed)
+    self.random_seed_fix(self.random_seed)
 
 
   def generate_data0(self, pi_strategy, beta_strategy, n, m, eta):
@@ -77,7 +77,7 @@ class GenerateData:
 
   def strategy_split_player(self, strategy):
     """return string
-    >>> GenerateData(2, 2).strategy_split_player({'J':[1,2], 'Jp':[2,3]}) == [{'J':[1,2]}, {'Jp':[2,3]}]
+    >>> GenerateData(2, 2, 42).strategy_split_player({'J':[1,2], 'Jp':[2,3]}) == [{'J':[1,2]}, {'Jp':[2,3]}]
     True
     """
     strategy_player_list = [{} for _ in range(self.NUM_PLAYERS)]
@@ -92,7 +92,7 @@ class GenerateData:
 
   def strategy_uion(self, strategy_target_player_list, strategy_not_target_player_list, target_player):
     """return string
-    >>> GenerateData(2, 2).strategy_uion([{'J':[1,2]}, {'Jp':[2,3]}], [{'J':[11,12]}, {'Jp':[13,14]}], 0) == {'J':[1,2], 'Jp':[13,14]}
+    >>> GenerateData(2, 2, 42).strategy_uion([{'J':[1,2]}, {'Jp':[2,3]}], [{'J':[11,12]}, {'Jp':[13,14]}], 0) == {'J':[1,2], 'Jp':[13,14]}
     True
     """
     union_strategy = {}
@@ -189,5 +189,12 @@ class GenerateData:
 
 
     return nodeUtil
+
+
+  def random_seed_fix(self, random_seed):
+      random.seed(random_seed)
+      np.random.seed(random_seed)
+      torch.manual_seed(random_seed)
+
 
 doctest.testmod()

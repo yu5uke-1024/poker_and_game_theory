@@ -37,7 +37,7 @@ class ReinforcementLearning:
     self.NUM_PLAYERS = num_players
     self.num_actions = 3
     self.action_id = {"f":0, "c":1, "r":2}
-    self.STATE_BIT_LEN = 2* ( (self.NUM_PLAYERS + 1) + 3*(self.NUM_PLAYERS *3 - 2) )
+    self.STATE_BIT_LEN = 2* ( (self.NUM_PLAYERS + 1) + 3*(self.NUM_PLAYERS *3 - 2) ) - 3
     self.hidden_units_num = hidden_units_num
     self.lr = lr
     self.epochs = epochs
@@ -65,6 +65,7 @@ class ReinforcementLearning:
 
     self.update_count = 0
 
+    self.bit_count = []
 
 
   def RL_learn(self, memory, target_player, update_strategy, k):
@@ -90,6 +91,9 @@ class ReinforcementLearning:
 
       for s, a, r, s_prime in samples:
         s_bit = self.leduc_trainer.make_state_bit(s)
+
+        self.bit_count.append(s_bit)
+
         a_bit = self.leduc_trainer.make_action_bit(a)
         s_prime_bit = self.leduc_trainer.make_state_bit(s_prime)
         if s_prime == None:
@@ -182,6 +186,7 @@ class ReinforcementLearning:
           y = self.deep_q_network.forward(inputs_eval).detach().numpy()
           print(node_X, y, update_strategy[node_X])
       """
+
 
 
 

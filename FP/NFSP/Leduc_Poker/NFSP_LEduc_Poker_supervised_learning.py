@@ -58,7 +58,7 @@ class SupervisedLearning:
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
     self.NUM_ACTIONS = 3
-    self.STATE_BIT_LEN = 2* ( (self.NUM_PLAYERS + 1) + 3*(self.NUM_PLAYERS *3 - 2) )
+    self.STATE_BIT_LEN = 2* ( (self.NUM_PLAYERS + 1) + 3*(self.NUM_PLAYERS *3 - 2) ) - 3
     self.hidden_units_num = hidden_units_num
     self.lr = lr
     self.epochs = epochs
@@ -123,10 +123,6 @@ class SupervisedLearning:
       targets = torch.from_numpy(train_y).long().reshape(-1, 1).squeeze_()
 
       outputs = self.sl_network.forward(inputs)
-
-
-      #loss = - (targets * outputs).sum(dim=-1).mean()
-
 
 
 
