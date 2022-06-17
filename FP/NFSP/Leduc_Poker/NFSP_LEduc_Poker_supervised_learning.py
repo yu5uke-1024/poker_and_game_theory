@@ -1,5 +1,6 @@
 
 # _________________________________ Library _________________________________
+from platform import node
 from turtle import update
 import numpy as np
 import pandas as pd
@@ -143,7 +144,6 @@ class SupervisedLearning:
         wandb.log({'iteration': iteration_t, 'loss_sl': total_loss/self.epochs})
 
 
-
     # eval
     self.sl_network.eval()
     with torch.no_grad():
@@ -155,10 +155,10 @@ class SupervisedLearning:
           y = self.softmax(self.sl_network.forward(inputs_eval)).detach().numpy()[0]
 
 
-
-
           possible_action_list = self.leduc_trainer.node_possible_action[node_X]
           normalizationSum = 0
+
+
           for action_i, yi in enumerate(y):
             if action_i not in possible_action_list:
               y[action_i] = 0
@@ -168,8 +168,16 @@ class SupervisedLearning:
           y /= normalizationSum
           update_strategy[node_X] = y
 
+          """
+          for action_i, yi in enumerate(y):
+            if action_i not in possible_action_list:
+              # fold, raise not choice → call
+              y[1] += yi
+              y[action_i] = 0
 
-
+          #y /= normalizationSum
+          update_strategy[node_X] = y
+          """
 
 
   def SL_train_AVG(self, memory, target_player, strategy, n_count):
