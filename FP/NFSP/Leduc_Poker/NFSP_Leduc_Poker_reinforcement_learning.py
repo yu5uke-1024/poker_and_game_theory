@@ -1,7 +1,7 @@
 
 # _________________________________ Library _________________________________
 
-from platform import node
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -130,7 +130,6 @@ class ReinforcementLearning:
             if Q_value[ai] > Q_value[max_idx]:
               max_idx = ai
 
-          #print(node_X, Q_value,  Q_value[max_idx])
 
           outputs = np.append(outputs, Q_value[max_idx])
 
@@ -143,9 +142,7 @@ class ReinforcementLearning:
       q_now = self.deep_q_network(train_states)
       q_now_value = q_now.gather(1, train_actions.type(torch.int64))
 
-
       loss = F.mse_loss(q_targets, q_now_value)
-
 
 
       if torch.isnan(loss):
@@ -166,9 +163,10 @@ class ReinforcementLearning:
 
       total_loss += loss.item()
 
+
     if self.update_count % self.update_frequency ==  0 :
-      #print(self.update_count)
       self.parameter_update()
+
 
     #eval
     self.deep_q_network.eval()

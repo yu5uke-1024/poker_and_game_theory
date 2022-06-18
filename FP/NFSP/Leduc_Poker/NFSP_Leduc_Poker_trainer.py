@@ -72,6 +72,7 @@ class LeducTrainer:
     self.GD = gd_module
     self.GD.infoset_action_player_dict = self.infoset_action_player_dict
     self.SL.infoset_action_player_dict = self.infoset_action_player_dict
+
     self.RL.infoset_action_player_dict = self.infoset_action_player_dict
 
 

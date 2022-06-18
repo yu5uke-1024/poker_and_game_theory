@@ -26,9 +26,9 @@ import NFSP_Leduc_Poker_generate_data
 
 config = dict(
   random_seed = 42,
-  iterations = 10**5,
+  iterations = 10**2,
   num_players = 2,
-  wandb_save = [True, False][0],
+  wandb_save = [True, False][1],
 
 
   #train
@@ -50,7 +50,7 @@ config = dict(
   rl_gamma = 1.0,
   rl_tau = 0.1,
   rl_update_frequency = 300,
-  sl_algo = ["cnt", "mlp"][0],
+  sl_algo = ["cnt", "mlp"][1],
   rl_algo = ["dfs", "dqn"][1]
 )
 
@@ -86,6 +86,8 @@ leduc_RL = NFSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(
   update_frequency = config["rl_update_frequency"],
   leduc_trainer_for_rl = leduc_trainer
   )
+
+
 
 
 leduc_SL = NFSP_Leduc_Poker_supervised_learning.SupervisedLearning(
