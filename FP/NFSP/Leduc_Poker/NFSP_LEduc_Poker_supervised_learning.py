@@ -118,8 +118,7 @@ class SupervisedLearning:
           train_y = np.append(train_y, train_i[1])
 
 
-      #print("")
-      #print(samples)
+
       inputs = torch.from_numpy(train_X).float().reshape(-1,self.STATE_BIT_LEN)
       targets = torch.from_numpy(train_y).long().reshape(-1, 1).squeeze_()
 

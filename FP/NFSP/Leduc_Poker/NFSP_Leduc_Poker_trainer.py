@@ -218,6 +218,8 @@ class LeducTrainer:
       self.RL.update_count += 1
       self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
 
+      #print(len(self.M_RL[player]))
+
 
 
     elif self.rl_algo == "dfs":

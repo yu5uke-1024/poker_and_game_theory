@@ -26,8 +26,8 @@ class DQN(nn.Module):
 
     def forward(self, x):
         h1 = F.leaky_relu(self.fc1(x))
-
         output = self.fc2(h1)
+
         return output
 
 
@@ -75,8 +75,13 @@ class ReinforcementLearning:
 
     total_loss = 0
     # train
-    for _ in range(self.epochs):
 
+
+    if len(memory) < self.sampling_num:
+      return
+
+
+    for _ in range(self.epochs):
 
       samples = random.sample(memory, min(self.sampling_num, len(memory)))
 
@@ -117,6 +122,7 @@ class ReinforcementLearning:
 
       outputs_all = self.deep_q_network_target(train_next_states).detach()
 
+
       for node_X, Q_value in zip(s_prime_array, outputs_all):
 
         if node_X == None:
@@ -132,6 +138,7 @@ class ReinforcementLearning:
 
 
           outputs = np.append(outputs, Q_value[max_idx])
+
 
       outputs = torch.from_numpy(outputs).float().unsqueeze(1)
 
@@ -213,8 +220,8 @@ class ReinforcementLearning:
     for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
       target_param.data.copy_(
           self.tau * param.data + (1.0 - self.tau) * target_param.data)
-    """
 
+    """
     # hard update
     for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
       target_param.data.copy_(param.data)

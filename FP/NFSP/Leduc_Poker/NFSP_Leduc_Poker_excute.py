@@ -26,9 +26,9 @@ import NFSP_Leduc_Poker_generate_data
 
 config = dict(
   random_seed = 42,
-  iterations = 10**2,
+  iterations = 10**4,
   num_players = 2,
-  wandb_save = [True, False][1],
+  wandb_save = [True, False][0],
 
 
   #train
@@ -51,7 +51,7 @@ config = dict(
   rl_tau = 0.1,
   rl_update_frequency = 300,
   sl_algo = ["cnt", "mlp"][1],
-  rl_algo = ["dfs", "dqn"][1]
+  rl_algo = ["dfs", "dqn"][0]
 )
 
 
