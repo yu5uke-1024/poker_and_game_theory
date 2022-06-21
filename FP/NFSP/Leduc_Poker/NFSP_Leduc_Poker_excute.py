@@ -28,7 +28,7 @@ config = dict(
   random_seed = 42,
   iterations = 10**5,
   num_players = 2,
-  wandb_save = [True, False][1],
+  wandb_save = [True, False][0],
 
 
   #train
@@ -39,18 +39,18 @@ config = dict(
   #sl
   sl_hidden_units_num= 64,
   sl_lr = 0.001,
-  sl_epochs = 1,
+  sl_epochs = 2,
   sl_sampling_num =128,
 
   #rl
   rl_hidden_units_num= 64,
   rl_lr = 0.1,
-  rl_epochs = 1,
+  rl_epochs = 2,
   rl_sampling_num = 128,
   rl_gamma = 1.0,
   rl_tau = 0.1,
   rl_update_frequency = 300,
-  sl_algo = ["cnt", "mlp"][0],
+  sl_algo = ["cnt", "mlp"][1],
   rl_algo = ["dfs", "dqn"][1]
 )
 

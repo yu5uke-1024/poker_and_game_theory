@@ -154,8 +154,6 @@ class SupervisedLearning:
           y = self.softmax(self.sl_network.forward(inputs_eval)).detach().numpy()[0]
 
 
-
-
           possible_action_list = self.leduc_trainer.node_possible_action[node_X]
 
 

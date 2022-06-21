@@ -43,14 +43,14 @@ config = dict(
   #sl
   sl_hidden_units_num= 32,
   sl_lr = 0.001,
-  sl_epochs = 1,
+  sl_epochs = 2,
   sl_sampling_num = 128,
   sl_loss_function = [nn.BCELoss()][0],
 
   #rl
   rl_hidden_units_num= 32,
   rl_lr = 0.1,
-  rl_epochs = 1,
+  rl_epochs = 2,
   rl_sampling_num = 128,
   rl_gamma = 1.0,
   rl_tau = 0.1,

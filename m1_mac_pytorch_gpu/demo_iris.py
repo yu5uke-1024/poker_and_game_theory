@@ -26,11 +26,13 @@ class SL_Network(nn.Module):
         return output
 
 
-device = torch.device('mps') if torch.backends.mps.is_available() else torch.device('cpu')
+#device = torch.device('mps') if torch.backends.mps.is_available() else torch.device('cpu')
+device = torch.device('cpu')
 
 iris = datasets.load_iris()
 X = iris.data.astype(np.float32)
 Y = iris.target.astype(np.int64)
+
 
 X_train, X_test,  Y_train, Y_test = train_test_split(X,Y,test_size=0.3, random_state=3)
 
