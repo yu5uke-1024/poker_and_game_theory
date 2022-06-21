@@ -206,11 +206,16 @@ class ReinforcementLearning:
       if self.leduc_trainer.wandb_save:
         wandb.log({'iteration': k, 'loss_rl': total_loss/self.epochs})
 
+
       """
       for node_X , _ in update_strategy.items():
         if self.infoset_action_player_dict[node_X] == target_player :
-          inputs_eval = torch.from_numpy(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
-          y = self.deep_q_network.forward(inputs_eval).detach().numpy()
+          # 絶対勝っているnode
+          if node_X.count("J") == 2 or node_X.count("Q") == 2 or node_X.count("K") == 2:
+            inputs_eval = torch.from_numpy(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
+            y = self.deep_q_network.forward(inputs_eval).detach().numpy()
+            print(node_X, y)
+      print("")
       """
 
 

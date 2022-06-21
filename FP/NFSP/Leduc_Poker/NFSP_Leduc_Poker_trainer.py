@@ -97,7 +97,6 @@ class LeducTrainer:
           self.sigma_strategy_bit[player_i] = 1
 
 
-
       self.cards = self.card_distribution()
       random.shuffle(self.cards)
       history = "".join(self.cards[:self.NUM_PLAYERS])
@@ -136,8 +135,7 @@ class LeducTrainer:
         #print(self.epsilon_greedy_q_learning_strategy["J"], self.avg_strategy["J"])
         #print(self.best_response_strategy_dfs)
         #print(self.epsilon_greedy_q_learning_strategy)
-
-
+        print(len(self.M_RL[0]), len(self.M_RL[1]))
 
 
 
@@ -193,6 +191,7 @@ class LeducTrainer:
         else:
           other_history = other_history[:-1]
 
+
         s_prime = self.player_last_infoset[player]
         self.M_RL[player].append((s, a, r, s_prime))
 
@@ -203,6 +202,7 @@ class LeducTrainer:
 
     if self.sigma_strategy_bit[player] == 0:
       self.reservior_add(self.M_SL[player],(s, a))
+
 
 
     if len(self.M_SL[player]) != 0:

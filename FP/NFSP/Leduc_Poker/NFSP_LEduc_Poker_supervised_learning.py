@@ -111,6 +111,7 @@ class SupervisedLearning:
       train_X = np.array([])
       train_y = np.array([])
 
+
       for one_s_a_set in samples:
         if one_s_a_set is not None:
           train_i = self.leduc_trainer.from_episode_to_bit([one_s_a_set])
@@ -123,7 +124,6 @@ class SupervisedLearning:
       targets = torch.from_numpy(train_y).long().reshape(-1, 1).squeeze_()
 
       outputs = self.sl_network.forward(inputs)
-
 
 
       loss = self.loss_fn(outputs, targets)
@@ -154,10 +154,12 @@ class SupervisedLearning:
           y = self.softmax(self.sl_network.forward(inputs_eval)).detach().numpy()[0]
 
 
+
+
           possible_action_list = self.leduc_trainer.node_possible_action[node_X]
+
+
           normalizationSum = 0
-
-
           for action_i, yi in enumerate(y):
             if action_i not in possible_action_list:
               y[action_i] = 0
@@ -174,9 +176,9 @@ class SupervisedLearning:
               y[1] += yi
               y[action_i] = 0
 
-          #y /= normalizationSum
           update_strategy[node_X] = y
           """
+
 
 
   def SL_train_AVG(self, memory, target_player, strategy, n_count):
