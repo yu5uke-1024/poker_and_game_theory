@@ -21,12 +21,11 @@ from collections import defaultdict
 from tqdm import tqdm
 from collections import deque
 
-from zmq import device
 
-import NFSP_Kuhn_Poker_trainer
-import NFSP_Kuhn_Poker_supervised_learning
-import NFSP_Kuhn_Poker_reinforcement_learning
-import NFSP_Kuhn_Poker_generate_data
+import NFSP_Kuhn_Poker_trainer_gpu
+import NFSP_Kuhn_Poker_supervised_learning_gpu
+import NFSP_Kuhn_Poker_reinforcement_learning_gpu
+import NFSP_Kuhn_Poker_generate_data_gpu
 
 
 # _________________________________ config _________________________________
@@ -77,14 +76,14 @@ if config["wandb_save"]:
 
 # _________________________________ train _________________________________
 
-kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(
+kuhn_trainer = NFSP_Kuhn_Poker_trainer_gpu.KuhnTrainer(
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   wandb_save = config["wandb_save"],
   )
 
 
-kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
+kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning_gpu.ReinforcementLearning(
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   hidden_units_num = config["rl_hidden_units_num"],
@@ -100,7 +99,7 @@ kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
   )
 
 
-kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
+kuhn_SL = NFSP_Kuhn_Poker_supervised_learning_gpu.SupervisedLearning(
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   hidden_units_num= config["sl_hidden_units_num"],
@@ -115,7 +114,7 @@ kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
 
 
 
-kuhn_GD = NFSP_Kuhn_Poker_generate_data.GenerateData(
+kuhn_GD = NFSP_Kuhn_Poker_generate_data_gpu.GenerateData(
   num_players= config["num_players"],
   kuhn_trainer_for_gd= kuhn_trainer
   )
