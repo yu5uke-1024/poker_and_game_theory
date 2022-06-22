@@ -135,7 +135,8 @@ class LeducTrainer:
         #print(self.epsilon_greedy_q_learning_strategy["J"], self.avg_strategy["J"])
         #print(self.best_response_strategy_dfs)
         #print(self.epsilon_greedy_q_learning_strategy)
-        #print(len(self.M_RL[0]), len(self.M_RL[1]))
+        #print("RL:", len(self.M_RL[0]), len(self.M_RL[1]))
+        #print("SL:", len(self.M_SL[0]), len(self.M_SL[1]))
 
 
 

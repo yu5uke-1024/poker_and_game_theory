@@ -11,21 +11,25 @@ import doctest
 import copy
 import wandb
 import datetime
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+
 
 from collections import defaultdict
 from tqdm import tqdm
 from collections import deque
 
-import NFSP_Leduc_Poker_trainer
-import NFSP_Leduc_Poker_supervised_learning
-import NFSP_Leduc_Poker_reinforcement_learning
-import NFSP_Leduc_Poker_generate_data
+import NFSP_Kuhn_Poker_trainer
+import NFSP_Kuhn_Poker_supervised_learning
+import NFSP_Kuhn_Poker_reinforcement_learning
+import NFSP_Kuhn_Poker_generate_data
 
 
 # _________________________________ config _________________________________
 
 config = dict(
-  random_seed = 42,
   iterations = 10**5,
   num_players = 2,
   wandb_save = [True, False][0],
@@ -33,31 +37,33 @@ config = dict(
 
   #train
   eta = 0.1,
-  memory_size_rl = 2*(10**5),
-  memory_size_sl = 2*(10**6),
+  memory_size_rl = 10**3,
+  memory_size_sl = 10**5,
 
   #sl
-  sl_hidden_units_num= 64,
+  sl_hidden_units_num= 32,
   sl_lr = 0.001,
   sl_epochs = 2,
-  sl_sampling_num =128,
+  sl_sampling_num = 128,
+  sl_loss_function = [nn.BCELoss()][0],
 
   #rl
-  rl_hidden_units_num= 64,
+  rl_hidden_units_num= 32,
   rl_lr = 0.1,
   rl_epochs = 2,
   rl_sampling_num = 128,
   rl_gamma = 1.0,
   rl_tau = 0.1,
-  rl_update_frequency = 300,
+  rl_update_frequency = 50,
   sl_algo = ["cnt", "mlp"][1],
-  rl_algo = ["dfs", "dqn"][0]
+  rl_algo = ["dfs", "dqn"][1],
+  rl_loss_function = [F.mse_loss, nn.HuberLoss()][0]
 )
 
 
 
 if config["wandb_save"]:
-  wandb.init(project="leduc_Poker_{}players".format(config["num_players"]), name="{}_{}_NFSP".format(config["rl_algo"], config["sl_algo"]))
+  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="{}_{}_NFSP".format(config["rl_algo"], config["sl_algo"]))
   wandb.config.update(config)
   wandb.define_metric("exploitability", summary="last")
   wandb.define_metric("avg_utility", summary="last")
@@ -65,16 +71,14 @@ if config["wandb_save"]:
 
 # _________________________________ train _________________________________
 
-leduc_trainer = NFSP_Leduc_Poker_trainer.LeducTrainer(
-  random_seed = config["random_seed"],
+kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   wandb_save = config["wandb_save"]
   )
 
 
-leduc_RL = NFSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(
-  random_seed = config["random_seed"],
+kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   hidden_units_num = config["rl_hidden_units_num"],
@@ -84,62 +88,62 @@ leduc_RL = NFSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(
   gamma = config["rl_gamma"],
   tau = config["rl_tau"],
   update_frequency = config["rl_update_frequency"],
-  leduc_trainer_for_rl = leduc_trainer
+  loss_function = config["rl_loss_function"],
+  kuhn_trainer_for_rl = kuhn_trainer
   )
 
 
-
-
-leduc_SL = NFSP_Leduc_Poker_supervised_learning.SupervisedLearning(
-  random_seed = config["random_seed"],
+kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   hidden_units_num= config["sl_hidden_units_num"],
   lr = config["sl_lr"],
   epochs = config["sl_epochs"],
   sampling_num = config["sl_sampling_num"],
-  leduc_trainer_for_sl = leduc_trainer
+  loss_function = config["sl_loss_function"],
+  kuhn_trainer_for_sl = kuhn_trainer
   )
 
 
 
 
-leduc_GD = NFSP_Leduc_Poker_generate_data.GenerateData(
-  random_seed = config["random_seed"],
+kuhn_GD = NFSP_Kuhn_Poker_generate_data.GenerateData(
   num_players= config["num_players"],
-  leduc_trainer_for_gd= leduc_trainer
+  kuhn_trainer_for_gd= kuhn_trainer
   )
 
 
-leduc_trainer.train(
+
+
+kuhn_trainer.train(
   eta = config["eta"],
   memory_size_rl = config["memory_size_rl"],
   memory_size_sl = config["memory_size_sl"],
   rl_algo = config["rl_algo"],
   sl_algo = config["sl_algo"],
-  rl_module= leduc_RL,
-  sl_module= leduc_SL,
-  gd_module= leduc_GD
+  rl_module= kuhn_RL,
+  sl_module= kuhn_SL,
+  gd_module= kuhn_GD
   )
 
 
 # _________________________________ result _________________________________
 
 if not config["wandb_save"]:
-  print("avg_utility", list(leduc_trainer.avg_utility_list.items())[-1])
-  print("final_exploitability", list(leduc_trainer.exploitability_list.items())[-1])
+  print("avg_utility", list(kuhn_trainer.avg_utility_list.items())[-1])
+  print("final_exploitability", list(kuhn_trainer.exploitability_list.items())[-1])
 
 
 result_dict_avg = {}
-for key, value in sorted(leduc_trainer.avg_strategy.items()):
+for key, value in sorted(kuhn_trainer.avg_strategy.items()):
   result_dict_avg[key] = value
-df = pd.DataFrame(result_dict_avg.values(), index=result_dict_avg.keys(), columns=["Fold_avg", "Call_avg", "Raise_avg"])
+df = pd.DataFrame(result_dict_avg.values(), index=result_dict_avg.keys(), columns=['Pass_avg', "Bet_avg"])
 df.index.name = "Node"
 
 result_dict_br = {}
-for key, value in sorted(leduc_trainer.epsilon_greedy_q_learning_strategy.items()):
+for key, value in sorted(kuhn_trainer.epsilon_greedy_q_learning_strategy.items()):
   result_dict_br[key] = value
-df1 = pd.DataFrame(result_dict_br.values(), index=result_dict_br.keys(), columns=["Fold_br", "Call_br", "Raise_br"])
+df1 = pd.DataFrame(result_dict_br.values(), index=result_dict_br.keys(), columns=['Pass_br', "Bet_br"])
 df1.index.name = "Node"
 
 df2 = pd.concat([df, df1], axis=1)
