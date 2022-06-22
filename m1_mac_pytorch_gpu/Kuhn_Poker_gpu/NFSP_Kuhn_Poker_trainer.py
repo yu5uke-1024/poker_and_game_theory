@@ -33,6 +33,7 @@ class KuhnTrainer:
     self.memory_count_for_sl = 0
 
 
+
 # _________________________________ Train main method _________________________________
   def train(self, eta, memory_size_rl, memory_size_sl, rl_algo, sl_algo, rl_module, sl_module, gd_module):
     self.exploitability_list = {}

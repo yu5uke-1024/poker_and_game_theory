@@ -21,6 +21,8 @@ from collections import defaultdict
 from tqdm import tqdm
 from collections import deque
 
+from zmq import device
+
 import NFSP_Kuhn_Poker_trainer
 import NFSP_Kuhn_Poker_supervised_learning
 import NFSP_Kuhn_Poker_reinforcement_learning
@@ -30,9 +32,9 @@ import NFSP_Kuhn_Poker_generate_data
 # _________________________________ config _________________________________
 
 config = dict(
-  iterations = 10**5,
+  iterations = 10**2,
   num_players = 2,
-  wandb_save = [True, False][0],
+  wandb_save = [True, False][1],
 
 
   #train
@@ -45,7 +47,7 @@ config = dict(
   sl_lr = 0.001,
   sl_epochs = 2,
   sl_sampling_num = 128,
-  sl_loss_function = [nn.BCELoss()][0],
+  sl_loss_function = [nn.BCEWithLogitsLoss()][0],
 
   #rl
   rl_hidden_units_num= 32,
@@ -57,7 +59,11 @@ config = dict(
   rl_update_frequency = 50,
   sl_algo = ["cnt", "mlp"][1],
   rl_algo = ["dfs", "dqn"][1],
-  rl_loss_function = [F.mse_loss, nn.HuberLoss()][0]
+  rl_loss_function = [F.mse_loss, nn.HuberLoss()][0],
+
+  # device
+  device = torch.device('mps') if torch.backends.mps.is_available() else torch.device('cpu')
+  #device = torch.device('cpu')
 )
 
 
@@ -74,7 +80,7 @@ if config["wandb_save"]:
 kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(
   train_iterations = config["iterations"],
   num_players= config["num_players"],
-  wandb_save = config["wandb_save"]
+  wandb_save = config["wandb_save"],
   )
 
 
@@ -89,7 +95,8 @@ kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
   tau = config["rl_tau"],
   update_frequency = config["rl_update_frequency"],
   loss_function = config["rl_loss_function"],
-  kuhn_trainer_for_rl = kuhn_trainer
+  kuhn_trainer_for_rl = kuhn_trainer,
+  device = config["device"]
   )
 
 
@@ -101,7 +108,8 @@ kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
   epochs = config["sl_epochs"],
   sampling_num = config["sl_sampling_num"],
   loss_function = config["sl_loss_function"],
-  kuhn_trainer_for_sl = kuhn_trainer
+  kuhn_trainer_for_sl = kuhn_trainer,
+  device = config["device"]
   )
 
 

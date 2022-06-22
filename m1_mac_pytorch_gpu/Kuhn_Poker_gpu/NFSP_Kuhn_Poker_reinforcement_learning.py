@@ -34,7 +34,7 @@ class DQN(nn.Module):
 
 # _________________________________ RL class _________________________________
 class ReinforcementLearning:
-  def __init__(self, train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, gamma, tau, update_frequency, loss_function, kuhn_trainer_for_rl):
+  def __init__(self, train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, gamma, tau, update_frequency, loss_function, kuhn_trainer_for_rl, device):
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
     self.num_actions = 2
@@ -49,10 +49,10 @@ class ReinforcementLearning:
     self.update_frequency = update_frequency
     self.kuhn_trainer = kuhn_trainer_for_rl
     self.card_rank  = self.kuhn_trainer.card_rank
+    self.device = device
 
-
-    self.deep_q_network = DQN(state_num = self.STATE_BIT_LEN, action_num = self.num_actions, hidden_units_num = self.hidden_units_num)
-    self.deep_q_network_target = DQN(state_num = self.STATE_BIT_LEN, action_num = self.num_actions, hidden_units_num = self.hidden_units_num)
+    self.deep_q_network = DQN(state_num = self.STATE_BIT_LEN, action_num = self.num_actions, hidden_units_num = self.hidden_units_num).to(self.device)
+    self.deep_q_network_target = DQN(state_num = self.STATE_BIT_LEN, action_num = self.num_actions, hidden_units_num = self.hidden_units_num).to(self.device)
 
 
     for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
@@ -101,11 +101,11 @@ class ReinforcementLearning:
         train_next_states = np.append(train_next_states, s_prime_bit)
         train_done = np.append(train_done, done)
 
-      train_states = torch.from_numpy(train_states).float().reshape(-1,self.STATE_BIT_LEN)
-      train_actions = torch.from_numpy(train_actions).float().reshape(-1,1)
-      train_rewards = torch.from_numpy(train_rewards).float().reshape(-1,1)
-      train_next_states = torch.from_numpy(train_next_states).float().reshape(-1,self.STATE_BIT_LEN)
-      train_done = torch.from_numpy(train_done).float().reshape(-1,1)
+      train_states = torch.from_numpy(train_states).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
+      train_actions = torch.from_numpy(train_actions).float().reshape(-1,1).to(self.device)
+      train_rewards = torch.from_numpy(train_rewards).float().reshape(-1,1).to(self.device)
+      train_next_states = torch.from_numpy(train_next_states).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
+      train_done = torch.from_numpy(train_done).float().reshape(-1,1).to(self.device)
 
       outputs = self.deep_q_network_target(train_next_states).detach().max(axis=1)[0].unsqueeze(1)
 
@@ -124,6 +124,7 @@ class ReinforcementLearning:
       total_loss += loss.item()
 
 
+
     if k % self.update_frequency ==  0:
       self.parameter_update()
 
@@ -132,16 +133,6 @@ class ReinforcementLearning:
       if self.kuhn_trainer.wandb_save:
         wandb.log({'iteration': k, 'loss_rl': total_loss/self.epochs})
 
-      """
-      self.deep_q_network.eval()
-      with torch.no_grad():
-        for node_X , _ in update_strategy.items():
-          if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
-            inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
-            y = self.deep_q_network.forward(inputs_eval).detach().numpy()
-            print(node_X, y)
-      print("")
-      """
 
 
     #eval
@@ -149,8 +140,8 @@ class ReinforcementLearning:
     with torch.no_grad():
       for node_X , _ in update_strategy.items():
         if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
-          inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
-          y = self.deep_q_network.forward(inputs_eval).detach().numpy()
+          inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
+          y = self.deep_q_network.forward(inputs_eval).to("cpu").detach().numpy()
 
 
           if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
