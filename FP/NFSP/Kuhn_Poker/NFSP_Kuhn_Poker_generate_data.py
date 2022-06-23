@@ -11,16 +11,19 @@ import time
 import doctest
 import copy
 from collections import deque
-
+import torch
 
 
 # _________________________________ GD class _________________________________
 
 class GenerateData:
-  def __init__(self, num_players, kuhn_trainer_for_gd):
+  def __init__(self, num_players, kuhn_trainer_for_gd, random_seed):
     self.NUM_PLAYERS = num_players
     self.num_actions = 2
     self.kuhn_trainer = kuhn_trainer_for_gd
+    self.random_seed = random_seed
+
+    self.random_seed_fix(self.random_seed)
 
 
   def generate_data0(self, pi_strategy, beta_strategy, n, m, eta):
@@ -168,5 +171,12 @@ class GenerateData:
       nodeUtil += strategy[ai] * util_list[ai]
 
     return nodeUtil
+
+
+  def random_seed_fix(self, random_seed):
+      random.seed(random_seed)
+      np.random.seed(random_seed)
+      torch.manual_seed(random_seed)
+
 
 doctest.testmod()

@@ -22,7 +22,7 @@ import torch.nn as nn
 
 # _________________________________ Train class _________________________________
 class KuhnTrainer:
-  def __init__(self, train_iterations=10, num_players=2, wandb_save=False):
+  def __init__(self,random_seed=42, train_iterations=10, num_players=2, wandb_save=False):
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
     self.NUM_ACTIONS = 2
@@ -32,6 +32,9 @@ class KuhnTrainer:
     self.avg_strategy = {}
     self.memory_count_for_sl = 0
 
+    self.random_seed = random_seed
+
+    self.random_seed_fix(self.random_seed)
 
 # _________________________________ Train main method _________________________________
   def train(self, eta, memory_size_rl, memory_size_sl, rl_algo, sl_algo, rl_module, sl_module, gd_module):
@@ -42,6 +45,8 @@ class KuhnTrainer:
     self.sl_algo = sl_algo
     self.memory_size_sl = memory_size_sl
     self.memory_size_rl = memory_size_rl
+
+
 
     self.M_SL = [[] for _ in range(self.NUM_PLAYERS)]
     self.M_RL = [deque([], maxlen=self.memory_size_rl) for _ in range(self.NUM_PLAYERS)]
@@ -81,6 +86,10 @@ class KuhnTrainer:
       random.shuffle(cards)
       history = "".join(cards[:self.NUM_PLAYERS])
 
+
+      self.player_sars_list = [{"s":None, "a":None, "r":None, "s_prime":None} for _ in range(self.NUM_PLAYERS)]
+
+
       self.train_one_episode(history, iteration_t)
 
 
@@ -115,77 +124,83 @@ class KuhnTrainer:
 
 
 
-
+  def random_seed_fix(self, random_seed):
+      random.seed(random_seed)
+      np.random.seed(random_seed)
+      torch.manual_seed(random_seed)
 
 
 # _________________________________ Train second main method _________________________________
   def train_one_episode(self, history, iteration_t):
-    plays = len(history)
-    player = plays % self.NUM_PLAYERS
 
-    s = history[player] + history[self.NUM_PLAYERS:]
+    # one episode
+    while  not self.whether_terminal_states(history):
 
-    if self.sigma_strategy_bit[player] == 0:
-      sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.epsilon_greedy_q_learning_strategy[s])
-    elif self.sigma_strategy_bit[player] == 1:
-      sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.avg_strategy[s])
+      plays = len(history)
+      player = plays % self.NUM_PLAYERS
 
 
-    a = ("p" if sampling_action == 0 else "b")
-    Nexthistory = history + ("p" if sampling_action == 0 else "b")
+      s = history[player] + history[self.NUM_PLAYERS:]
+
+      if self.player_sars_list[player]["s"] is not None:
+        self.player_sars_list[player]["s_prime"] = s
+
+        self.M_RL[player].append([x for x in self.player_sars_list[player].values()])
+        self.player_sars_list[player] = {"s":None, "a":None, "r":None, "s_prime":None}
 
 
-    next_transition = []
-    if self.whether_terminal_states(Nexthistory):
-      r = self.Return_payoff_for_terminal_states(Nexthistory, player)
-      s_prime = None
-      self.M_RL[player].append((s, a, r, s_prime))
-      next_transition = [s, a, r, s_prime, Nexthistory]
+      if self.sigma_strategy_bit[player] == 0:
+        sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.epsilon_greedy_q_learning_strategy[s])
+      elif self.sigma_strategy_bit[player] == 1:
+        sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.avg_strategy[s])
 
 
-    else:
-      other_s, other_a, other_r, other_s_prime, other_histroy = self.train_one_episode(Nexthistory, iteration_t)
+      a = ("p" if sampling_action == 0 else "b")
+      history +=  a
+      r = 0
 
-      if self.whether_terminal_states(other_histroy):
-        r = self.Return_payoff_for_terminal_states(other_histroy, player)
-        s_prime = None
-        self.M_RL[player].append((s, a, r, s_prime))
-        other_histroy = other_histroy[:-1]
-        next_transition = [s, a, r, s_prime, other_histroy]
-      else:
-        r = 0
-        s_prime = other_histroy[player] + other_histroy[self.NUM_PLAYERS:]
-        self.M_RL[player].append((s, a, r, s_prime))
-        next_transition = [s, a, r, s_prime, other_histroy]
+      self.player_sars_list[player]["s"] = s
+      self.player_sars_list[player]["a"] = a
+      self.player_sars_list[player]["r"] = r
 
 
-    if self.sigma_strategy_bit[player] == 0:
-      self.reservior_add(self.M_SL[player],(s, a))
+      if self.sigma_strategy_bit[player] == 0:
+        self.reservior_add(self.M_SL[player],(s, a))
 
 
-    if len(self.M_SL[player]) != 0:
+      if len(self.M_SL[player]) != 0:
 
-      if self.sl_algo == "mlp":
-        self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
-      elif self.sl_algo == "cnt":
-        self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
-        self.M_SL[player] = []
-
-
-    if self.rl_algo == "dqn":
-      self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
+        if self.sl_algo == "mlp":
+          self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
+        elif self.sl_algo == "cnt":
+          self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
+          self.M_SL[player] = []
 
 
-    elif self.rl_algo == "dfs":
-      self.infoSets_dict = {}
-      for target_player in range(self.NUM_PLAYERS):
-        self.create_infoSets("", target_player, 1.0)
-      self.epsilon_greedy_q_learning_strategy = {}
-      for best_response_player_i in range(self.NUM_PLAYERS):
-        self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
+      if self.rl_algo == "dqn":
+
+        self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
 
 
-    return next_transition
+      elif self.rl_algo == "dfs":
+        self.infoSets_dict = {}
+        for target_player in range(self.NUM_PLAYERS):
+          self.create_infoSets("", target_player, 1.0)
+        self.epsilon_greedy_q_learning_strategy = {}
+        for best_response_player_i in range(self.NUM_PLAYERS):
+          self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
+
+
+
+    if self.whether_terminal_states(history):
+      for target_player_i in range(self.NUM_PLAYERS):
+        r = self.Return_payoff_for_terminal_states(history, target_player_i)
+        self.player_sars_list[target_player_i]["r"] = r
+
+        self.M_RL[target_player_i].append([x for x in self.player_sars_list[target_player_i].values()])
+        self.player_sars_list[target_player_i] = {"s":None, "a":None, "r":None, "s_prime":None}
+
+
 
 
   def reservior_add(self, memory, data):

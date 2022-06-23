@@ -55,7 +55,7 @@ class SL_Network(nn.Module):
 
 # _________________________________ SL class _________________________________
 class SupervisedLearning:
-  def __init__(self,train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, loss_function, kuhn_trainer_for_sl):
+  def __init__(self,train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, loss_function, kuhn_trainer_for_sl, random_seed):
 
     #self.device = torch.device('mps') if torch.backends.mps.is_available() else torch.device('cpu')
 
@@ -73,7 +73,9 @@ class SupervisedLearning:
     self.kuhn_trainer = kuhn_trainer_for_sl
 
     self.card_rank  = self.kuhn_trainer.card_rank
+    self.random_seed = random_seed
 
+    self.kuhn_trainer.random_seed_fix(random_seed = self.random_seed)
 
     self.sl_network = SL_Network(state_num=self.STATE_BIT_LEN, hidden_units_num=self.hidden_units_num)
 

@@ -177,6 +177,10 @@ class LeducTrainer:
     if self.whether_terminal_states(Nexthistory):
       r = self.Return_payoff_for_terminal_states(Nexthistory, player)
       s_prime = None
+
+      assert  self.infoset_action_player_dict[s] == player
+
+
       self.M_RL[player].append((s, a, r, s_prime))
       next_transition = [s, a, r, s_prime, Nexthistory]
 
@@ -200,6 +204,9 @@ class LeducTrainer:
 
 
         s_prime = self.player_last_infoset[player]
+
+        assert  self.infoset_action_player_dict[s] == player
+
         self.M_RL[player].append((s, a, r, s_prime))
 
         self.player_last_infoset[player] = s
@@ -223,6 +230,8 @@ class LeducTrainer:
 
     if self.rl_algo == "dqn":
       self.RL.update_count += 1
+
+
       self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
 
       #print(len(self.M_RL[player]))
@@ -242,7 +251,7 @@ class LeducTrainer:
           self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
 
 
-    #print(player, next_transition)
+
     return next_transition
 
 

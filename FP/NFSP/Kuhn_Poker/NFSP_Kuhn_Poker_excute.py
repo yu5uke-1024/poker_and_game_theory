@@ -30,6 +30,7 @@ import NFSP_Kuhn_Poker_generate_data
 # _________________________________ config _________________________________
 
 config = dict(
+  random_seed = 42,
   iterations = 10**5,
   num_players = 3,
   wandb_save = [True, False][0],
@@ -56,14 +57,14 @@ config = dict(
   rl_tau = 0.1,
   rl_update_frequency = 50,
   sl_algo = ["cnt", "mlp"][1],
-  rl_algo = ["dfs", "dqn"][0],
+  rl_algo = ["dfs", "dqn"][1],
   rl_loss_function = [F.mse_loss, nn.HuberLoss()][0]
 )
 
 
 
 if config["wandb_save"]:
-  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="{}_{}_NFSP".format(config["rl_algo"], config["sl_algo"]))
+  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="{}_{}_NFSP_new".format(config["rl_algo"], config["sl_algo"]))
   wandb.config.update(config)
   wandb.define_metric("exploitability", summary="last")
   wandb.define_metric("avg_utility", summary="last")
@@ -72,6 +73,7 @@ if config["wandb_save"]:
 # _________________________________ train _________________________________
 
 kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(
+  random_seed = config["random_seed"],
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   wandb_save = config["wandb_save"]
@@ -79,6 +81,7 @@ kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(
 
 
 kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
+  random_seed = config["random_seed"],
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   hidden_units_num = config["rl_hidden_units_num"],
@@ -94,6 +97,7 @@ kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
 
 
 kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
+  random_seed = config["random_seed"],
   train_iterations = config["iterations"],
   num_players= config["num_players"],
   hidden_units_num= config["sl_hidden_units_num"],
@@ -108,6 +112,7 @@ kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
 
 
 kuhn_GD = NFSP_Kuhn_Poker_generate_data.GenerateData(
+  random_seed = config["random_seed"],
   num_players= config["num_players"],
   kuhn_trainer_for_gd= kuhn_trainer
   )

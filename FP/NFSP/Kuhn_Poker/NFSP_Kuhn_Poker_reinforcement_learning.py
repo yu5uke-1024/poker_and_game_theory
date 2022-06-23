@@ -34,7 +34,7 @@ class DQN(nn.Module):
 
 # _________________________________ RL class _________________________________
 class ReinforcementLearning:
-  def __init__(self, train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, gamma, tau, update_frequency, loss_function, kuhn_trainer_for_rl):
+  def __init__(self, train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, gamma, tau, update_frequency, loss_function, kuhn_trainer_for_rl, random_seed):
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
     self.num_actions = 2
@@ -49,6 +49,10 @@ class ReinforcementLearning:
     self.update_frequency = update_frequency
     self.kuhn_trainer = kuhn_trainer_for_rl
     self.card_rank  = self.kuhn_trainer.card_rank
+    self.random_seed = random_seed
+
+    self.kuhn_trainer.random_seed_fix(self.random_seed)
+
 
 
     self.deep_q_network = DQN(state_num = self.STATE_BIT_LEN, action_num = self.num_actions, hidden_units_num = self.hidden_units_num)
