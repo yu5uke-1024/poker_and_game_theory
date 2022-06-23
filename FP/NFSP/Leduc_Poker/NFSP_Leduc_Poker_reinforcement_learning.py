@@ -77,8 +77,8 @@ class ReinforcementLearning:
     # train
 
 
-    if len(memory) < self.sampling_num:
-      return
+    #if len(memory) < self.sampling_num:
+    #  return
 
 
     for _ in range(self.epochs):
@@ -99,6 +99,7 @@ class ReinforcementLearning:
         s_bit = self.leduc_trainer.make_state_bit(s)
         a_bit = self.leduc_trainer.make_action_bit(a)
         s_prime_bit = self.leduc_trainer.make_state_bit(s_prime)
+
         if s_prime == None:
           done = 1
         else:
@@ -125,6 +126,7 @@ class ReinforcementLearning:
 
       for node_X, Q_value in zip(s_prime_array, outputs_all):
 
+
         if node_X == None:
           outputs = np.append(outputs, 0)
         else:
@@ -133,7 +135,7 @@ class ReinforcementLearning:
 
 
           for ai in action_list:
-            if Q_value[ai] > Q_value[max_idx]:
+            if Q_value[ai] >= Q_value[max_idx]:
               max_idx = ai
 
 
@@ -149,7 +151,9 @@ class ReinforcementLearning:
       q_now = self.deep_q_network(train_states)
       q_now_value = q_now.gather(1, train_actions.type(torch.int64))
 
+
       loss = F.mse_loss(q_targets, q_now_value)
+
 
 
       if torch.isnan(loss):
@@ -180,6 +184,7 @@ class ReinforcementLearning:
     with torch.no_grad():
       for node_X , _ in update_strategy.items():
         if self.infoset_action_player_dict[node_X] == target_player :
+
           inputs_eval = torch.from_numpy(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
           y = self.deep_q_network.forward(inputs_eval).detach().numpy()
 
@@ -193,10 +198,8 @@ class ReinforcementLearning:
             action_list = self.leduc_trainer.node_possible_action[node_X]
             max_idx = action_list[0]
 
-            #print(node_X, action_list, y)
-
             for ai in action_list:
-              if y[0][ai] > y[0][max_idx]:
+              if y[0][ai] >= y[0][max_idx]:
                 max_idx = ai
             update_strategy[node_X] = np.array([0 for _ in range(self.num_actions)], dtype=float)
             update_strategy[node_X][max_idx] = 1.0

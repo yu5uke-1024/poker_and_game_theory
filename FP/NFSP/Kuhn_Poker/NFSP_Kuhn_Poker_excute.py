@@ -30,8 +30,8 @@ import NFSP_Kuhn_Poker_generate_data
 # _________________________________ config _________________________________
 
 config = dict(
-  iterations = 10**5,
-  num_players = 2,
+  iterations = 10**4,
+  num_players = 3,
   wandb_save = [True, False][0],
 
 

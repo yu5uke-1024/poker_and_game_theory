@@ -9,7 +9,9 @@ import pandas as pd
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 import numpy as np
+import time
 
+time_start = time.time()
 
 # アイリス　あやめの品種分類
 class SL_Network(nn.Module):
@@ -43,8 +45,6 @@ model     = SL_Network().to(device)
 optimizer = optim.SGD(model.parameters(),lr=0.05)
 criterion = nn.CrossEntropyLoss()
 
-# データ
-print(X_train.shape, X_test.shape, Y_train.shape, Y_test.shape)
 
 # 学習回数
 repeat = 1000
@@ -69,4 +69,9 @@ with torch.no_grad():
     pred_result = torch.argmax(pred_model,1)
 
     accuracy = sum(pred_result.to('cpu').detach().numpy() == Y_test.to('cpu').detach().numpy()) / len(Y_test.to('cpu').detach().numpy())
-    print(accuracy)
+
+time_end = time.time()
+
+print("device:", device)
+print("正答率:",accuracy)
+print("経過時間:", time_end - time_start, "s")

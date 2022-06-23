@@ -136,8 +136,14 @@ class LeducTrainer:
         #print(self.best_response_strategy_dfs)
         #print(self.epsilon_greedy_q_learning_strategy)
         #print("RL:", len(self.M_RL[0]), len(self.M_RL[1]))
-        #print("SL:", len(self.M_SL[0]), len(self.M_SL[1]))
 
+        #print(self.avg_strategy)
+        #print(self.M_SL)
+        #print("")
+
+        #if iteration_t >= 100:
+        #  print("SL:", set([i[0] for i in self.M_SL[0]]), set([i[0] for i in self.M_SL[1]]))
+        #  print("RL:", set([i[0] for i in self.M_RL[0]]), set([i[0] for i in self.M_RL[1]]))
 
 
 
@@ -236,7 +242,7 @@ class LeducTrainer:
           self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
 
 
-
+    #print(player, next_transition)
     return next_transition
 
 

@@ -25,7 +25,7 @@ import NFSP_Leduc_Poker_generate_data
 # _________________________________ config _________________________________
 
 config = dict(
-  random_seed = 42,
+  random_seed = 1024,
   iterations = 10**5,
   num_players = 2,
   wandb_save = [True, False][0],
@@ -51,13 +51,13 @@ config = dict(
   rl_tau = 0.1,
   rl_update_frequency = 300,
   sl_algo = ["cnt", "mlp"][1],
-  rl_algo = ["dfs", "dqn"][0]
+  rl_algo = ["dfs", "dqn"][1]
 )
 
 
 
 if config["wandb_save"]:
-  wandb.init(project="leduc_Poker_{}players".format(config["num_players"]), name="{}_{}_NFSP".format(config["rl_algo"], config["sl_algo"]))
+  wandb.init(project="Leduc_Poker_{}players".format(config["num_players"]), name="{}_{}_NFSP".format(config["rl_algo"], config["sl_algo"]))
   wandb.config.update(config)
   wandb.define_metric("exploitability", summary="last")
   wandb.define_metric("avg_utility", summary="last")
