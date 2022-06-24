@@ -532,12 +532,12 @@ class KuhnTrainer:
     return exploitability
 
 
-"""
+
 #config
 config = dict(
   algo = ["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"][3],
-  train_iterations = 10**6,
-  num_players =  2,
+  train_iterations = 10**5,
+  num_players =  4,
   wandb_save = True
 )
 
@@ -572,7 +572,7 @@ if config["wandb_save"]:
 else:
   print(df)
 
-"""
+
 
 # calculate random strategy_profile exploitability
 for i in range(2,6):

@@ -97,11 +97,14 @@ class LeducTrainer:
           self.sigma_strategy_bit[player_i] = 1
 
 
+
       self.cards = self.card_distribution()
       random.shuffle(self.cards)
       history = "".join(self.cards[:self.NUM_PLAYERS])
 
-      self.player_last_infoset = [None for _ in range(self.NUM_PLAYERS)]
+      self.player_sars_list = [{"s":None, "a":None, "r":None, "s_prime":None} for _ in range(self.NUM_PLAYERS)]
+
+
       self.train_one_episode(history, iteration_t)
 
 
@@ -132,127 +135,91 @@ class LeducTrainer:
 
 
 
-        #print(self.epsilon_greedy_q_learning_strategy["J"], self.avg_strategy["J"])
-        #print(self.best_response_strategy_dfs)
-        #print(self.epsilon_greedy_q_learning_strategy)
-        #print("RL:", len(self.M_RL[0]), len(self.M_RL[1]))
-
-        #print(self.avg_strategy)
-        #print(self.M_SL)
-        #print("")
-
-        #if iteration_t >= 100:
-        #  print("SL:", set([i[0] for i in self.M_SL[0]]), set([i[0] for i in self.M_SL[1]]))
-        #  print("RL:", set([i[0] for i in self.M_RL[0]]), set([i[0] for i in self.M_RL[1]]))
-
-
 
 # _________________________________ Train second main method _________________________________
   def train_one_episode(self, history, iteration_t):
+ # one episode
+    while  not self.whether_terminal_states(history):
+      if self.whether_chance_node(history):
+        history += self.cards[self.NUM_PLAYERS]
 
-    player = self.action_player(history)
-
-    s = history[player] + history[self.NUM_PLAYERS:]
-
-    self.player_last_infoset[player] = s
-
-    if self.sigma_strategy_bit[player] == 0:
-      sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.epsilon_greedy_q_learning_strategy[s])
-    elif self.sigma_strategy_bit[player] == 1:
-      sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.avg_strategy[s])
-
-
-    a = self.ACTION_DICT[sampling_action]
-    Nexthistory = history + self.ACTION_DICT[sampling_action]
-
-
-
-    next_transition = []
-
-    if self.whether_chance_node(Nexthistory):
-      Nexthistory += self.cards[self.NUM_PLAYERS]
-
-
-
-    if self.whether_terminal_states(Nexthistory):
-      r = self.Return_payoff_for_terminal_states(Nexthistory, player)
-      s_prime = None
-
-      assert  self.infoset_action_player_dict[s] == player
-
-
-      self.M_RL[player].append((s, a, r, s_prime))
-      next_transition = [s, a, r, s_prime, Nexthistory]
-
-
-    else:
-      other_s, other_a, other_r, other_s_prime, other_history = self.train_one_episode(Nexthistory, iteration_t)
-
-
-      if self.whether_terminal_states(other_history):
-        r = self.Return_payoff_for_terminal_states(other_history, player)
-        s_prime = None
-        self.M_RL[player].append((s, a, r, s_prime))
-        other_history = other_history[:-1]
-        next_transition = [s, a, r, s_prime, other_history]
       else:
+
+        player = self.action_player(history)
+
+
+        s = history[player] + history[self.NUM_PLAYERS:]
+
+
+        if self.player_sars_list[player]["s"] is not None:
+          self.player_sars_list[player]["s_prime"] = s
+
+          self.M_RL[player].append([x for x in self.player_sars_list[player].values()])
+          self.player_sars_list[player] = {"s":None, "a":None, "r":None, "s_prime":None}
+
+
+        if self.sigma_strategy_bit[player] == 0:
+          sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.epsilon_greedy_q_learning_strategy[s])
+        elif self.sigma_strategy_bit[player] == 1:
+          sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.avg_strategy[s])
+
+
+        a = self.ACTION_DICT[sampling_action]
+        history  += a
         r = 0
-        if other_history[-1] in self.card_set:
-          other_history = other_history[:-2]
-        else:
-          other_history = other_history[:-1]
+
+        self.player_sars_list[player]["s"] = s
+        self.player_sars_list[player]["a"] = a
+        self.player_sars_list[player]["r"] = r
 
 
-        s_prime = self.player_last_infoset[player]
-
-        assert  self.infoset_action_player_dict[s] == player
-
-        self.M_RL[player].append((s, a, r, s_prime))
-
-        self.player_last_infoset[player] = s
-
-        next_transition = [s, a, r, s_prime, other_history]
+        if self.sigma_strategy_bit[player] == 0:
+          self.reservior_add(self.M_SL[player],(s, a))
 
 
-    if self.sigma_strategy_bit[player] == 0:
-      self.reservior_add(self.M_SL[player],(s, a))
+        if len(self.M_SL[player]) != 0:
+
+          if self.sl_algo == "mlp":
+            self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
+          elif self.sl_algo == "cnt":
+            self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
+            self.M_SL[player] = []
 
 
+        if self.rl_algo == "dqn":
 
-    if len(self.M_SL[player]) != 0:
+          #print("")
+          #print(player)
+          #print(self.M_RL[player])
 
-      if self.sl_algo == "mlp":
-        self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
-      elif self.sl_algo == "cnt":
-        self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
-        self.M_SL[player] = []
-
-
-    if self.rl_algo == "dqn":
-      self.RL.update_count += 1
+          self.RL.update_count += 1
+          self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
 
 
-      self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
+        elif self.rl_algo == "dfs":
+          self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
+          self.infoSets_dict = {}
+          self.infoset_action_player_dict = {}
 
-      #print(len(self.M_RL[player]))
+          for target_player in range(self.NUM_PLAYERS):
+            self.create_infoSets("", target_player, 1.0)
+          self.epsilon_greedy_q_learning_strategy = {}
+          for best_response_player_i in range(self.NUM_PLAYERS):
+              self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
 
 
+    if self.whether_terminal_states(history):
+      for target_player_i in range(self.NUM_PLAYERS):
+        r = self.Return_payoff_for_terminal_states(history, target_player_i)
+        self.player_sars_list[target_player_i]["r"] = r
 
-    elif self.rl_algo == "dfs":
-
-      self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
-      self.infoSets_dict = {}
-      self.infoset_action_player_dict = {}
-
-      for target_player in range(self.NUM_PLAYERS):
-        self.create_infoSets("", target_player, 1.0)
-      self.epsilon_greedy_q_learning_strategy = {}
-      for best_response_player_i in range(self.NUM_PLAYERS):
-          self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
+        self.M_RL[target_player_i].append([x for x in self.player_sars_list[target_player_i].values()])
+        self.player_sars_list[target_player_i] = {"s":None, "a":None, "r":None, "s_prime":None}
 
 
 
-    return next_transition
+
+
 
 
   def random_seed_fix(self, random_seed):

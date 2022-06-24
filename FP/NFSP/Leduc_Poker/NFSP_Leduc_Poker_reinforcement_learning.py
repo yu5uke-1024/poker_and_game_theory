@@ -77,8 +77,8 @@ class ReinforcementLearning:
     # train
 
 
-    #if len(memory) < self.sampling_num:
-    #  return
+    if len(memory) < 2:
+      return
 
 
     for _ in range(self.epochs):
