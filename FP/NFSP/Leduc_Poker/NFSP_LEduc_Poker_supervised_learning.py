@@ -97,50 +97,43 @@ class SupervisedLearning:
     #train
     self.sl_network.train()
 
-    if len(memory) < 2:
-      return
+    total_loss = []
 
-    total_loss = 0
+    train_X = np.array([])
+    train_y = np.array([])
 
+
+    for one_s_a_set in memory:
+      if one_s_a_set is not None:
+        train_i = self.leduc_trainer.from_episode_to_bit([one_s_a_set])
+        train_X = np.append(train_X, train_i[0])
+        train_y = np.append(train_y, train_i[1])
+
+
+
+    inputs = torch.from_numpy(train_X).float().reshape(-1,self.STATE_BIT_LEN)
+    targets = torch.from_numpy(train_y).long().reshape(-1, 1).squeeze_()
+
+    train_dataset = torch.utils.data.TensorDataset(inputs, targets)
+    train_dataset_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.sampling_num, shuffle=True)
 
     for _ in range(self.epochs):
 
-      samples =  random.sample(memory, min(self.sampling_num, len(memory)))
+      for x, t in train_dataset_loader:
+
+        y = self.sl_network.forward(x)
+        loss = self.loss_fn(y, t)
+
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+
+        total_loss.append(loss.item())
 
 
-      train_X = np.array([])
-      train_y = np.array([])
-
-
-      for one_s_a_set in samples:
-        if one_s_a_set is not None:
-          train_i = self.leduc_trainer.from_episode_to_bit([one_s_a_set])
-          train_X = np.append(train_X, train_i[0])
-          train_y = np.append(train_y, train_i[1])
-
-
-
-      inputs = torch.from_numpy(train_X).float().reshape(-1,self.STATE_BIT_LEN)
-      targets = torch.from_numpy(train_y).long().reshape(-1, 1).squeeze_()
-
-      outputs = self.sl_network.forward(inputs)
-
-
-      loss = self.loss_fn(outputs, targets)
-
-      #print(outputs, targets, loss)
-
-
-      self.optimizer.zero_grad()
-      loss.backward()
-      self.optimizer.step()
-
-      total_loss += loss.item()
-
-
-    if iteration_t in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
-      if self.leduc_trainer.wandb_save:
-        wandb.log({'iteration': iteration_t, 'loss_sl': total_loss/self.epochs})
+    #if iteration_t in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
+    if self.leduc_trainer.wandb_save:
+      wandb.log({'iteration': iteration_t, 'loss_sl':  np.mean(total_loss)})
 
 
     # eval
@@ -166,16 +159,6 @@ class SupervisedLearning:
 
           y /= normalizationSum
           update_strategy[node_X] = y
-
-          """
-          for action_i, yi in enumerate(y):
-            if action_i not in possible_action_list:
-              # fold, raise not choice → call
-              y[1] += yi
-              y[action_i] = 0
-
-          update_strategy[node_X] = y
-          """
 
 
 

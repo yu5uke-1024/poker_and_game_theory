@@ -66,7 +66,7 @@ class LeducTrainer:
 
     self.epsilon_greedy_q_learning_strategy = copy.deepcopy(self.avg_strategy)
 
-    self.game_step_count = 0
+    self.game_step_count = [0 for _ in range(self.NUM_PLAYERS)]
 
 
     self.RL = rl_module
@@ -178,21 +178,21 @@ class LeducTrainer:
         if self.sigma_strategy_bit[player] == 0:
           self.reservior_add(self.M_SL[player],(s, a))
 
-        self.game_step_count += 1
-        if self.game_step_count % self.RL.sampling_num == 0:
+        self.game_step_count[player] += 1
+
+
+        if self.game_step_count[player] % self.RL.sampling_num == 0:
 
           # SL update
-          if len(self.M_SL[player]) != 0:
-
-            if self.sl_algo == "mlp":
-              self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
-            elif self.sl_algo == "cnt":
-              self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
-              self.M_SL[player] = []
+          if self.sl_algo == "mlp":
+            self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
+          elif self.sl_algo == "cnt":
+            self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
+            self.M_SL[player] = []
 
           # RL update
           if self.rl_algo == "dqn":
-            self.RL.update_count += 1
+            self.RL.update_count[player] += 1
             self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
 
 

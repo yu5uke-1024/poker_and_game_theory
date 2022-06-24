@@ -64,7 +64,7 @@ class ReinforcementLearning:
 
     self.optimizer = optim.SGD(self.deep_q_network.parameters(), lr=self.lr)
 
-    self.update_count = 0
+    self.update_count =  [0 for _ in range(self.NUM_PLAYERS)]
 
 
   def RL_learn(self, memory, target_player, update_strategy, k):
@@ -73,109 +73,92 @@ class ReinforcementLearning:
     self.deep_q_network_target.eval()
     self.epsilon = 0.06/(k**0.5)
 
-    total_loss = 0
-    # train
+    total_loss = []
+
+    train_states = np.array([])
+    train_actions = np.array([])
+    train_rewards = np.array([])
+    train_next_states = np.array([])
+    train_done = np.array([])
+    s_prime_array = np.array([])
+    outputs = np.array([])
 
 
-    if len(memory) < 2:
-      return
+    for s, a, r, s_prime in memory:
+      s_bit = self.leduc_trainer.make_state_bit(s)
+      a_bit = self.leduc_trainer.make_action_bit(a)
+      s_prime_bit = self.leduc_trainer.make_state_bit(s_prime)
 
+      if s_prime == None:
+        done = 1
+      else:
+        done = 0
+
+
+      train_states = np.append(train_states, s_bit)
+      train_actions = np.append(train_actions, a_bit)
+      train_rewards = np.append(train_rewards, r)
+      train_next_states = np.append(train_next_states, s_prime_bit)
+      s_prime_array = np.append(s_prime_array, s_prime)
+      train_done = np.append(train_done, done)
+
+
+    train_states = torch.from_numpy(train_states).float().reshape(-1,self.STATE_BIT_LEN)
+    train_actions = torch.from_numpy(train_actions).float().reshape(-1,1)
+    train_rewards = torch.from_numpy(train_rewards).float().reshape(-1,1)
+    train_next_states = torch.from_numpy(train_next_states).float().reshape(-1,self.STATE_BIT_LEN)
+    train_done = torch.from_numpy(train_done).float().reshape(-1,1)
+
+
+    outputs_all = self.deep_q_network_target(train_next_states).detach()
+
+
+    for node_X, Q_value in zip(s_prime_array, outputs_all):
+
+
+      if node_X == None:
+        outputs = np.append(outputs, 0)
+      else:
+        action_list = self.leduc_trainer.node_possible_action[node_X]
+        max_idx = action_list[0]
+
+
+        for ai in action_list:
+          if Q_value[ai] >= Q_value[max_idx]:
+            max_idx = ai
+
+
+        outputs = np.append(outputs, Q_value[max_idx])
+
+
+    outputs = torch.from_numpy(outputs).float().unsqueeze(1)
+
+
+    q_targets = train_rewards + (1 - train_done) * self.gamma * outputs
+
+    #x: train_states, t: q_target, y:q_now_value
+
+    train_dataset = torch.utils.data.TensorDataset(train_states, q_targets, train_actions)
+    train_dataset_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.sampling_num, shuffle=True)
 
     for _ in range(self.epochs):
 
-      samples = random.sample(memory, min(self.sampling_num, len(memory)))
+      for x, t, a in train_dataset_loader:
+
+        q_now = self.deep_q_network(x)
+
+        y = q_now.gather(1, a.type(torch.int64))
+
+        loss = F.mse_loss(t, y)
+
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+
+        total_loss.append(loss.item())
 
 
-      train_states = np.array([])
-      train_actions = np.array([])
-      train_rewards = np.array([])
-      train_next_states = np.array([])
-      train_done = np.array([])
-
-      s_prime_array = np.array([])
-      outputs = np.array([])
-
-      for s, a, r, s_prime in samples:
-        s_bit = self.leduc_trainer.make_state_bit(s)
-        a_bit = self.leduc_trainer.make_action_bit(a)
-        s_prime_bit = self.leduc_trainer.make_state_bit(s_prime)
-
-        if s_prime == None:
-          done = 1
-        else:
-          done = 0
-
-
-        train_states = np.append(train_states, s_bit)
-        train_actions = np.append(train_actions, a_bit)
-        train_rewards = np.append(train_rewards, r)
-        train_next_states = np.append(train_next_states, s_prime_bit)
-        s_prime_array = np.append(s_prime_array, s_prime)
-        train_done = np.append(train_done, done)
-
-
-      train_states = torch.from_numpy(train_states).float().reshape(-1,self.STATE_BIT_LEN)
-      train_actions = torch.from_numpy(train_actions).float().reshape(-1,1)
-      train_rewards = torch.from_numpy(train_rewards).float().reshape(-1,1)
-      train_next_states = torch.from_numpy(train_next_states).float().reshape(-1,self.STATE_BIT_LEN)
-      train_done = torch.from_numpy(train_done).float().reshape(-1,1)
-
-
-      outputs_all = self.deep_q_network_target(train_next_states).detach()
-
-
-      for node_X, Q_value in zip(s_prime_array, outputs_all):
-
-
-        if node_X == None:
-          outputs = np.append(outputs, 0)
-        else:
-          action_list = self.leduc_trainer.node_possible_action[node_X]
-          max_idx = action_list[0]
-
-
-          for ai in action_list:
-            if Q_value[ai] >= Q_value[max_idx]:
-              max_idx = ai
-
-
-          outputs = np.append(outputs, Q_value[max_idx])
-
-
-      outputs = torch.from_numpy(outputs).float().unsqueeze(1)
-
-
-      q_targets = train_rewards + (1 - train_done) * self.gamma * outputs
-
-
-      q_now = self.deep_q_network(train_states)
-      q_now_value = q_now.gather(1, train_actions.type(torch.int64))
-
-
-      loss = F.mse_loss(q_targets, q_now_value)
-
-
-
-      if torch.isnan(loss):
-        print(outputs)
-        print(q_targets)
-        print(q_now)
-        print(q_now_value)
-        print(train_states)
-        print(train_actions)
-        print(train_rewards)
-        print(train_next_states)
-        exit()
-
-
-      self.optimizer.zero_grad()
-      loss.backward()
-      self.optimizer.step()
-
-      total_loss += loss.item()
-
-
-    if self.update_count % self.update_frequency ==  0 :
+    if self.update_count[target_player] % self.update_frequency ==  0 :
       self.parameter_update()
 
 
@@ -205,21 +188,11 @@ class ReinforcementLearning:
             update_strategy[node_X][max_idx] = 1.0
 
 
-    if k in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
-      if self.leduc_trainer.wandb_save:
-        wandb.log({'iteration': k, 'loss_rl': total_loss/self.epochs})
 
+    #if k in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
+    if self.leduc_trainer.wandb_save:
+      wandb.log({'iteration': k, 'loss_rl': np.mean(total_loss)})
 
-      """
-      for node_X , _ in update_strategy.items():
-        if self.infoset_action_player_dict[node_X] == target_player :
-          # 絶対勝っているnode
-          if node_X.count("J") == 2 or node_X.count("Q") == 2 or node_X.count("K") == 2:
-            inputs_eval = torch.from_numpy(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
-            y = self.deep_q_network.forward(inputs_eval).detach().numpy()
-            print(node_X, y)
-      print("")
-      """
 
 
   def parameter_update(self):
