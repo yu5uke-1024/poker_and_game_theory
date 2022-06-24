@@ -66,6 +66,8 @@ class LeducTrainer:
 
     self.epsilon_greedy_q_learning_strategy = copy.deepcopy(self.avg_strategy)
 
+    self.game_step_count = 0
+
 
     self.RL = rl_module
     self.SL = sl_module
@@ -176,38 +178,37 @@ class LeducTrainer:
         if self.sigma_strategy_bit[player] == 0:
           self.reservior_add(self.M_SL[player],(s, a))
 
+        self.game_step_count += 1
+        if self.game_step_count % self.RL.sampling_num == 0:
 
-        if len(self.M_SL[player]) != 0:
+          # SL update
+          if len(self.M_SL[player]) != 0:
 
-          if self.sl_algo == "mlp":
-            self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
-          elif self.sl_algo == "cnt":
-            self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
-            self.M_SL[player] = []
+            if self.sl_algo == "mlp":
+              self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
+            elif self.sl_algo == "cnt":
+              self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
+              self.M_SL[player] = []
 
-
-        if self.rl_algo == "dqn":
-
-          #print("")
-          #print(player)
-          #print(self.M_RL[player])
-
-          self.RL.update_count += 1
-          self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
+          # RL update
+          if self.rl_algo == "dqn":
+            self.RL.update_count += 1
+            self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
 
 
-        elif self.rl_algo == "dfs":
-          self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
-          self.infoSets_dict = {}
-          self.infoset_action_player_dict = {}
+          elif self.rl_algo == "dfs":
+            self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
+            self.infoSets_dict = {}
+            self.infoset_action_player_dict = {}
 
-          for target_player in range(self.NUM_PLAYERS):
-            self.create_infoSets("", target_player, 1.0)
-          self.epsilon_greedy_q_learning_strategy = {}
-          for best_response_player_i in range(self.NUM_PLAYERS):
-              self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
+            for target_player in range(self.NUM_PLAYERS):
+              self.create_infoSets("", target_player, 1.0)
+            self.epsilon_greedy_q_learning_strategy = {}
+            for best_response_player_i in range(self.NUM_PLAYERS):
+                self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
 
 
+    # terminal state
     if self.whether_terminal_states(history):
       for target_player_i in range(self.NUM_PLAYERS):
         r = self.Return_payoff_for_terminal_states(history, target_player_i)
@@ -215,6 +216,11 @@ class LeducTrainer:
 
         self.M_RL[target_player_i].append([x for x in self.player_sars_list[target_player_i].values()])
         self.player_sars_list[target_player_i] = {"s":None, "a":None, "r":None, "s_prime":None}
+
+    #print("")
+    #print(history)
+    #print(self.M_RL[0])
+    #print("")
 
 
 
