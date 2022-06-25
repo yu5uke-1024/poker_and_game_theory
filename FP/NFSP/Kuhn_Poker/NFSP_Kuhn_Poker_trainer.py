@@ -59,6 +59,7 @@ class KuhnTrainer:
 
     self.epsilon_greedy_q_learning_strategy = copy.deepcopy(self.avg_strategy)
 
+    self.game_step_count = [0 for _ in range(self.NUM_PLAYERS)]
 
     self.RL = rl_module
     self.SL = sl_module
@@ -145,7 +146,22 @@ class KuhnTrainer:
       if self.player_sars_list[player]["s"] is not None:
         self.player_sars_list[player]["s_prime"] = s
 
-        self.M_RL[player].append([x for x in self.player_sars_list[player].values()])
+        sars_list = []
+        for idx, x in enumerate(self.player_sars_list[player].values()):
+          if idx == 0:
+            sars_list.append(self.make_state_bit(x))
+          elif idx == 1:
+            sars_list.append(self.make_action_bit(x))
+          elif idx == 2:
+            sars_list.append(r)
+          elif idx == 3:
+            sars_list.append(self.make_state_bit(x))
+            if x == None:
+              sars_list.append(1)
+            else:
+              sars_list.append(0)
+
+        self.M_RL[player].append(sars_list)
         self.player_sars_list[player] = {"s":None, "a":None, "r":None, "s_prime":None}
 
 
@@ -165,10 +181,13 @@ class KuhnTrainer:
 
 
       if self.sigma_strategy_bit[player] == 0:
-        self.reservior_add(self.M_SL[player],(s, a))
+        sa_bit = self.from_episode_to_bit([(s, a)])
+
+        self.reservior_add(self.M_SL[player],sa_bit)
 
 
-      if len(self.M_SL[player]) != 0:
+      self.game_step_count[player] += 1
+      if self.game_step_count[player] % self.RL.sampling_num == 0:
 
         if self.sl_algo == "mlp":
           self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
@@ -177,23 +196,18 @@ class KuhnTrainer:
           self.M_SL[player] = []
 
 
-      if self.rl_algo == "dqn":
-
-        #print("")
-        #print(player)
-        #print(self.M_RL[player])
+        if self.rl_algo == "dqn":
+          self.RL.update_count[player] += 1
+          self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
 
 
-        self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
-
-
-      elif self.rl_algo == "dfs":
-        self.infoSets_dict = {}
-        for target_player in range(self.NUM_PLAYERS):
-          self.create_infoSets("", target_player, 1.0)
-        self.epsilon_greedy_q_learning_strategy = {}
-        for best_response_player_i in range(self.NUM_PLAYERS):
-          self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
+        elif self.rl_algo == "dfs":
+          self.infoSets_dict = {}
+          for target_player in range(self.NUM_PLAYERS):
+            self.create_infoSets("", target_player, 1.0)
+          self.epsilon_greedy_q_learning_strategy = {}
+          for best_response_player_i in range(self.NUM_PLAYERS):
+            self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
 
 
 
@@ -202,7 +216,24 @@ class KuhnTrainer:
         r = self.Return_payoff_for_terminal_states(history, target_player_i)
         self.player_sars_list[target_player_i]["r"] = r
 
-        self.M_RL[target_player_i].append([x for x in self.player_sars_list[target_player_i].values()])
+        sars_list = []
+        for idx, x in enumerate(self.player_sars_list[target_player_i].values()):
+          if idx == 0:
+            sars_list.append(self.make_state_bit(x))
+          elif idx == 1:
+            sars_list.append(self.make_action_bit(x))
+          elif idx == 2:
+            sars_list.append(r)
+          elif idx == 3:
+            sars_list.append(self.make_state_bit(x))
+            if x == None:
+              sars_list.append(1)
+            else:
+              sars_list.append(0)
+
+
+        self.M_RL[target_player_i].append(sars_list)
+
         self.player_sars_list[target_player_i] = {"s":None, "a":None, "r":None, "s_prime":None}
 
 
@@ -480,6 +511,7 @@ class KuhnTrainer:
     >>> KuhnTrainer().from_episode_to_bit([('Q', 'b')])
     (array([0, 1, 0, 0, 0, 0, 0]), array([1]))
     """
+
     for X, y in one_s_a_set:
       y_bit = self.make_action_bit(y)
       X_bit = self.make_state_bit(X)

@@ -66,6 +66,8 @@ class ReinforcementLearning:
     self.optimizer = optim.SGD(self.deep_q_network.parameters(), lr=self.lr)
     self.loss_fn = loss_function
 
+    self.update_count =  [0 for _ in range(self.NUM_PLAYERS)]
+
 
   def RL_learn(self, memory, target_player, update_strategy, k):
 
@@ -74,78 +76,63 @@ class ReinforcementLearning:
     self.epsilon = 0.06/(k**0.5)
 
 
-    total_loss = 0
+    total_loss = []
     # train
+
+    train_states = np.array([])
+    train_actions = np.array([])
+    train_rewards = np.array([])
+    train_next_states = np.array([])
+    train_done = np.array([])
+
+    for s_bit, a_bit, r, s_prime_bit, done in memory:
+
+
+      train_states = np.append(train_states, s_bit)
+      train_actions = np.append(train_actions, a_bit)
+      train_rewards = np.append(train_rewards, r)
+      train_next_states = np.append(train_next_states, s_prime_bit)
+      train_done = np.append(train_done, done)
+
+
+    train_states = torch.from_numpy(train_states).float().reshape(-1,self.STATE_BIT_LEN)
+    train_actions = torch.from_numpy(train_actions).float().reshape(-1,1)
+    train_rewards = torch.from_numpy(train_rewards).float().reshape(-1,1)
+    train_next_states = torch.from_numpy(train_next_states).float().reshape(-1,self.STATE_BIT_LEN)
+    train_done = torch.from_numpy(train_done).float().reshape(-1,1)
+
+    outputs = self.deep_q_network_target(train_next_states).detach().max(axis=1)[0].unsqueeze(1)
+
+
+    q_targets = train_rewards + (1 - train_done) * self.gamma * outputs
+
+    train_dataset = torch.utils.data.TensorDataset(train_states, q_targets, train_actions)
+    train_dataset_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.sampling_num, shuffle=True)
+
     for _ in range(self.epochs):
 
-      samples = random.sample(memory, min(self.sampling_num, len(memory)))
+      for x, t, a in train_dataset_loader:
+
+        q_now = self.deep_q_network(x)
+        y = q_now.gather(1, a.type(torch.int64))
 
 
-      train_states = np.array([])
-      train_actions = np.array([])
-      train_rewards = np.array([])
-      train_next_states = np.array([])
-      train_done = np.array([])
+        loss =   self.loss_fn(t, y)
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+
+        total_loss.append(loss.item())
 
 
-      for s, a, r, s_prime in samples:
-        s_bit = self.kuhn_trainer.make_state_bit(s)
-        a_bit = self.kuhn_trainer.make_action_bit(a)
-        s_prime_bit = self.kuhn_trainer.make_state_bit(s_prime)
-        if s_prime == None:
-          done = 1
-        else:
-          done = 0
-
-
-
-        train_states = np.append(train_states, s_bit)
-        train_actions = np.append(train_actions, a_bit)
-        train_rewards = np.append(train_rewards, r)
-        train_next_states = np.append(train_next_states, s_prime_bit)
-        train_done = np.append(train_done, done)
-
-      train_states = torch.from_numpy(train_states).float().reshape(-1,self.STATE_BIT_LEN)
-      train_actions = torch.from_numpy(train_actions).float().reshape(-1,1)
-      train_rewards = torch.from_numpy(train_rewards).float().reshape(-1,1)
-      train_next_states = torch.from_numpy(train_next_states).float().reshape(-1,self.STATE_BIT_LEN)
-      train_done = torch.from_numpy(train_done).float().reshape(-1,1)
-
-      outputs = self.deep_q_network_target(train_next_states).detach().max(axis=1)[0].unsqueeze(1)
-
-
-      q_targets = train_rewards + (1 - train_done) * self.gamma * outputs
-
-      q_now = self.deep_q_network(train_states)
-      q_now = q_now.gather(1, train_actions.type(torch.int64))
-
-
-      loss =   self.loss_fn(q_targets, q_now)
-      self.optimizer.zero_grad()
-      loss.backward()
-      self.optimizer.step()
-
-      total_loss += loss.item()
-
-
-    if k % self.update_frequency ==  0:
+    if self.update_count[target_player] % self.update_frequency ==  0 :
       self.parameter_update()
 
 
-    if k in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
-      if self.kuhn_trainer.wandb_save:
-        wandb.log({'iteration': k, 'loss_rl': total_loss/self.epochs})
+    if self.kuhn_trainer.wandb_save:
+      wandb.log({'iteration': k, 'loss_rl': np.mean(total_loss)})
 
-      """
-      self.deep_q_network.eval()
-      with torch.no_grad():
-        for node_X , _ in update_strategy.items():
-          if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
-            inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
-            y = self.deep_q_network.forward(inputs_eval).detach().numpy()
-            print(node_X, y)
-      print("")
-      """
+
 
 
     #eval
@@ -169,9 +156,6 @@ class ReinforcementLearning:
               update_strategy[node_X] = np.array([1, 0], dtype=float)
             else:
               update_strategy[node_X] = np.array([0, 1], dtype=float)
-
-
-          #print(node_X, y)
 
 
 

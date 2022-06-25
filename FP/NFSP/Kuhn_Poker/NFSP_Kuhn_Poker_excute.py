@@ -31,9 +31,9 @@ import NFSP_Kuhn_Poker_generate_data
 
 config = dict(
   random_seed = 42,
-  iterations = 10**6,
+  iterations = 10**3,
   num_players = 3,
-  wandb_save = [True, False][0],
+  wandb_save = [True, False][1],
 
 
   #train
@@ -64,7 +64,7 @@ config = dict(
 
 
 if config["wandb_save"]:
-  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="{}_{}_NFSP_new".format(config["rl_algo"], config["sl_algo"]))
+  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="{}_{}_NFSP_minibatch".format(config["rl_algo"], config["sl_algo"]))
   wandb.config.update(config)
   wandb.define_metric("exploitability", summary="last")
   wandb.define_metric("avg_utility", summary="last")

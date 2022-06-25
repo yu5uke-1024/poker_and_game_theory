@@ -88,64 +88,43 @@ class SupervisedLearning:
 
 
   def SL_learn(self, memory, target_player, update_strategy, iteration_t):
-
-    #train
     self.sl_network.train()
 
-    #if len(memory) < self.sampling_num:
-    #  return
+    total_loss = []
 
-    total_loss = 0
+    train_X = np.array([])
+    train_y = np.array([])
 
+
+    for sa_bit in memory:
+      train_X = np.append(train_X, sa_bit[0])
+      train_y = np.append(train_y, sa_bit[1])
+
+
+
+    inputs = torch.from_numpy(train_X).float().reshape(-1,self.STATE_BIT_LEN)
+    targets = torch.from_numpy(train_y).float().reshape(-1, 1)
+
+    train_dataset = torch.utils.data.TensorDataset(inputs, targets)
+    train_dataset_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.sampling_num, shuffle=True)
 
     for _ in range(self.epochs):
 
-      #samples = self.reservoir_sampling(memory, min(self.sampling_num, len(memory)))
-      samples =  random.sample(memory, min(self.sampling_num, len(memory)))
+      for x, t in train_dataset_loader:
+
+        y = self.sl_network.forward(x)
+        loss = self.loss_fn(y, t)
+
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+
+        total_loss.append(loss.item())
 
 
-      train_X = np.array([])
-      train_y = np.array([])
-
-      for one_s_a_set in samples:
-        if one_s_a_set is not None:
-          train_i = self.kuhn_trainer.from_episode_to_bit([one_s_a_set])
-          train_X = np.append(train_X, train_i[0])
-          train_y = np.append(train_y, train_i[1])
-
-          #print(one_s_a_set, train_i)
-
-      #print("")
-      #print(samples)
-      inputs = torch.from_numpy(train_X).float().reshape(-1,self.STATE_BIT_LEN)
-      targets = torch.from_numpy(train_y).float().reshape(-1, 1)
-
-
-
-      outputs = self.sl_network.forward(inputs)
-
-      loss = self.loss_fn(outputs, targets)
-
-
-
-      self.optimizer.zero_grad()
-      loss.backward()
-      self.optimizer.step()
-
-      total_loss += loss.item()
-
-
-    if iteration_t in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
-      if self.kuhn_trainer.wandb_save:
-        wandb.log({'iteration': iteration_t, 'loss_sl': total_loss/self.epochs})
-
-
-        #for node_X , _ in update_strategy.items():
-          #if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
-            #print(node_X, update_strategy[node_X])
-
-
-
+    #if iteration_t in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
+    if self.kuhn_trainer.wandb_save:
+      wandb.log({'iteration': iteration_t, 'loss_sl':  np.mean(total_loss)})
 
 
 
