@@ -189,6 +189,8 @@ class KuhnTrainer:
       self.game_step_count[player] += 1
       if self.game_step_count[player] % self.RL.sampling_num == 0:
 
+
+
         if self.sl_algo == "mlp":
           self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
         elif self.sl_algo == "cnt":

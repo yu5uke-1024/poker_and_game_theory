@@ -31,9 +31,9 @@ import NFSP_Kuhn_Poker_generate_data
 
 config = dict(
   random_seed = 42,
-  iterations = 10**3,
-  num_players = 3,
-  wandb_save = [True, False][1],
+  iterations = 10**5,
+  num_players = 2,
+  wandb_save = [True, False][0],
 
 
   #train
@@ -46,7 +46,7 @@ config = dict(
   sl_lr = 0.001,
   sl_epochs = 2,
   sl_sampling_num = 128,
-  sl_loss_function = [nn.BCELoss()][0],
+  sl_loss_function = [nn.BCEWithLogitsLoss()][0],
 
   #rl
   rl_hidden_units_num= 32,
@@ -58,13 +58,18 @@ config = dict(
   rl_update_frequency = 50,
   sl_algo = ["cnt", "mlp"][1],
   rl_algo = ["dfs", "dqn"][1],
-  rl_loss_function = [F.mse_loss, nn.HuberLoss()][0]
+  rl_loss_function = [F.mse_loss, nn.HuberLoss()][0],
+
+  # device
+  #device = torch.device('mps') if torch.backends.mps.is_available() else torch.device('cpu')
+  device = torch.device('cpu')
+
 )
 
 
 
 if config["wandb_save"]:
-  wandb.init(project="Kuhn_Poker_{}players".format(config["num_players"]), name="{}_{}_NFSP_minibatch".format(config["rl_algo"], config["sl_algo"]))
+  wandb.init(project="Kuhn_Poker_{}players_speed".format(config["num_players"]), name="{}_{}_NFSP_minibatch".format(config["rl_algo"], config["sl_algo"]))
   wandb.config.update(config)
   wandb.define_metric("exploitability", summary="last")
   wandb.define_metric("avg_utility", summary="last")
@@ -92,7 +97,8 @@ kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
   tau = config["rl_tau"],
   update_frequency = config["rl_update_frequency"],
   loss_function = config["rl_loss_function"],
-  kuhn_trainer_for_rl = kuhn_trainer
+  kuhn_trainer_for_rl = kuhn_trainer,
+  device = config["device"]
   )
 
 
@@ -105,7 +111,8 @@ kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
   epochs = config["sl_epochs"],
   sampling_num = config["sl_sampling_num"],
   loss_function = config["sl_loss_function"],
-  kuhn_trainer_for_sl = kuhn_trainer
+  kuhn_trainer_for_sl = kuhn_trainer,
+  device = config["device"]
   )
 
 

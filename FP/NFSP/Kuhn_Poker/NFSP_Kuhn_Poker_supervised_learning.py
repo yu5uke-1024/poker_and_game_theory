@@ -47,7 +47,7 @@ class SL_Network(nn.Module):
         #output = self.fc2(h1)
         h2 = self.dropout(h1)
 
-        output = torch.sigmoid(self.fc2(h2))
+        output = self.fc2(h2)
 
 
         return output
@@ -55,7 +55,7 @@ class SL_Network(nn.Module):
 
 # _________________________________ SL class _________________________________
 class SupervisedLearning:
-  def __init__(self,train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, loss_function, kuhn_trainer_for_sl, random_seed):
+  def __init__(self,train_iterations, num_players, hidden_units_num, lr, epochs, sampling_num, loss_function, kuhn_trainer_for_sl, random_seed, device):
 
     #self.device = torch.device('mps') if torch.backends.mps.is_available() else torch.device('cpu')
 
@@ -71,13 +71,16 @@ class SupervisedLearning:
     self.sampling_num = sampling_num
 
     self.kuhn_trainer = kuhn_trainer_for_sl
+    self.device = device
+    self.save_count = 0
+
 
     self.card_rank  = self.kuhn_trainer.card_rank
     self.random_seed = random_seed
 
     self.kuhn_trainer.random_seed_fix(random_seed = self.random_seed)
 
-    self.sl_network = SL_Network(state_num=self.STATE_BIT_LEN, hidden_units_num=self.hidden_units_num)
+    self.sl_network = SL_Network(state_num=self.STATE_BIT_LEN, hidden_units_num=self.hidden_units_num).to(self.device)
 
     #self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.lr, weight_decay=5*(10**(-4)))
     self.optimizer = optim.Adam(self.sl_network.parameters(), lr=self.lr)
@@ -85,6 +88,7 @@ class SupervisedLearning:
 
     self.loss_fn = loss_function
     #self.loss_fn = nn.CrossEntropyLoss()
+
 
 
   def SL_learn(self, memory, target_player, update_strategy, iteration_t):
@@ -102,8 +106,8 @@ class SupervisedLearning:
 
 
 
-    inputs = torch.from_numpy(train_X).float().reshape(-1,self.STATE_BIT_LEN)
-    targets = torch.from_numpy(train_y).float().reshape(-1, 1)
+    inputs = torch.from_numpy(train_X).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
+    targets = torch.from_numpy(train_y).float().reshape(-1, 1).to(self.device)
 
     train_dataset = torch.utils.data.TensorDataset(inputs, targets)
     train_dataset_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.sampling_num, shuffle=True)
@@ -123,8 +127,9 @@ class SupervisedLearning:
 
 
     #if iteration_t in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
-    if self.kuhn_trainer.wandb_save:
+    if self.kuhn_trainer.wandb_save and self.save_count % 10 == 0:
       wandb.log({'iteration': iteration_t, 'loss_sl':  np.mean(total_loss)})
+    self.save_count += 1
 
 
 
@@ -134,9 +139,9 @@ class SupervisedLearning:
     with torch.no_grad():
       for node_X , _ in update_strategy.items():
         if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
-          inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
+          inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
 
-          y = self.sl_network.forward(inputs_eval).detach().numpy()[0]
+          y = torch.sigmoid(self.sl_network.forward(inputs_eval)).to('cpu').detach().numpy()[0]
 
 
           update_strategy[node_X] = np.array([1.0-y[0], y[0]])
