@@ -31,9 +31,9 @@ import NFSP_Kuhn_Poker_generate_data
 
 config = dict(
   random_seed = 42,
-  iterations = 10**5,
+  iterations = 4000,
   num_players = 5,
-  wandb_save = [True, False][0],
+  wandb_save = [True, False][1],
 
 
   #train
@@ -170,5 +170,6 @@ else:
   print(df2)
 
 
+print(kuhn_trainer.visit_count)
 
 doctest.testmod()

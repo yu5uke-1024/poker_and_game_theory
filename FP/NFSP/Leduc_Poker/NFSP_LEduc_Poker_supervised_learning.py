@@ -100,20 +100,11 @@ class SupervisedLearning:
 
     total_loss = []
 
-    train_X = np.array([])
-    train_y = np.array([])
+    train_X = [sa_bit[0] for sa_bit in memory]
+    train_y = [sa_bit[1] for sa_bit in memory]
 
-
-    for one_s_a_set in memory:
-      if one_s_a_set is not None:
-        train_i = self.leduc_trainer.from_episode_to_bit([one_s_a_set])
-        train_X = np.append(train_X, train_i[0])
-        train_y = np.append(train_y, train_i[1])
-
-
-
-    inputs = torch.from_numpy(train_X).float().reshape(-1,self.STATE_BIT_LEN)
-    targets = torch.from_numpy(train_y).long().reshape(-1, 1).squeeze_()
+    inputs = torch.tensor(train_X).float().reshape(-1,self.STATE_BIT_LEN)
+    targets = torch.tensor(train_y).long().reshape(-1, 1).squeeze_()
 
     train_dataset = torch.utils.data.TensorDataset(inputs, targets)
     train_dataset_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.sampling_num, shuffle=True)
@@ -145,7 +136,7 @@ class SupervisedLearning:
       for node_X , _ in update_strategy.items():
         if self.infoset_action_player_dict[node_X] == target_player :
 
-          inputs_eval = torch.from_numpy(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
+          inputs_eval = torch.tensor(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
 
           y = self.softmax(self.sl_network.forward(inputs_eval)).detach().numpy()[0]
 

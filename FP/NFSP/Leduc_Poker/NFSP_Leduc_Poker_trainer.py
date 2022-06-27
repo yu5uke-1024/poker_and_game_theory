@@ -87,6 +87,8 @@ class LeducTrainer:
           self.N_count[node][key_i] = 1.0
 
 
+    self.visit_count = 0
+
     for iteration_t in tqdm(range(1, int(self.train_iterations)+1)):
 
 
@@ -156,7 +158,24 @@ class LeducTrainer:
         if self.player_sars_list[player]["s"] is not None:
           self.player_sars_list[player]["s_prime"] = s
 
-          self.M_RL[player].append([x for x in self.player_sars_list[player].values()])
+          sars_list = []
+          for idx, x in enumerate(self.player_sars_list[player].values()):
+            if idx == 0:
+              sars_list.append(self.make_state_bit(x))
+            elif idx == 1:
+              sars_list.append(self.make_action_bit(x))
+            elif idx == 2:
+              sars_list.append(r)
+            elif idx == 3:
+              sars_list.append(x)
+              sars_list.append(self.make_state_bit(x))
+              if x == None:
+                sars_list.append(1)
+              else:
+                sars_list.append(0)
+
+          self.M_RL[player].append(sars_list)
+
           self.player_sars_list[player] = {"s":None, "a":None, "r":None, "s_prime":None}
 
 
@@ -176,12 +195,14 @@ class LeducTrainer:
 
 
         if self.sigma_strategy_bit[player] == 0:
-          self.reservior_add(self.M_SL[player],(s, a))
+          sa_bit = self.from_episode_to_bit([(s, a)])
+          self.reservior_add(self.M_SL[player],sa_bit)
+
 
         self.game_step_count[player] += 1
 
-
         if self.game_step_count[player] % self.RL.sampling_num == 0:
+
 
           # SL update
           if self.sl_algo == "mlp":
@@ -208,22 +229,32 @@ class LeducTrainer:
                 self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
 
 
+
     # terminal state
     if self.whether_terminal_states(history):
       for target_player_i in range(self.NUM_PLAYERS):
         r = self.Return_payoff_for_terminal_states(history, target_player_i)
         self.player_sars_list[target_player_i]["r"] = r
 
-        self.M_RL[target_player_i].append([x for x in self.player_sars_list[target_player_i].values()])
+        sars_list = []
+        for idx, x in enumerate(self.player_sars_list[target_player_i].values()):
+          if idx == 0:
+            sars_list.append(self.make_state_bit(x))
+          elif idx == 1:
+            sars_list.append(self.make_action_bit(x))
+          elif idx == 2:
+            sars_list.append(r)
+          elif idx == 3:
+            sars_list.append(x)
+            sars_list.append(self.make_state_bit(x))
+            if x == None:
+              sars_list.append(1)
+            else:
+              sars_list.append(0)
+
+        self.M_RL[target_player_i].append(sars_list)
+
         self.player_sars_list[target_player_i] = {"s":None, "a":None, "r":None, "s_prime":None}
-
-    #print("")
-    #print(history)
-    #print(self.M_RL[0])
-    #print("")
-
-
-
 
 
 
@@ -793,8 +824,7 @@ class LeducTrainer:
   def from_episode_to_bit(self, one_s_a_set):
     """return list
     >>> LeducTrainer().from_episode_to_bit([('Q', 'r')])
-    (array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-           0, 0, 0, 0, 0]), array([2]))
+    ([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [2])
     """
     for X, y in one_s_a_set:
       y_bit = self.make_action_bit(y)
@@ -807,14 +837,15 @@ class LeducTrainer:
   def make_action_bit(self, y):
     """return array
     >>> LeducTrainer().make_action_bit("f")
-    array([0])
+    [0]
     """
+
     if y == "f":
-      y_bit = np.array([0])
+      y_bit = [0]
     elif y == "c":
-      y_bit = np.array([1])
+      y_bit = [1]
     elif y == "r":
-      y_bit = np.array([2])
+      y_bit = [2]
     return y_bit
 
 
@@ -822,16 +853,13 @@ class LeducTrainer:
   def make_state_bit(self, X):
     """return array
     >>> LeducTrainer().make_state_bit("Q")
-    array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-           0, 0, 0, 0, 0])
+    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     >>> LeducTrainer().make_state_bit("KrrcKrr")
-    array([0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1,
-           0, 0, 1, 0, 0])
+    [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]
     >>> LeducTrainer().make_state_bit("QrrccJrrc")
-    array([0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1,
-           0, 0, 0, 0, 1])
+    [0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1]
     """
-    X_bit = np.array([0 for _ in range(self.STATE_BIT_LEN)])
+    X_bit = [0 for _ in range(self.STATE_BIT_LEN)]
 
     if X == None:
       return X_bit

@@ -69,7 +69,6 @@ class KuhnTrainer:
     for node, cn in self.N_count.items():
       self.N_count[node] = np.array([1.0 for _ in range(self.NUM_ACTIONS)], dtype=float)
 
-
     for iteration_t in tqdm(range(1, int(self.train_iterations)+1)):
 
 

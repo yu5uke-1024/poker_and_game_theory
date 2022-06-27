@@ -76,39 +76,20 @@ class ReinforcementLearning:
 
     total_loss = []
 
-    train_states = np.array([])
-    train_actions = np.array([])
-    train_rewards = np.array([])
-    train_next_states = np.array([])
-    train_done = np.array([])
-    s_prime_array = np.array([])
-    outputs = np.array([])
+    train_states = [sars[0] for sars in memory]
+    train_actions = [sars[1] for sars in memory]
+    train_rewards = [sars[2] for sars in memory]
+    s_prime_array = [sars[3] for sars in memory]
+    train_next_states = [sars[4] for sars in memory]
+    train_done = [sars[5] for sars in memory]
+    outputs = []
 
 
-    for s, a, r, s_prime in memory:
-      s_bit = self.leduc_trainer.make_state_bit(s)
-      a_bit = self.leduc_trainer.make_action_bit(a)
-      s_prime_bit = self.leduc_trainer.make_state_bit(s_prime)
-
-      if s_prime == None:
-        done = 1
-      else:
-        done = 0
-
-
-      train_states = np.append(train_states, s_bit)
-      train_actions = np.append(train_actions, a_bit)
-      train_rewards = np.append(train_rewards, r)
-      train_next_states = np.append(train_next_states, s_prime_bit)
-      s_prime_array = np.append(s_prime_array, s_prime)
-      train_done = np.append(train_done, done)
-
-
-    train_states = torch.from_numpy(train_states).float().reshape(-1,self.STATE_BIT_LEN)
-    train_actions = torch.from_numpy(train_actions).float().reshape(-1,1)
-    train_rewards = torch.from_numpy(train_rewards).float().reshape(-1,1)
-    train_next_states = torch.from_numpy(train_next_states).float().reshape(-1,self.STATE_BIT_LEN)
-    train_done = torch.from_numpy(train_done).float().reshape(-1,1)
+    train_states = torch.tensor(train_states).float().reshape(-1,self.STATE_BIT_LEN)
+    train_actions = torch.tensor(train_actions).float().reshape(-1,1)
+    train_rewards = torch.tensor(train_rewards).float().reshape(-1,1)
+    train_next_states = torch.tensor(train_next_states).float().reshape(-1,self.STATE_BIT_LEN)
+    train_done = torch.tensor(train_done).float().reshape(-1,1)
 
 
     outputs_all = self.deep_q_network_target(train_next_states).detach()
@@ -118,21 +99,20 @@ class ReinforcementLearning:
 
 
       if node_X == None:
-        outputs = np.append(outputs, 0)
+        outputs.append(0)
       else:
         action_list = self.leduc_trainer.node_possible_action[node_X]
         max_idx = action_list[0]
-
 
         for ai in action_list:
           if Q_value[ai] >= Q_value[max_idx]:
             max_idx = ai
 
 
-        outputs = np.append(outputs, Q_value[max_idx])
+        outputs.append(Q_value[max_idx])
 
 
-    outputs = torch.from_numpy(outputs).float().unsqueeze(1)
+    outputs = torch.tensor(outputs).float().unsqueeze(1)
 
 
     q_targets = train_rewards + (1 - train_done) * self.gamma * outputs
@@ -169,7 +149,7 @@ class ReinforcementLearning:
       for node_X , _ in update_strategy.items():
         if self.infoset_action_player_dict[node_X] == target_player :
 
-          inputs_eval = torch.from_numpy(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
+          inputs_eval = torch.tensor(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
           y = self.deep_q_network.forward(inputs_eval).detach().numpy()
 
 
