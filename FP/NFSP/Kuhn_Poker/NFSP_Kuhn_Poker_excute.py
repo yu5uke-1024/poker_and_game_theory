@@ -32,7 +32,7 @@ import NFSP_Kuhn_Poker_generate_data
 config = dict(
   random_seed = 42,
   iterations = 10**5,
-  num_players = 5,
+  num_players = 4,
   wandb_save = [True, False][0],
 
 
@@ -57,7 +57,7 @@ config = dict(
   rl_tau = 0.1,
   rl_update_frequency = 50,
   sl_algo = ["cnt", "mlp"][1],
-  rl_algo = ["dfs", "dqn"][1],
+  rl_algo = ["dfs", "dqn", "ddqn"][1],
   rl_loss_function = [F.mse_loss, nn.HuberLoss()][0],
 
   # device

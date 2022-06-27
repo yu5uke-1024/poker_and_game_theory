@@ -179,8 +179,10 @@ class KuhnTrainer:
           self.M_SL[player] = []
 
 
-        if self.rl_algo == "dqn":
+        if self.rl_algo == "dqn" or self.rl_algo == "ddqn":
           self.RL.update_count[player] += 1
+          self.RL.rl_algo = self.rl_algo
+
           self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
 
 
@@ -215,7 +217,7 @@ class KuhnTrainer:
       elif idx == 1:
         sars_list.append(self.make_action_bit(x))
       elif idx == 2:
-        sars_list.append(r)
+        sars_list.append(x)
       elif idx == 3:
         sars_list.append(self.make_state_bit(x))
         if x == None:

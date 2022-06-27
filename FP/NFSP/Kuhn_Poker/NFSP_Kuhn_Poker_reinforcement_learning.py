@@ -53,6 +53,8 @@ class ReinforcementLearning:
     self.device = device
     self.save_count = 0
 
+    self.rl_algo = None
+
     self.kuhn_trainer.random_seed_fix(self.random_seed)
 
 
@@ -94,7 +96,13 @@ class ReinforcementLearning:
     train_next_states = torch.tensor(train_next_states).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
     train_done = torch.tensor(train_done).float().reshape(-1,1).to(self.device)
 
-    outputs = self.deep_q_network_target(train_next_states).detach().max(axis=1)[0].unsqueeze(1)
+    if self.rl_algo == "dqn":
+      outputs = self.deep_q_network_target(train_next_states).detach().max(axis=1)[0].unsqueeze(1)
+    #Double DQN
+    elif self.rl_algo == "ddqn":
+      not_target_nn_max_action = np.argmax(self.deep_q_network(train_next_states).detach(), axis=1).reshape(-1,1)
+
+      outputs = self.deep_q_network_target(train_next_states).gather(1,not_target_nn_max_action.type(torch.int64)).detach()
 
 
     q_targets = train_rewards + (1 - train_done) * self.gamma * outputs
