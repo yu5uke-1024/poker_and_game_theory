@@ -33,8 +33,8 @@ config = dict(
 
   #train
   eta = 0.1,
-  memory_size_rl = 2*(10**4),
-  memory_size_sl = 2*(10**5),
+  memory_size_rl = 2*(10**5),
+  memory_size_sl = 2*(10**6),
 
   #sl
   sl_hidden_units_num= 64,

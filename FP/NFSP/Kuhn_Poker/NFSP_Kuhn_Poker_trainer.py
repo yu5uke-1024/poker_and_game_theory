@@ -36,6 +36,7 @@ class KuhnTrainer:
 
     self.random_seed_fix(self.random_seed)
 
+
 # _________________________________ Train main method _________________________________
   def train(self, eta, memory_size_rl, memory_size_sl, rl_algo, sl_algo, rl_module, sl_module, gd_module):
     self.exploitability_list = {}
@@ -118,12 +119,6 @@ class KuhnTrainer:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
 
 
-        #print(self.epsilon_greedy_q_learning_strategy["J"], self.avg_strategy["J"])
-        #print(self.best_response_strategy_dfs)
-        #print(self.epsilon_greedy_q_learning_strategy)
-
-
-
   def random_seed_fix(self, random_seed):
       random.seed(random_seed)
       np.random.seed(random_seed)
@@ -145,20 +140,7 @@ class KuhnTrainer:
       if self.player_sars_list[player]["s"] is not None:
         self.player_sars_list[player]["s_prime"] = s
 
-        sars_list = []
-        for idx, x in enumerate(self.player_sars_list[player].values()):
-          if idx == 0:
-            sars_list.append(self.make_state_bit(x))
-          elif idx == 1:
-            sars_list.append(self.make_action_bit(x))
-          elif idx == 2:
-            sars_list.append(r)
-          elif idx == 3:
-            sars_list.append(self.make_state_bit(x))
-            if x == None:
-              sars_list.append(1)
-            else:
-              sars_list.append(0)
+        sars_list = self.make_sars_list(self.player_sars_list[player])
 
         self.M_RL[player].append(sars_list)
         self.player_sars_list[player] = {"s":None, "a":None, "r":None, "s_prime":None}
@@ -217,26 +199,30 @@ class KuhnTrainer:
         r = self.Return_payoff_for_terminal_states(history, target_player_i)
         self.player_sars_list[target_player_i]["r"] = r
 
-        sars_list = []
-        for idx, x in enumerate(self.player_sars_list[target_player_i].values()):
-          if idx == 0:
-            sars_list.append(self.make_state_bit(x))
-          elif idx == 1:
-            sars_list.append(self.make_action_bit(x))
-          elif idx == 2:
-            sars_list.append(r)
-          elif idx == 3:
-            sars_list.append(self.make_state_bit(x))
-            if x == None:
-              sars_list.append(1)
-            else:
-              sars_list.append(0)
-
-
+        sars_list = self.make_sars_list(self.player_sars_list[target_player_i])
         self.M_RL[target_player_i].append(sars_list)
 
         self.player_sars_list[target_player_i] = {"s":None, "a":None, "r":None, "s_prime":None}
 
+
+
+
+  def make_sars_list(self, sars_memory):
+    sars_list = []
+    for idx, x in enumerate(sars_memory.values()):
+      if idx == 0:
+        sars_list.append(self.make_state_bit(x))
+      elif idx == 1:
+        sars_list.append(self.make_action_bit(x))
+      elif idx == 2:
+        sars_list.append(r)
+      elif idx == 3:
+        sars_list.append(self.make_state_bit(x))
+        if x == None:
+          sars_list.append(1)
+        else:
+          sars_list.append(0)
+    return sars_list
 
 
 
@@ -510,42 +496,32 @@ class KuhnTrainer:
   def from_episode_to_bit(self, one_s_a_set):
     """return list
     >>> KuhnTrainer().from_episode_to_bit([('Q', 'b')])
-    (array([0, 1, 0, 0, 0, 0, 0]), array([1]))
+    ([0, 1, 0, 0, 0, 0, 0], [1])
     """
 
     for X, y in one_s_a_set:
       y_bit = self.make_action_bit(y)
       X_bit = self.make_state_bit(X)
 
-    return (X_bit, y_bit)
-
-
-  def make_action_bit_for_sl(self, y):
-    if y == "p":
-      y_bit = np.array([1.0 , 0.0], dtype="float")
-    else:
-      y_bit = np.array([0.0 , 1.0], dtype="float")
-    return y_bit
-
-
+    return (X_bit,y_bit)
 
 
   def make_action_bit(self, y):
     if y == "p":
-      y_bit = np.array([0])
+      y_bit = [0]
     else:
-      y_bit = np.array([1])
+      y_bit = [1]
     return y_bit
 
 
   def make_state_bit(self, X):
     """return list
     >>> KuhnTrainer().make_state_bit("J")
-    array([1, 0, 0, 0, 0, 0, 0])
+    [1, 0, 0, 0, 0, 0, 0]
     >>> KuhnTrainer().make_state_bit("Kb")
-    array([0, 0, 1, 0, 1, 0, 0])
+    [0, 0, 1, 0, 1, 0, 0]
     """
-    X_bit = np.array([0 for _ in range(self.STATE_BIT_LEN)])
+    X_bit = [0 for _ in range(self.STATE_BIT_LEN)]
 
     if X != None:
 
@@ -558,10 +534,6 @@ class KuhnTrainer:
           X_bit[(self.NUM_PLAYERS+1) + 2*idx +1] = 1
 
     return X_bit
-
-
-
-
 
 
 

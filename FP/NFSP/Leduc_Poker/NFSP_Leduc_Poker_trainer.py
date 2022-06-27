@@ -158,22 +158,7 @@ class LeducTrainer:
         if self.player_sars_list[player]["s"] is not None:
           self.player_sars_list[player]["s_prime"] = s
 
-          sars_list = []
-          for idx, x in enumerate(self.player_sars_list[player].values()):
-            if idx == 0:
-              sars_list.append(self.make_state_bit(x))
-            elif idx == 1:
-              sars_list.append(self.make_action_bit(x))
-            elif idx == 2:
-              sars_list.append(r)
-            elif idx == 3:
-              sars_list.append(x)
-              sars_list.append(self.make_state_bit(x))
-              if x == None:
-                sars_list.append(1)
-              else:
-                sars_list.append(0)
-
+          sars_list = self.make_sars_list(self.player_sars_list[player])
           self.M_RL[player].append(sars_list)
 
           self.player_sars_list[player] = {"s":None, "a":None, "r":None, "s_prime":None}
@@ -236,26 +221,30 @@ class LeducTrainer:
         r = self.Return_payoff_for_terminal_states(history, target_player_i)
         self.player_sars_list[target_player_i]["r"] = r
 
-        sars_list = []
-        for idx, x in enumerate(self.player_sars_list[target_player_i].values()):
-          if idx == 0:
-            sars_list.append(self.make_state_bit(x))
-          elif idx == 1:
-            sars_list.append(self.make_action_bit(x))
-          elif idx == 2:
-            sars_list.append(r)
-          elif idx == 3:
-            sars_list.append(x)
-            sars_list.append(self.make_state_bit(x))
-            if x == None:
-              sars_list.append(1)
-            else:
-              sars_list.append(0)
-
+        sars_list = self.make_sars_list(self.player_sars_list[target_player_i])
         self.M_RL[target_player_i].append(sars_list)
 
         self.player_sars_list[target_player_i] = {"s":None, "a":None, "r":None, "s_prime":None}
 
+
+
+  def make_sars_list(self, sars_memory):
+    sars_list = []
+    for idx, x in enumerate(sars_memory.values()):
+      if idx == 0:
+        sars_list.append(self.make_state_bit(x))
+      elif idx == 1:
+        sars_list.append(self.make_action_bit(x))
+      elif idx == 2:
+        sars_list.append(x)
+      elif idx == 3:
+        sars_list.append(x)
+        sars_list.append(self.make_state_bit(x))
+        if x == None:
+          sars_list.append(1)
+        else:
+          sars_list.append(0)
+    return sars_list
 
 
 

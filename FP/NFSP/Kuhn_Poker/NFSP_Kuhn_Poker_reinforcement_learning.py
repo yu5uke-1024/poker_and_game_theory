@@ -81,27 +81,18 @@ class ReinforcementLearning:
     total_loss = []
     # train
 
-    train_states = np.array([])
-    train_actions = np.array([])
-    train_rewards = np.array([])
-    train_next_states = np.array([])
-    train_done = np.array([])
-
-    for s_bit, a_bit, r, s_prime_bit, done in memory:
+    train_states = [sars[0] for sars in memory]
+    train_actions = [sars[1] for sars in memory]
+    train_rewards = [sars[2] for sars in memory]
+    train_next_states = [sars[3] for sars in memory]
+    train_done = [sars[4] for sars in memory]
 
 
-      train_states = np.append(train_states, s_bit)
-      train_actions = np.append(train_actions, a_bit)
-      train_rewards = np.append(train_rewards, r)
-      train_next_states = np.append(train_next_states, s_prime_bit)
-      train_done = np.append(train_done, done)
-
-
-    train_states = torch.from_numpy(train_states).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
-    train_actions = torch.from_numpy(train_actions).float().reshape(-1,1).to(self.device)
-    train_rewards = torch.from_numpy(train_rewards).float().reshape(-1,1).to(self.device)
-    train_next_states = torch.from_numpy(train_next_states).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
-    train_done = torch.from_numpy(train_done).float().reshape(-1,1).to(self.device)
+    train_states = torch.tensor(train_states).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
+    train_actions = torch.tensor(train_actions).float().reshape(-1,1).to(self.device)
+    train_rewards = torch.tensor(train_rewards).float().reshape(-1,1).to(self.device)
+    train_next_states = torch.tensor(train_next_states).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
+    train_done = torch.tensor(train_done).float().reshape(-1,1).to(self.device)
 
     outputs = self.deep_q_network_target(train_next_states).detach().max(axis=1)[0].unsqueeze(1)
 
@@ -143,7 +134,7 @@ class ReinforcementLearning:
     with torch.no_grad():
       for node_X , _ in update_strategy.items():
         if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
-          inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
+          inputs_eval = torch.tensor(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
           y = self.deep_q_network.forward(inputs_eval).to('cpu').detach().numpy()
 
 

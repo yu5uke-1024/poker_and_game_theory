@@ -96,18 +96,12 @@ class SupervisedLearning:
 
     total_loss = []
 
-    train_X = np.array([])
-    train_y = np.array([])
+    train_X = [sa_bit[0] for sa_bit in memory]
+    train_y = [sa_bit[1] for sa_bit in memory]
 
 
-    for sa_bit in memory:
-      train_X = np.append(train_X, sa_bit[0])
-      train_y = np.append(train_y, sa_bit[1])
-
-
-
-    inputs = torch.from_numpy(train_X).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
-    targets = torch.from_numpy(train_y).float().reshape(-1, 1).to(self.device)
+    inputs = torch.tensor(train_X).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
+    targets = torch.tensor(train_y).float().reshape(-1, 1).to(self.device)
 
     train_dataset = torch.utils.data.TensorDataset(inputs, targets)
     train_dataset_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.sampling_num, shuffle=True)
@@ -139,7 +133,7 @@ class SupervisedLearning:
     with torch.no_grad():
       for node_X , _ in update_strategy.items():
         if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
-          inputs_eval = torch.from_numpy(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
+          inputs_eval = torch.tensor(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
 
           y = torch.sigmoid(self.sl_network.forward(inputs_eval)).to('cpu').detach().numpy()[0]
 
