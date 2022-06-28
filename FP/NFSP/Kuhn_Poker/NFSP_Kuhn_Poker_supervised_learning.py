@@ -72,7 +72,7 @@ class SupervisedLearning:
 
     self.kuhn_trainer = kuhn_trainer_for_sl
     self.device = device
-    self.save_count = 0
+    self.save_count = [0 for _ in range(self.NUM_PLAYERS)]
 
 
     self.card_rank  = self.kuhn_trainer.card_rank
@@ -120,10 +120,9 @@ class SupervisedLearning:
         total_loss.append(loss.item())
 
 
-    #if iteration_t in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
-    if self.kuhn_trainer.wandb_save and self.save_count % 10 == 0:
-      wandb.log({'iteration': iteration_t, 'loss_sl':  np.mean(total_loss)})
-    self.save_count += 1
+    if self.kuhn_trainer.wandb_save and self.save_count[target_player] % 10 == 0:
+      wandb.log({'iteration': iteration_t, 'loss_sl_{}'.format(target_player):  np.mean(total_loss)})
+    self.save_count[target_player] += 1
 
 
 
@@ -140,9 +139,6 @@ class SupervisedLearning:
 
           update_strategy[node_X] = np.array([1.0-y[0], y[0]])
 
-
-
-            #update_strategy[node_X] = np.array(np.exp(y))
 
 
 

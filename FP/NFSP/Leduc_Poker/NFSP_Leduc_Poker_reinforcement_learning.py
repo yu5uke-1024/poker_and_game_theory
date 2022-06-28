@@ -65,7 +65,7 @@ class ReinforcementLearning:
     self.optimizer = optim.SGD(self.deep_q_network.parameters(), lr=self.lr)
 
     self.update_count =  [0 for _ in range(self.NUM_PLAYERS)]
-    self.save_count = 0
+    self.save_count = [0 for _ in range(self.NUM_PLAYERS)]
 
 
   def RL_learn(self, memory, target_player, update_strategy, k):
@@ -169,11 +169,11 @@ class ReinforcementLearning:
             update_strategy[node_X][max_idx] = 1.0
 
 
+    if self.leduc_trainer.wandb_save and self.save_count[target_player] % 10 == 0:
+      wandb.log({'iteration': k, 'loss_rl_{}'.format(target_player):  np.mean(total_loss)})
+    self.save_count[target_player] += 1
 
-    #if k in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
-    if self.leduc_trainer.wandb_save  and self.save_count % 10 == 0:
-      wandb.log({'iteration': k, 'loss_rl': np.mean(total_loss)})
-    self.save_count += 1
+
 
   def parameter_update(self):
     # soft update

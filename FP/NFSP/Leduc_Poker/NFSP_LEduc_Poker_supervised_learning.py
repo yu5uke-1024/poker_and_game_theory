@@ -69,7 +69,7 @@ class SupervisedLearning:
     self.leduc_trainer = leduc_trainer_for_sl
 
     self.leduc_trainer.random_seed_fix(random_seed = self.random_seed)
-    self.save_count = 0
+    self.save_count = [0 for _ in range(self.NUM_PLAYERS)]
 
     self.card_rank  = self.leduc_trainer.card_rank
 
@@ -124,9 +124,9 @@ class SupervisedLearning:
 
 
 
-    if self.leduc_trainer.wandb_save and self.save_count % 10 == 0:
-      wandb.log({'iteration': iteration_t, 'loss_sl':  np.mean(total_loss)})
-    self.save_count += 1
+    if self.leduc_trainer.wandb_save and self.save_count[target_player] % 10 == 0:
+      wandb.log({'iteration': iteration_t, 'loss_sl_{}'.format(target_player):  np.mean(total_loss)})
+    self.save_count[target_player] += 1
 
 
 

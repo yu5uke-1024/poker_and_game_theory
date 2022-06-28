@@ -51,7 +51,7 @@ class ReinforcementLearning:
     self.card_rank  = self.kuhn_trainer.card_rank
     self.random_seed = random_seed
     self.device = device
-    self.save_count = 0
+    self.save_count = [0 for _ in range(self.NUM_PLAYERS)]
 
     self.rl_algo = None
 
@@ -130,9 +130,9 @@ class ReinforcementLearning:
       self.parameter_update()
 
 
-    if self.kuhn_trainer.wandb_save  and self.save_count % 10 == 0:
-      wandb.log({'iteration': k, 'loss_rl': np.mean(total_loss)})
-    self.save_count += 1
+    if self.kuhn_trainer.wandb_save and self.save_count[target_player] % 10 == 0:
+      wandb.log({'iteration': k, 'loss_rl_{}'.format(target_player):  np.mean(total_loss)})
+    self.save_count[target_player] += 1
 
 
 
