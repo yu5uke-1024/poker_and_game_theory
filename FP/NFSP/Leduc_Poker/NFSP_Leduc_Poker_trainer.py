@@ -198,7 +198,7 @@ class LeducTrainer:
 
           # RL update
           if self.rl_algo == "dqn":
-            self.RL.update_count[player] += 1
+            self.RL.rl_algo = self.rl_algo
             self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
 
 

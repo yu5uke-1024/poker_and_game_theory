@@ -170,8 +170,6 @@ class KuhnTrainer:
       self.game_step_count[player] += 1
       if self.game_step_count[player] % self.RL.sampling_num == 0:
 
-
-
         if self.sl_algo == "mlp":
           self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
         elif self.sl_algo == "cnt":
@@ -180,7 +178,6 @@ class KuhnTrainer:
 
 
         if self.rl_algo == "dqn" or self.rl_algo == "ddqn":
-          self.RL.update_count[player] += 1
           self.RL.rl_algo = self.rl_algo
 
           self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
@@ -331,7 +328,8 @@ class KuhnTrainer:
       return False
 
 
-  # make node or get node
+  # ensure_exsist, create if
+  # if → return true or false
   def if_nonexistant(self, infoSet):
     if infoSet not in self.avg_strategy:
       self.avg_strategy[infoSet] = np.array([1/self.NUM_ACTIONS for _ in range(self.NUM_ACTIONS)], dtype=float)
@@ -399,6 +397,7 @@ class KuhnTrainer:
     plays = len(history)
     player = plays % self.NUM_PLAYERS
 
+    # whether → if
     if self.whether_terminal_states(history):
       return
 
@@ -410,6 +409,7 @@ class KuhnTrainer:
         self.create_infoSets(nextHistory, target_player, po)
       return
 
+    #history JQKpp → Kpp player2
     infoSet = history[player] + history[self.NUM_PLAYERS:]
     if player == target_player:
       if self.infoSets_dict.get(infoSet) is None:

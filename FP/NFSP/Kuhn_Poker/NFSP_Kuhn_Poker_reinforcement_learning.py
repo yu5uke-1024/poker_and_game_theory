@@ -98,6 +98,7 @@ class ReinforcementLearning:
 
     if self.rl_algo == "dqn":
       outputs = self.deep_q_network_target(train_next_states).detach().max(axis=1)[0].unsqueeze(1)
+
     #Double DQN
     elif self.rl_algo == "ddqn":
       not_target_nn_max_action = np.argmax(self.deep_q_network(train_next_states).detach(), axis=1).reshape(-1,1)
@@ -110,24 +111,33 @@ class ReinforcementLearning:
     train_dataset = torch.utils.data.TensorDataset(train_states, q_targets, train_actions)
     train_dataset_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.sampling_num, shuffle=True)
 
-    for _ in range(self.epochs):
+    self.weight_update_count = 0
 
-      for x, t, a in train_dataset_loader:
+    for x, t, a in train_dataset_loader:
 
-        q_now = self.deep_q_network(x)
-        y = q_now.gather(1, a.type(torch.int64))
+      if self.weight_update_count >= self.epochs:
+        break
 
-
-        loss =   self.loss_fn(t, y)
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
-
-        total_loss.append(loss.item())
+      q_now = self.deep_q_network(x)
+      y = q_now.gather(1, a.type(torch.int64))
 
 
-    if self.update_count[target_player] % self.update_frequency ==  0 :
-      self.parameter_update()
+      loss =   self.loss_fn(t, y)
+      self.optimizer.zero_grad()
+      loss.backward()
+      self.optimizer.step()
+
+      total_loss.append(loss.item())
+
+
+      self.weight_update_count += 1
+
+      self.update_count[target_player] += 1
+
+
+      if self.update_count[target_player] % self.update_frequency ==  0 :
+        self.parameter_update()
+
 
 
     if self.kuhn_trainer.wandb_save and self.save_count[target_player] % 10 == 0:
@@ -173,6 +183,14 @@ class ReinforcementLearning:
     # hard update
     for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
       target_param.data.copy_(param.data)
+
+
+
+# Prioritized experience replay
+
+class PER:
+  def __init__(self):
+    pass
 
 
 

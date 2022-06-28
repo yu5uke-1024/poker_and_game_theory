@@ -106,18 +106,22 @@ class SupervisedLearning:
     train_dataset = torch.utils.data.TensorDataset(inputs, targets)
     train_dataset_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.sampling_num, shuffle=True)
 
-    for _ in range(self.epochs):
+    self.weight_update_count = 0
 
-      for x, t in train_dataset_loader:
+    for x, t in train_dataset_loader:
+      if self.weight_update_count >= self.epochs:
+        break
 
-        y = self.sl_network.forward(x)
-        loss = self.loss_fn(y, t)
+      y = self.sl_network.forward(x)
+      loss = self.loss_fn(y, t)
 
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
+      self.optimizer.zero_grad()
+      loss.backward()
+      self.optimizer.step()
 
-        total_loss.append(loss.item())
+      total_loss.append(loss.item())
+
+      self.weight_update_count += 1
 
 
     if self.kuhn_trainer.wandb_save and self.save_count[target_player] % 10 == 0:
