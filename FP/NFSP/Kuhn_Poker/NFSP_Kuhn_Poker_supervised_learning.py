@@ -96,24 +96,18 @@ class SupervisedLearning:
 
     total_loss = []
 
-    train_X = [sa_bit[0] for sa_bit in memory]
-    train_y = [sa_bit[1] for sa_bit in memory]
+    for _ in range(self.epochs):
+      samples =  random.sample(memory, min(self.sampling_num, len(memory)))
+      train_X = [sa_bit[0] for sa_bit in samples]
+      train_y = [sa_bit[1] for sa_bit in samples]
 
 
-    inputs = torch.tensor(train_X).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
-    targets = torch.tensor(train_y).float().reshape(-1, 1).to(self.device)
+      inputs = torch.tensor(train_X).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
+      targets = torch.tensor(train_y).float().reshape(-1, 1).to(self.device)
 
-    train_dataset = torch.utils.data.TensorDataset(inputs, targets)
-    train_dataset_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.sampling_num, shuffle=True)
 
-    self.weight_update_count = 0
-
-    for x, t in train_dataset_loader:
-      if self.weight_update_count >= self.epochs:
-        break
-
-      y = self.sl_network.forward(x)
-      loss = self.loss_fn(y, t)
+      outputs = self.sl_network.forward(inputs)
+      loss = self.loss_fn(outputs, targets)
 
       self.optimizer.zero_grad()
       loss.backward()
@@ -121,7 +115,6 @@ class SupervisedLearning:
 
       total_loss.append(loss.item())
 
-      self.weight_update_count += 1
 
 
     if self.kuhn_trainer.wandb_save and self.save_count[target_player] % 10 == 0:
