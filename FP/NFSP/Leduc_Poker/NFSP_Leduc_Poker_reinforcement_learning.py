@@ -77,84 +77,74 @@ class ReinforcementLearning:
 
     total_loss = []
 
-    train_states = [sars[0] for sars in memory]
-    train_actions = [sars[1] for sars in memory]
-    train_rewards = [sars[2] for sars in memory]
-    s_prime_array = [sars[3] for sars in memory]
-    train_next_states = [sars[4] for sars in memory]
-    train_done = [sars[5] for sars in memory]
-    outputs = []
+    for _ in range(self.epochs):
+      samples = random.sample(memory, min(self.sampling_num, len(memory)))
+      train_states = [sars[0] for sars in samples]
+      train_actions = [sars[1] for sars in samples]
+      train_rewards = [sars[2] for sars in samples]
+      s_prime_array = [sars[3] for sars in samples]
+      train_next_states = [sars[4] for sars in samples]
+      train_done = [sars[5] for sars in samples]
+      outputs = []
 
 
-    train_states = torch.tensor(train_states).float().reshape(-1,self.STATE_BIT_LEN)
-    train_actions = torch.tensor(train_actions).float().reshape(-1,1)
-    train_rewards = torch.tensor(train_rewards).float().reshape(-1,1)
-    train_next_states = torch.tensor(train_next_states).float().reshape(-1,self.STATE_BIT_LEN)
-    train_done = torch.tensor(train_done).float().reshape(-1,1)
+      train_states = torch.tensor(train_states).float().reshape(-1,self.STATE_BIT_LEN)
+      train_actions = torch.tensor(train_actions).float().reshape(-1,1)
+      train_rewards = torch.tensor(train_rewards).float().reshape(-1,1)
+      train_next_states = torch.tensor(train_next_states).float().reshape(-1,self.STATE_BIT_LEN)
+      train_done = torch.tensor(train_done).float().reshape(-1,1)
 
 
-    if self.rl_algo == "dqn":
-      outputs_all = self.deep_q_network_target(train_next_states).detach()
+      if self.rl_algo == "dqn":
+        outputs_all = self.deep_q_network_target(train_next_states).detach()
 
-    #Double DQN
-    elif self.rl_algo == "ddqn":
-      not_target_nn_max_action_list = []
+      #Double DQN
+      elif self.rl_algo == "ddqn":
+        not_target_nn_max_action_list = []
 
-      for node_X, Q_value in zip(s_prime_array, self.deep_q_network(train_next_states)):
-        action_list = self.leduc_trainer.node_possible_action[node_X]
-        max_idx = action_list[0]
+        for node_X, Q_value in zip(s_prime_array, self.deep_q_network(train_next_states)):
+          action_list = self.leduc_trainer.node_possible_action[node_X]
+          max_idx = action_list[0]
+          if node_X == None:
+            not_target_nn_max_action_list.append(max_idx)
+          else:
+            for ai in action_list:
+              if Q_value[ai] >= Q_value[max_idx]:
+                max_idx = ai
+
+            not_target_nn_max_action_list.append(max_idx)
+
+
+        outputs_all = self.deep_q_network_target(train_next_states).gather(1,not_target_nn_max_action_list.type(torch.int64)).detach()
+
+
+
+      for node_X, Q_value in zip(s_prime_array, outputs_all):
+
+
         if node_X == None:
-          not_target_nn_max_action_list.append(max_idx)
+          outputs.append(0)
         else:
+          action_list = self.leduc_trainer.node_possible_action[node_X]
+          max_idx = action_list[0]
+
           for ai in action_list:
             if Q_value[ai] >= Q_value[max_idx]:
               max_idx = ai
 
-          not_target_nn_max_action_list.append(max_idx)
+
+          outputs.append(Q_value[max_idx])
 
 
-      outputs_all = self.deep_q_network_target(train_next_states).gather(1,not_target_nn_max_action_list.type(torch.int64)).detach()
+      outputs = torch.tensor(outputs).float().unsqueeze(1)
 
 
+      q_targets = train_rewards + (1 - train_done) * self.gamma * outputs
 
-    for node_X, Q_value in zip(s_prime_array, outputs_all):
+      q_now = self.deep_q_network(train_states)
+      q_now_value = q_now.gather(1, train_actions.type(torch.int64))
 
-
-      if node_X == None:
-        outputs.append(0)
-      else:
-        action_list = self.leduc_trainer.node_possible_action[node_X]
-        max_idx = action_list[0]
-
-        for ai in action_list:
-          if Q_value[ai] >= Q_value[max_idx]:
-            max_idx = ai
-
-
-        outputs.append(Q_value[max_idx])
-
-
-    outputs = torch.tensor(outputs).float().unsqueeze(1)
-
-
-    q_targets = train_rewards + (1 - train_done) * self.gamma * outputs
-
-    #x: train_states, t: q_target, y:q_now_value
-
-    train_dataset = torch.utils.data.TensorDataset(train_states, q_targets, train_actions)
-    train_dataset_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.sampling_num, shuffle=True)
-
-    self.weight_update_count = 0
-
-    for x, t, a in train_dataset_loader:
-      if self.weight_update_count >= self.epochs:
-        break
-
-      q_now = self.deep_q_network(x)
-
-      y = q_now.gather(1, a.type(torch.int64))
-
-      loss = F.mse_loss(t, y)
+      loss = F.mse_loss(q_targets, q_now_value)
 
       self.optimizer.zero_grad()
       loss.backward()
@@ -162,7 +152,6 @@ class ReinforcementLearning:
 
       total_loss.append(loss.item())
 
-      self.weight_update_count += 1
 
       self.update_count[target_player] += 1
 

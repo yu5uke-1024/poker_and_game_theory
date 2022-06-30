@@ -100,32 +100,23 @@ class SupervisedLearning:
 
     total_loss = []
 
-    train_X = [sa_bit[0] for sa_bit in memory]
-    train_y = [sa_bit[1] for sa_bit in memory]
+    for _ in range(self.epochs):
+      samples =  random.sample(memory, min(self.sampling_num, len(memory)))
+      train_X = [sa_bit[0] for sa_bit in samples]
+      train_y = [sa_bit[1] for sa_bit in samples]
 
-    inputs = torch.tensor(train_X).float().reshape(-1,self.STATE_BIT_LEN)
-    targets = torch.tensor(train_y).long().reshape(-1, 1).squeeze_()
 
-    train_dataset = torch.utils.data.TensorDataset(inputs, targets)
-    train_dataset_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.sampling_num, shuffle=True)
+      inputs = torch.tensor(train_X).float().reshape(-1,self.STATE_BIT_LEN)
+      targets = torch.tensor(train_y).long().reshape(-1, 1).squeeze_()
 
-    self.weight_update_count = 0
-
-    for x, t in train_dataset_loader:
-      if self.weight_update_count >= self.epochs:
-        break
-
-      y = self.sl_network.forward(x)
-      loss = self.loss_fn(y, t)
+      outputs = self.sl_network.forward(inputs)
+      loss = self.loss_fn(outputs, targets)
 
       self.optimizer.zero_grad()
       loss.backward()
       self.optimizer.step()
 
       total_loss.append(loss.item())
-
-      self.weight_update_count += 1
-
 
 
     if self.leduc_trainer.wandb_save and self.save_count[target_player] % 10 == 0:
