@@ -112,8 +112,8 @@ class SupervisedLearning:
     self.weight_update_count = 0
 
     for x, t in train_dataset_loader:
-      #if self.weight_update_count >= self.epochs:
-        #break
+      if self.weight_update_count >= self.epochs:
+        break
 
       y = self.sl_network.forward(x)
       loss = self.loss_fn(y, t)

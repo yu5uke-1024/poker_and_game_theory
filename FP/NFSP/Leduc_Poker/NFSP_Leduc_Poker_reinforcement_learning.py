@@ -147,8 +147,8 @@ class ReinforcementLearning:
     self.weight_update_count = 0
 
     for x, t, a in train_dataset_loader:
-      #if self.weight_update_count >= self.epochs:
-        #break
+      if self.weight_update_count >= self.epochs:
+        break
 
       q_now = self.deep_q_network(x)
 
