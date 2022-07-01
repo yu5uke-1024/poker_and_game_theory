@@ -21,7 +21,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
-from NFSP_Kuhn_Poker_trainer import KuhnTrainer
+from NFSP_PPO_Kuhn_Poker_trainer import KuhnTrainer
 
 
 

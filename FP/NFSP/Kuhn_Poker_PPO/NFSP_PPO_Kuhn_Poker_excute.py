@@ -21,10 +21,10 @@ from collections import defaultdict
 from tqdm import tqdm
 from collections import deque
 
-import NFSP_Kuhn_Poker_trainer
-import NFSP_Kuhn_Poker_supervised_learning
-import NFSP_Kuhn_Poker_reinforcement_learning
-import NFSP_Kuhn_Poker_generate_data
+import NFSP_PPO_Kuhn_Poker_trainer
+import NFSP_PPO_Kuhn_Poker_supervised_learning
+import NFSP_PPO_Kuhn_Poker_reinforcement_learning
+import NFSP_PPO_Kuhn_Poker_generate_data
 
 
 # _________________________________ config _________________________________
@@ -57,7 +57,7 @@ config = dict(
   rl_tau = 0.1,
   rl_update_frequency = 100,
   sl_algo = ["cnt", "mlp"][1],
-  rl_algo = ["dfs", "dqn", "ddqn", "ppo"][3],
+  rl_algo = ["dfs", "ppo"][1],
   rl_loss_function = [F.mse_loss, nn.HuberLoss()][0],
 
   # device
@@ -77,7 +77,7 @@ if config["wandb_save"]:
 
 # _________________________________ train _________________________________
 
-kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(
+kuhn_trainer = NFSP_PPO_Kuhn_Poker_trainer.KuhnTrainer(
   random_seed = config["random_seed"],
   train_iterations = config["iterations"],
   num_players= config["num_players"],
@@ -85,7 +85,7 @@ kuhn_trainer = NFSP_Kuhn_Poker_trainer.KuhnTrainer(
   )
 
 if not config["rl_algo"] == "ppo":
-  kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
+  kuhn_RL = NFSP_PPO_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
     random_seed = config["random_seed"],
     train_iterations = config["iterations"],
     num_players= config["num_players"],
@@ -102,14 +102,14 @@ if not config["rl_algo"] == "ppo":
     )
 
 elif config["rl_algo"] == "ppo":
-  kuhn_RL = NFSP_Kuhn_Poker_reinforcement_learning.PPO(
+  kuhn_RL = NFSP_PPO_Kuhn_Poker_reinforcement_learning.PPO(
     num_players= config["num_players"],
     hidden_units_num = config["rl_hidden_units_num"],
     sampling_num = config["rl_sampling_num"],
     )
 
 
-kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
+kuhn_SL = NFSP_PPO_Kuhn_Poker_supervised_learning.SupervisedLearning(
   random_seed = config["random_seed"],
   train_iterations = config["iterations"],
   num_players= config["num_players"],
@@ -125,7 +125,7 @@ kuhn_SL = NFSP_Kuhn_Poker_supervised_learning.SupervisedLearning(
 
 
 
-kuhn_GD = NFSP_Kuhn_Poker_generate_data.GenerateData(
+kuhn_GD = NFSP_PPO_Kuhn_Poker_generate_data.GenerateData(
   random_seed = config["random_seed"],
   num_players= config["num_players"],
   kuhn_trainer_for_gd= kuhn_trainer
