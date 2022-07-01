@@ -33,8 +33,8 @@ config = dict(
 
   #train
   eta = 0.1,
-  memory_size_rl = 2*(10**3),
-  memory_size_sl = 2*(10**4),
+  memory_size_rl = 2*(10**4),
+  memory_size_sl = 2*(10**5),
 
   #sl
   sl_hidden_units_num= 64,
@@ -50,7 +50,7 @@ config = dict(
   rl_gamma = 1.0,
   rl_tau = 0.1,
   rl_update_frequency = 300,
-  sl_algo = ["cnt", "mlp"][1],
+  sl_algo = ["cnt", "mlp"][0],
   rl_algo = ["dfs", "dqn", "ddqn"][1]
 )
 

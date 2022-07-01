@@ -180,8 +180,11 @@ class LeducTrainer:
 
 
         if self.sigma_strategy_bit[player] == 0:
-          sa_bit = self.from_episode_to_bit([(s, a)])
-          self.reservior_add(self.M_SL[player],sa_bit)
+          if self.sl_algo == "mlp":
+            sa_bit = self.from_episode_to_bit([(s, a)])
+            self.reservior_add(self.M_SL[player],sa_bit)
+          else:
+            self.reservior_add(self.M_SL[player],(s, a))
 
 
         self.game_step_count[player] += 1

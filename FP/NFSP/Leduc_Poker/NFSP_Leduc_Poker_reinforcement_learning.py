@@ -59,8 +59,7 @@ class ReinforcementLearning:
 
     self.leduc_trainer.random_seed_fix(self.random_seed)
 
-    for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
-        target_param.data.copy_(param.data)
+    self.deep_q_network_target.load_state_dict(self.deep_q_network.state_dict())
 
 
     self.optimizer = optim.SGD(self.deep_q_network.parameters(), lr=self.lr)
@@ -157,7 +156,7 @@ class ReinforcementLearning:
 
 
       if self.update_count[target_player] % self.update_frequency ==  0 :
-        self.parameter_update()
+        self.deep_q_network_target.load_state_dict(self.deep_q_network.state_dict())
 
 
     #eval
@@ -189,22 +188,6 @@ class ReinforcementLearning:
     if self.leduc_trainer.wandb_save and self.save_count[target_player] % 10 == 0:
       wandb.log({'iteration': k, 'loss_rl_{}'.format(target_player):  np.mean(total_loss)})
     self.save_count[target_player] += 1
-
-
-
-  def parameter_update(self):
-    # soft update
-    """
-    for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
-      target_param.data.copy_(
-          self.tau * param.data + (1.0 - self.tau) * target_param.data)
-
-    """
-    # hard update
-    for target_param, param in zip(self.deep_q_network_target.parameters(), self.deep_q_network.parameters()):
-      target_param.data.copy_(param.data)
-
-
 
 
 
