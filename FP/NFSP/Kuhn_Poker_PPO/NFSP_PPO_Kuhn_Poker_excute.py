@@ -57,7 +57,7 @@ config = dict(
   rl_tau = 0.1,
   rl_update_frequency = 100,
   sl_algo = ["cnt", "mlp"][1],
-  rl_algo = ["dfs", "ppo"][1],
+  rl_algo = ["ppo"][0],
   rl_loss_function = [F.mse_loss, nn.HuberLoss()][0],
 
   # device
@@ -84,29 +84,11 @@ kuhn_trainer = NFSP_PPO_Kuhn_Poker_trainer.KuhnTrainer(
   wandb_save = config["wandb_save"]
   )
 
-if not config["rl_algo"] == "ppo":
-  kuhn_RL = NFSP_PPO_Kuhn_Poker_reinforcement_learning.ReinforcementLearning(
-    random_seed = config["random_seed"],
-    train_iterations = config["iterations"],
-    num_players= config["num_players"],
-    hidden_units_num = config["rl_hidden_units_num"],
-    lr = config["rl_lr"],
-    epochs = config["rl_epochs"],
-    sampling_num = config["rl_sampling_num"],
-    gamma = config["rl_gamma"],
-    tau = config["rl_tau"],
-    update_frequency = config["rl_update_frequency"],
-    loss_function = config["rl_loss_function"],
-    kuhn_trainer_for_rl = kuhn_trainer,
-    device = config["device"]
-    )
-
-elif config["rl_algo"] == "ppo":
-  kuhn_RL = NFSP_PPO_Kuhn_Poker_reinforcement_learning.PPO(
-    num_players= config["num_players"],
-    hidden_units_num = config["rl_hidden_units_num"],
-    sampling_num = config["rl_sampling_num"],
-    )
+kuhn_RL = NFSP_PPO_Kuhn_Poker_reinforcement_learning.PPO(
+  num_players= config["num_players"],
+  hidden_units_num = config["rl_hidden_units_num"],
+  sampling_num = config["rl_sampling_num"],
+  )
 
 
 kuhn_SL = NFSP_PPO_Kuhn_Poker_supervised_learning.SupervisedLearning(

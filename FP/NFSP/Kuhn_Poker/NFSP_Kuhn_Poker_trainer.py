@@ -1,5 +1,6 @@
 
 # _________________________________ Library _________________________________
+from cmath import e
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -57,6 +58,11 @@ class KuhnTrainer:
 
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
+
+    #calculate random strategy exploitability
+    self.random_strategy_exploitability = self.get_exploitability_dfs()
+
+
 
     self.epsilon_greedy_q_learning_strategy = copy.deepcopy(self.avg_strategy)
 
@@ -116,7 +122,7 @@ class KuhnTrainer:
           self.optimality_gap += self.optimality_gap_i
 
         if self.wandb_save:
-          wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
+          wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap, "exploitability rate":  self.exploitability_list[iteration_t]/self.random_strategy_exploitability})
 
 
   def random_seed_fix(self, random_seed):

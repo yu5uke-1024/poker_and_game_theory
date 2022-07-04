@@ -66,7 +66,7 @@ class ActorCriticNetwork(nn.Module):
     action_log_probability = action_distribution.log_prob(action)
     distribution_entropy = action_distribution.entropy()
 
-    return action_probability, torch.squeeze(state_value), distribution_entropy
+    return action_log_probability, torch.squeeze(state_value), distribution_entropy
 
 
 class PPO:
@@ -76,6 +76,9 @@ class PPO:
     self.num_states = (self.NUM_PLAYERS + 1) + 2*(self.NUM_PLAYERS *2 - 2)
     self.hidden_units_num = hidden_units_num
     self.sampling_num = sampling_num
+    self.gamma = 0.1
+    self.epochs = 1
+    self.eps_clip = 0.2
 
 
     self.current_policy = ActorCriticNetwork(self.num_states, self.num_actions, self.hidden_units_num)
@@ -86,7 +89,6 @@ class PPO:
 
     self.loss_function = nn.MSELoss()
 
-    self.memory = RL_memory()
 
 
   def select_action(self, node_X):
@@ -94,21 +96,74 @@ class PPO:
 
       action, action_log_prob = self.old_policy.make_action(node_X)
 
-      return action
+      return action, action_log_prob
 
 
-  def RL_learn(self, memory):
-    pass
+  def RL_learn(self, memory, target_player):
+    # memory[0] → s, a, r, s_prime, done
+
+    rewards = []
+    discounted_reward = 0
+
+
+    for reward, done in zip(reversed(memory.rewards), reversed(memory.is_terminals)):
+      if done:
+        discounted_reward = 0
+      discounted_reward = reward + (self.gamma * discounted_reward)
+      rewards.append(discounted_reward)
+
+    rewards.reverse()
+    rewards = torch.tensor(rewards)
+
+
+
+    old_states = torch.tensor(memory.states).float().reshape(-1,self.num_states).detach()
+    old_actions = torch.tensor(memory.actions).float().reshape(-1,1).detach()
+    old_logprobs = torch.tensor(memory.logprobs).float().reshape(-1,1).detach()
+
+    for _ in range(self.epochs):
+      logprobs, state_values, distribution_entropy = self.current_policy.evaluate_action(old_states, old_actions)
+
+      # importance ratio r(θ)
+      ratios = torch.exp(logprobs - old_logprobs.detach())
+
+      # adavantage
+      advantages = rewards - state_values.detach()
+
+      #clip した方と してない方 比べて小さい方を選択
+      loss_unclipped = ratios * advantages
+      loss_clipped = torch.clamp(ratios, 1 - self.eps_clip, 1 + self.eps_clip) * advantages
+
+      actor_loss = - torch.min(loss_unclipped, loss_clipped)
+
+      # Critic loss: critic loss - entropy
+      critic_loss = 0.5 * self.loss_function(rewards, state_values) - 0.01 * distribution_entropy
+
+
+      loss = actor_loss + critic_loss
+
+      self.optimizer.zero_grad()
+      loss.mean().backward()
+      self.optimizer.step()
+
+
+    self.old_policy.load_state_dict(self.current_policy.state_dict())
 
 
 class RL_memory:
   def __init__(self):
-    self.states = []
-    self.actions = []
-    self.log_probs = []
-    self.rewards = []
-    self.done = []
+      self.states = []
+      self.actions = []
+      self.rewards = []
+      self.is_terminals = []
+      self.logprobs = []
 
+  def del_memory(self):
+      self.states = []
+      self.actions = []
+      self.rewards = []
+      self.is_terminals = []
+      self.logprobs = []
 
 
 

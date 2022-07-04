@@ -16,6 +16,8 @@ import wandb
 import torch
 import torch.nn as nn
 
+from NFSP_PPO_Kuhn_Poker_reinforcement_learning import RL_memory
+
 
 
 
@@ -50,7 +52,7 @@ class KuhnTrainer:
 
 
     self.M_SL = [[] for _ in range(self.NUM_PLAYERS)]
-    self.M_RL = [deque([], maxlen=self.memory_size_rl) for _ in range(self.NUM_PLAYERS)]
+    self.M_RL = [RL_memory() for _ in range(self.NUM_PLAYERS)]
 
     self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
     self.infoSets_dict = {}
@@ -87,10 +89,7 @@ class KuhnTrainer:
       random.shuffle(cards)
       history = "".join(cards[:self.NUM_PLAYERS])
 
-      if not self.rl_algo == "ppo":
-        self.player_sars_list = [{"s":None, "a":None, "r":None, "s_prime":None} for _ in range(self.NUM_PLAYERS)]
-      else:
-        self.player_sars_list = [{"s":None, "a":None, "log_prob":None, "r":None, "done":None} for _ in range(self.NUM_PLAYERS)]
+      self.player_sars_list = [{"s":None, "a":None, "r":None, "s_prime":None, "action_prob":None} for _ in range(self.NUM_PLAYERS)]
 
 
       self.train_one_episode(history, iteration_t)
@@ -142,22 +141,23 @@ class KuhnTrainer:
       if self.player_sars_list[player]["s"] is not None:
         self.player_sars_list[player]["s_prime"] = s
 
-        sars_list = self.make_sars_list(self.player_sars_list[player])
+        self.memory_append(self.player_sars_list[player], player)
 
-        self.M_RL[player].append(sars_list)
-        self.player_sars_list[player] = {"s":None, "a":None, "r":None, "s_prime":None}
+        self.player_sars_list[player] = {"s":None, "a":None, "r":None, "s_prime":None, "action_prob":None}
 
 
 
       if self.sigma_strategy_bit[player] == 0:
-        if not self.rl_algo == "ppo":
-          sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.epsilon_greedy_q_learning_strategy[s])
-        else:
-          node_X = self.make_state_bit(s)
-          sampling_action = self.RL.select_action(torch.tensor(node_X).float())
+        node_X = self.make_state_bit(s)
+        sampling_action, action_prob = self.RL.select_action(torch.tensor(node_X).float())
+
+        print(s, sampling_action)
+
+
 
       elif self.sigma_strategy_bit[player] == 1:
         sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.avg_strategy[s])
+        action_prob = None
 
 
       a = ("p" if sampling_action == 0 else "b")
@@ -167,6 +167,7 @@ class KuhnTrainer:
       self.player_sars_list[player]["s"] = s
       self.player_sars_list[player]["a"] = a
       self.player_sars_list[player]["r"] = r
+      self.player_sars_list[player]["action_prob"] = action_prob
 
 
       if self.sigma_strategy_bit[player] == 0:
@@ -185,19 +186,9 @@ class KuhnTrainer:
           self.M_SL[player] = []
 
 
-        if self.rl_algo == "dqn" or self.rl_algo == "ddqn":
-          self.RL.rl_algo = self.rl_algo
-
-          self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
-
-
-        elif self.rl_algo == "dfs":
-          self.infoSets_dict = {}
-          for target_player in range(self.NUM_PLAYERS):
-            self.create_infoSets("", target_player, 1.0)
-          self.epsilon_greedy_q_learning_strategy = {}
-          for best_response_player_i in range(self.NUM_PLAYERS):
-            self.calc_best_response_value(self.epsilon_greedy_q_learning_strategy, best_response_player_i, "", 1)
+        if self.rl_algo == "ppo":
+          self.RL.RL_learn(self.M_RL[player], player)
+          self.M_RL[player].del_memory()
 
 
 
@@ -206,33 +197,28 @@ class KuhnTrainer:
         r = self.Return_payoff_for_terminal_states(history, target_player_i)
         self.player_sars_list[target_player_i]["r"] = r
 
-        sars_list = self.make_sars_list(self.player_sars_list[target_player_i])
-        self.M_RL[target_player_i].append(sars_list)
+        self.memory_append(self.player_sars_list[target_player_i], target_player_i)
 
-        if not self.rl_algo == "ppo":
-          self.player_sars_list[target_player_i] = {"s":None, "a":None, "r":None, "s_prime":None}
-        else:
-          self.player_sars_list[target_player_i] = {"s":None, "a":None, "log_prob":None, "r":None, "done":None}
+        self.player_sars_list[target_player_i] = {"s":None, "a":None, "r":None, "s_prime":None, "action_prob":None}
 
 
 
 
-  def make_sars_list(self, sars_memory):
-    sars_list = []
-    for idx, x in enumerate(sars_memory.values()):
-      if idx == 0:
-        sars_list.append(self.make_state_bit(x))
-      elif idx == 1:
-        sars_list.append(self.make_action_bit(x))
-      elif idx == 2:
-        sars_list.append(x)
-      elif idx == 3:
-        sars_list.append(self.make_state_bit(x))
-        if x == None:
-          sars_list.append(1)
-        else:
-          sars_list.append(0)
-    return sars_list
+  def memory_append(self, sars_memory, player):
+
+    if sars_memory["action_prob"] is not None:
+      self.memory = self.M_RL[player]
+
+      self.memory.states.append(self.make_state_bit(sars_memory["s"]))
+      self.memory.actions.append(self.make_action_bit(sars_memory["a"]))
+      self.memory.rewards.append(sars_memory["r"])
+      if sars_memory["s_prime"] == None:
+        self.memory.is_terminals.append(1)
+      else:
+        self.memory.is_terminals.append(0)
+      self.memory.logprobs.append(sars_memory["action_prob"])
+
+
 
 
 
