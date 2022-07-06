@@ -64,6 +64,8 @@ class KuhnTrainer:
 
 
 
+
+
     self.epsilon_greedy_q_learning_strategy = copy.deepcopy(self.avg_strategy)
 
     self.game_step_count = [0 for _ in range(self.NUM_PLAYERS)]

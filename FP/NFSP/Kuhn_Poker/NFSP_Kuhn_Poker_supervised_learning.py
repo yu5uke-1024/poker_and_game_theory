@@ -96,11 +96,12 @@ class SupervisedLearning:
 
     total_loss = []
 
+
     for _ in range(self.epochs):
       samples =  random.sample(memory, min(self.sampling_num, len(memory)))
+
       train_X = [sa_bit[0] for sa_bit in samples]
       train_y = [sa_bit[1] for sa_bit in samples]
-
 
       inputs = torch.tensor(train_X).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
       targets = torch.tensor(train_y).float().reshape(-1, 1).to(self.device)

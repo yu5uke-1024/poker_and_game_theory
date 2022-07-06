@@ -82,6 +82,8 @@ class ReinforcementLearning:
     # train
     for _ in range(self.epochs):
       samples = random.sample(memory, min(self.sampling_num, len(memory)))
+
+
       train_states = [sars[0] for sars in samples]
       train_actions = [sars[1] for sars in samples]
       train_rewards = [sars[2] for sars in samples]
