@@ -25,16 +25,16 @@ import NFSP_Leduc_Poker_generate_data
 # _________________________________ config _________________________________
 
 config = dict(
-  random_seed = 42,
+  random_seed = [42, 1000, 10000][0],
   iterations = 10**6,
   num_players = 2,
-  wandb_save = [True, False][0],
+  wandb_save = [True, False][1],
 
 
   #train
   eta = 0.1,
-  memory_size_rl = 2*(10**4),
-  memory_size_sl = 2*(10**5),
+  memory_size_rl = 2*(10**3),
+  memory_size_sl = 2*(10**4),
 
   #sl
   sl_hidden_units_num= 64,
@@ -50,7 +50,7 @@ config = dict(
   rl_gamma = 1.0,
   rl_tau = 0.1,
   rl_update_frequency = 300,
-  sl_algo = ["cnt", "mlp"][0],
+  sl_algo = ["cnt", "mlp"][1],
   rl_algo = ["dfs", "dqn", "ddqn"][1]
 )
 
@@ -152,6 +152,11 @@ if config["wandb_save"]:
   wandb.save()
 else:
   print(df2)
+
+#追加 matplotlibで図を書くため
+df = pd.DataFrame(leduc_trainer.database_for_plot)
+df = df.set_index('iteration')
+df.to_csv('../../../Make_png/output/database_for_plot_NFSP.csv')
 
 
 doctest.testmod()

@@ -53,6 +53,10 @@ class LeducTrainer:
     self.memory_count_for_sl = 0
 
 
+    #追加 matplotlibで図を書くため
+    self.database_for_plot = {"iteration":[] ,"exploitability_NFSP":[]}
+
+
     self.M_SL = [[] for _ in range(self.NUM_PLAYERS)]
     self.M_RL = [deque([], maxlen= self.memory_size_rl) for _ in range(self.NUM_PLAYERS)]
 
@@ -137,6 +141,9 @@ class LeducTrainer:
         if self.wandb_save:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
 
+        #追加 matplotlibで図を書くため
+        self.database_for_plot["iteration"].append(iteration_t)
+        self.database_for_plot["exploitability_NFSP"].append(self.exploitability_list[iteration_t])
 
 
 

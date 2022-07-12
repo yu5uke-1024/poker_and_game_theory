@@ -49,6 +49,10 @@ class KuhnTrainer:
     self.memory_size_rl = memory_size_rl
 
 
+    #追加 matplotlibで図を書くため
+    #self.ex_name = "exploitability_rate_{}_{}".format(self.NUM_PLAYERS, self.random_seed)
+    #self.database_for_plot = {"iteration":[] ,self.ex_name:[]}
+
 
     self.M_SL = [[] for _ in range(self.NUM_PLAYERS)]
     self.M_RL = [deque([], maxlen=self.memory_size_rl) for _ in range(self.NUM_PLAYERS)]
@@ -126,6 +130,10 @@ class KuhnTrainer:
         if self.wandb_save:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap, "exploitability rate":  self.exploitability_list[iteration_t]/self.random_strategy_exploitability})
 
+        #追加 matplotlibで図を書くため
+        #self.database_for_plot["iteration"].append(iteration_t)
+        #self.database_for_plot[self.ex_name].append(self.exploitability_list[iteration_t]/self.random_strategy_exploitability)
+
 
   def random_seed_fix(self, random_seed):
       random.seed(random_seed)
@@ -170,9 +178,11 @@ class KuhnTrainer:
 
 
       if self.sigma_strategy_bit[player] == 0:
-        sa_bit = self.from_episode_to_bit([(s, a)])
-
-        self.reservior_add(self.M_SL[player],sa_bit)
+        if self.sl_algo == "mlp":
+          sa_bit = self.from_episode_to_bit([(s, a)])
+          self.reservior_add(self.M_SL[player],sa_bit)
+        else:
+          self.reservior_add(self.M_SL[player],(s, a))
 
 
       self.game_step_count[player] += 1

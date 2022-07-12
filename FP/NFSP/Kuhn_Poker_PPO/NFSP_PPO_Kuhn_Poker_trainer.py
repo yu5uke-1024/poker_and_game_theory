@@ -49,10 +49,10 @@ class KuhnTrainer:
     self.memory_size_sl = memory_size_sl
     self.memory_size_rl = memory_size_rl
 
+    self.time_step = 10
 
 
-    self.M_SL = [[] for _ in range(self.NUM_PLAYERS)]
-    self.M_RL = [RL_memory() for _ in range(self.NUM_PLAYERS)]
+
 
     self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
     self.infoSets_dict = {}
@@ -60,42 +60,27 @@ class KuhnTrainer:
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
 
-    self.epsilon_greedy_q_learning_strategy = copy.deepcopy(self.avg_strategy)
-
-    self.game_step_count = [0 for _ in range(self.NUM_PLAYERS)]
 
     self.RL = rl_module
     self.SL = sl_module
     self.GD = gd_module
 
-    self.N_count = copy.deepcopy(self.avg_strategy)
-    for node, cn in self.N_count.items():
-      self.N_count[node] = np.array([1.0 for _ in range(self.NUM_ACTIONS)], dtype=float)
 
     for iteration_t in tqdm(range(1, int(self.train_iterations)+1)):
+      self.M_SL = [[] for _ in range(self.NUM_PLAYERS)]
+      self.M_RL = [RL_memory() for _ in range(self.NUM_PLAYERS)]
+
+      for target_player in range(self.NUM_PLAYERS):
+        self.sar_list = {"s":None, "a":None, "r":None, "action_prob":None}
+        self.time_step_count = 0
+        while self.time_step_count <= self.time_step:
+          cards = self.card_distribution(self.NUM_PLAYERS)
+          random.shuffle(cards)
+          history = "".join(cards[:self.NUM_PLAYERS])
+          self.train_one_episode(history, target_player)
 
 
-      #0 → epsilon_greedy_q_strategy, 1 → avg_strategy
-      self.sigma_strategy_bit = [-1 for _ in range(self.NUM_PLAYERS)]
-      for player_i in range(self.NUM_PLAYERS):
-        if np.random.uniform() < self.eta:
-          self.sigma_strategy_bit[player_i] = 0
-        else:
-          self.sigma_strategy_bit[player_i] = 1
-
-
-
-      cards = self.card_distribution(self.NUM_PLAYERS)
-      random.shuffle(cards)
-      history = "".join(cards[:self.NUM_PLAYERS])
-
-      self.player_sars_list = [{"s":None, "a":None, "r":None, "s_prime":None, "action_prob":None} for _ in range(self.NUM_PLAYERS)]
-
-
-      self.train_one_episode(history, iteration_t)
-
-
-
+      """
       if iteration_t in [int(j) for j in np.logspace(0, len(str(self.train_iterations)), (len(str(self.train_iterations)))*4 , endpoint=False)] :
         self.exploitability_list[iteration_t] = self.get_exploitability_dfs()
         self.avg_utility_list[iteration_t] = self.eval_vanilla_CFR("", 0, 0, [1.0 for _ in range(self.NUM_PLAYERS)])
@@ -118,7 +103,7 @@ class KuhnTrainer:
 
         if self.wandb_save:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
-
+      """
 
   def random_seed_fix(self, random_seed):
       random.seed(random_seed)
@@ -127,7 +112,7 @@ class KuhnTrainer:
 
 
 # _________________________________ Train second main method _________________________________
-  def train_one_episode(self, history, iteration_t):
+  def train_one_episode(self, history, target_player):
 
     # one episode
     while  not self.whether_terminal_states(history):
@@ -135,72 +120,55 @@ class KuhnTrainer:
       plays = len(history)
       player = plays % self.NUM_PLAYERS
 
-
       s = history[player] + history[self.NUM_PLAYERS:]
 
-      if self.player_sars_list[player]["s"] is not None:
-        self.player_sars_list[player]["s_prime"] = s
 
-        self.memory_append(self.player_sars_list[player], player)
+      # sample action
+      if player == target_player:
+        self.time_step_count += 1
 
-        self.player_sars_list[player] = {"s":None, "a":None, "r":None, "s_prime":None, "action_prob":None}
+        #Store M_RL
+        if self.sar_list["r"] == 0:
+          self.M_RL[player].states.append(self.sar_list["s"])
+          self.M_RL[player].actions.append(self.sar_list["a"])
+          self.M_RL[player].rewards.append(self.sar_list["r"])
+          self.M_RL[player].logprobs.append(self.sar_list["action_prob"])
 
 
-
-      if self.sigma_strategy_bit[player] == 0:
+        #sample action
         node_X = self.make_state_bit(s)
         sampling_action, action_prob = self.RL.select_action(torch.tensor(node_X).float())
 
-        print(s, sampling_action)
+        #store M_SL
+        #self.M_SL[player].append([node_X, sampling_action])
+        a = ("p" if sampling_action == 0 else "b")
+        history +=  a
+        r = 0
+        self.M_SL[player].append([s, a])
+
+        #save sar list
+        self.sar_list["s"] = s
+        self.sar_list["a"] = a
+        self.sar_list["r"] = r
+        self.sar_list["action_prob"] = action_prob
 
 
-
-      elif self.sigma_strategy_bit[player] == 1:
+      elif player != target_player:
         sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.avg_strategy[s])
-        action_prob = None
-
-
-      a = ("p" if sampling_action == 0 else "b")
-      history +=  a
-      r = 0
-
-      self.player_sars_list[player]["s"] = s
-      self.player_sars_list[player]["a"] = a
-      self.player_sars_list[player]["r"] = r
-      self.player_sars_list[player]["action_prob"] = action_prob
-
-
-      if self.sigma_strategy_bit[player] == 0:
-        sa_bit = self.from_episode_to_bit([(s, a)])
-
-        self.reservior_add(self.M_SL[player],sa_bit)
-
-
-      self.game_step_count[player] += 1
-      if self.game_step_count[player] % self.RL.sampling_num == 0:
-
-        if self.sl_algo == "mlp":
-          self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
-        elif self.sl_algo == "cnt":
-          self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
-          self.M_SL[player] = []
-
-
-        if self.rl_algo == "ppo":
-          self.RL.RL_learn(self.M_RL[player], player)
-          self.M_RL[player].del_memory()
+        a = ("p" if sampling_action == 0 else "b")
+        history +=  a
+        r = 0
 
 
 
     if self.whether_terminal_states(history):
-      for target_player_i in range(self.NUM_PLAYERS):
-        r = self.Return_payoff_for_terminal_states(history, target_player_i)
-        self.player_sars_list[target_player_i]["r"] = r
+      r = self.Return_payoff_for_terminal_states(history, target_player)
+      self.sar_list["r"] = r
 
-        self.memory_append(self.player_sars_list[target_player_i], target_player_i)
-
-        self.player_sars_list[target_player_i] = {"s":None, "a":None, "r":None, "s_prime":None, "action_prob":None}
-
+      self.M_RL[target_player].states.append(self.sar_list["s"])
+      self.M_RL[target_player].actions.append(self.sar_list["a"])
+      self.M_RL[target_player].rewards.append(self.sar_list["r"])
+      self.M_RL[target_player].logprobs.append(self.sar_list["action_prob"])
 
 
 

@@ -1,6 +1,7 @@
 
 # _________________________________ Library _________________________________
 from platform import node
+from unittest.mock import seal
 from importlib_metadata import distribution
 import numpy as np
 import pandas as pd
@@ -93,7 +94,6 @@ class PPO:
 
   def select_action(self, node_X):
     with torch.no_grad():
-
       action, action_log_prob = self.old_policy.make_action(node_X)
 
       return action, action_log_prob
@@ -164,6 +164,9 @@ class RL_memory:
       self.rewards = []
       self.is_terminals = []
       self.logprobs = []
+
+  def display(self):
+    return self.states, self.actions, self.rewards, self.logprobs
 
 
 

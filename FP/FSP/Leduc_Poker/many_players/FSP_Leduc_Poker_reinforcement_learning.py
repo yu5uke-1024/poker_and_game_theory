@@ -19,7 +19,7 @@ import FSP_Leduc_Poker_trainer
 
 
 class ReinforcementLearning:
-  def __init__(self, infoSet_dict_player, num_players, num_actions, node_possible_action=None, infoset_action_player_dict=None):
+  def __init__(self,random_seed, infoSet_dict_player, num_players, num_actions, node_possible_action=None, infoset_action_player_dict=None):
     self.gamma = 1
     self.num_players = num_players
     self.num_actions = num_actions
@@ -29,8 +29,9 @@ class ReinforcementLearning:
     self.cards = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
     self.node_possible_action = node_possible_action
     self.infoset_action_player_dict = infoset_action_player_dict
+    self.random_seed = random_seed
 
-
+    self.leduc_trainer.random_seed_fix(self.random_seed)
 
 
 

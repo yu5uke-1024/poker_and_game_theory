@@ -31,7 +31,7 @@ import NFSP_PPO_Kuhn_Poker_generate_data
 
 config = dict(
   random_seed = 42,
-  iterations = 10**3,
+  iterations = 10**1,
   num_players = 2,
   wandb_save = [True, False][1],
 
@@ -56,7 +56,7 @@ config = dict(
   rl_gamma = 1.0,
   rl_tau = 0.1,
   rl_update_frequency = 100,
-  sl_algo = ["cnt", "mlp"][1],
+  sl_algo = ["mlp"][0],
   rl_algo = ["ppo"][0],
   rl_loss_function = [F.mse_loss, nn.HuberLoss()][0],
 
@@ -127,7 +127,7 @@ kuhn_trainer.train(
   gd_module= kuhn_GD
   )
 
-
+"""
 # _________________________________ result _________________________________
 
 if not config["wandb_save"]:
@@ -161,3 +161,4 @@ else:
 
 
 doctest.testmod()
+"""

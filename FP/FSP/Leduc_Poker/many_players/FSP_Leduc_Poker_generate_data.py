@@ -17,12 +17,14 @@ import FSP_Leduc_Poker_trainer
 
 
 class GenerateData:
-  def __init__(self, num_players, num_actions, infoset_action_player_dict):
+  def __init__(self, num_players, num_actions, infoset_action_player_dict, random_seed):
     self.num_players = num_players
     self.num_actions = num_actions
     self.leduc_trainer = FSP_Leduc_Poker_trainer.LeducTrainer(num_players=self.num_players)
     self.infoset_action_player_dict = infoset_action_player_dict
+    self.random_seed = random_seed
 
+    self.leduc_trainer.random_seed_fix(self.random_seed)
 
   def generate_data0(self, pi_strategy, beta_strategy, n, m, eta):
     sigma_strategy = {}

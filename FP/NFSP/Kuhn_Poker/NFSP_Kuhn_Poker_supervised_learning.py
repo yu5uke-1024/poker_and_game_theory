@@ -159,6 +159,7 @@ class SupervisedLearning:
 
 
   def SL_train_AVG(self, memory, target_player, strategy, n_count):
+
     for one_s_a_set in memory:
       for X, y in [one_s_a_set]:
         if (len(X)-1) % self.NUM_PLAYERS == target_player :

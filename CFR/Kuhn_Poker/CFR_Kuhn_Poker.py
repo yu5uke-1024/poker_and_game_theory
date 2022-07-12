@@ -59,13 +59,21 @@ class Node:
 
 #Trainer class
 class KuhnTrainer:
-  def __init__(self, train_iterations=10**4, num_players =2):
+  def __init__(self, train_iterations=10**4, num_players =2, random_seed = 42):
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
     self.NUM_ACTIONS = 2
     self.nodeMap = defaultdict(list)
     self.eval = False
     self.card_rank = self.make_rank(self.NUM_PLAYERS)
+    self.random_seed = random_seed
+
+    self.random_seed_fix(self.random_seed)
+
+
+  def random_seed_fix(self, random_seed):
+      random.seed(random_seed)
+      np.random.seed(random_seed)
 
 
   def make_rank(self, num_players):
@@ -538,6 +546,7 @@ config = dict(
   algo = ["vanilla_CFR", "chance_sampling_CFR", "external_sampling_MCCFR", "outcome_sampling_MCCFR"][3],
   train_iterations = 10**5,
   num_players =  5,
+  random_seed = 42,
   wandb_save = True
 )
 
@@ -548,7 +557,7 @@ if config["wandb_save"]:
 
 
 #train
-kuhn_trainer = KuhnTrainer(train_iterations=config["train_iterations"], num_players=config["num_players"])
+kuhn_trainer = KuhnTrainer(train_iterations=config["train_iterations"], num_players=config["num_players"], random_seed=config["random_seed"])
 kuhn_trainer.train(config["algo"])
 
 

@@ -19,6 +19,7 @@ import FSP_Leduc_Poker_trainer
 
 #config
 config = dict(
+  radnom_seed = [42][0],
   iterations = 10**6,
   num_players = 2,
   n= 2,
@@ -28,7 +29,7 @@ config = dict(
   rl_algo = ["epsilon-greedy", "boltzmann", "dfs"][0],
   sl_algo = ["cnt", "mlp"][0],
   pseudo_code = ["general_FSP", "batch_FSP"][1],
-  wandb_save = True
+  wandb_save = [True, False][1]
 )
 
 
@@ -42,7 +43,8 @@ if config["wandb_save"]:
 
 leduc_trainer = FSP_Leduc_Poker_trainer.LeducTrainer(
   train_iterations = config["iterations"],
-  num_players= config["num_players"]
+  num_players= config["num_players"],
+  random_seed = config["radnom_seed"]
   )
 
 
@@ -80,6 +82,11 @@ df1 = pd.DataFrame(result_dict_br.values(), index=result_dict_br.keys(), columns
 df1.index.name = "Node"
 
 print(pd.concat([df, df1], axis=1))
+
+#追加 matplotlibで図を書くため
+df = pd.DataFrame(leduc_trainer.database_for_plot)
+df = df.set_index('iteration')
+df.to_csv('../../../Make_png/output/database_for_plot_FSP.csv')
 
 
 for i in range(2,3):

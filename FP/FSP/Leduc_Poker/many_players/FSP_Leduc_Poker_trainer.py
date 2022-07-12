@@ -21,7 +21,7 @@ import FSP_Leduc_Poker_generate_data
 
 
 class LeducTrainer:
-  def __init__(self, train_iterations=10**1, num_players =2):
+  def __init__(self, train_iterations=10**1, num_players =2, random_seed = 42):
     self.train_iterations = train_iterations
     self.NUM_PLAYERS = num_players
     self.NUM_ACTIONS = 3
@@ -30,7 +30,9 @@ class LeducTrainer:
     self.node_possible_action = {}
     self.card_rank = self.make_rank()
     self.history_action_player_dict = {}
+    self.random_seed = random_seed
 
+    self.random_seed_fix(self.random_seed)
 
   def Get_possible_action_by_information_set(self, infoset): #{0:"f", 1:"c", 2:"r"}
     """return int
@@ -510,6 +512,10 @@ class LeducTrainer:
         actionProb = self.avg_strategy[infoSet][ai]
         self.create_infoSets(nextHistory, target_player, po*actionProb)
 
+  def random_seed_fix(self, random_seed):
+      random.seed(random_seed)
+      np.random.seed(random_seed)
+
 
   def get_exploitability_dfs(self):
 
@@ -600,6 +606,9 @@ class LeducTrainer:
     for target_player in range(self.NUM_PLAYERS):
       self.create_infoSets("", target_player, 1.0)
 
+    #追加 matplotlibで図を書くため
+    self.database_for_plot = {"iteration":[] ,"exploitability_FSP":[]}
+
 
     self.best_response_strategy = copy.deepcopy(self.avg_strategy)
 
@@ -615,9 +624,9 @@ class LeducTrainer:
     self.Q_value = [np.zeros((len(self.infoSets_dict_player[i]),3)) for i in range(self.NUM_PLAYERS)]
 
 
-    RL = FSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action, self.infoset_action_player_dict)
-    SL = FSP_Leduc_Poker_supervised_learning.SupervisedLearning(self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action, self.infoset_action_player_dict)
-    GD = FSP_Leduc_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS, self.infoset_action_player_dict)
+    RL = FSP_Leduc_Poker_reinforcement_learning.ReinforcementLearning(self.random_seed, self.infoSets_dict_player, self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action, self.infoset_action_player_dict)
+    SL = FSP_Leduc_Poker_supervised_learning.SupervisedLearning(self.random_seed, self.NUM_PLAYERS, self.NUM_ACTIONS, self.node_possible_action, self.infoset_action_player_dict)
+    GD = FSP_Leduc_Poker_generate_data.GenerateData(self.NUM_PLAYERS, self.NUM_ACTIONS, self.infoset_action_player_dict, self.random_seed)
 
 
     for iteration_t in tqdm(range(1, int(self.train_iterations)+1)):
@@ -677,6 +686,10 @@ class LeducTrainer:
 
         if wandb_save:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t]})
+
+        #追加 matplotlibで図を書くため
+        self.database_for_plot["iteration"].append(iteration_t)
+        self.database_for_plot["exploitability_FSP"].append(self.exploitability_list[iteration_t])
 
 
     #self.show_plot("FSP")

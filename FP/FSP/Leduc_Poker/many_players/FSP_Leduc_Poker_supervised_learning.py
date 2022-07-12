@@ -21,7 +21,7 @@ import FSP_Leduc_Poker_trainer
 
 
 class SupervisedLearning:
-  def __init__(self, num_players=2, num_actions=2, node_possible_action=None, infoset_action_player_dict=None):
+  def __init__(self,random_seed, num_players=2, num_actions=2,  node_possible_action=None, infoset_action_player_dict=None):
     self.num_players = num_players
     self.num_actions = num_actions
     self.node_possible_action = node_possible_action
@@ -29,13 +29,14 @@ class SupervisedLearning:
     self.ACTION_DICT = {0:"f", 1:"c", 2:"r"}
     self.ACTION_DICT_verse = {"f":0, "c":1, "r":2}
     self.infoset_action_player_dict = infoset_action_player_dict
+    self.random_seed = random_seed
 
 
     self.cards = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
     self.card_order  = self.make_card_order(self.num_players)
     self.leduc_trainer = FSP_Leduc_Poker_trainer.LeducTrainer(num_players=self.num_players)
 
-
+    self.leduc_trainer.random_seed_fix(self.random_seed)
 
 
   def make_card_order(self, num_players):
