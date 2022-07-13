@@ -40,8 +40,8 @@ class SL_Network(nn.Module):
 
 
     def forward(self, x):
-        #h1 = F.relu(self.fc1(x))
-        h1 = F.leaky_relu(self.fc1(x))
+        h1 = F.relu(self.fc1(x))
+        #h1 = F.leaky_relu(self.fc1(x))
 
         #output = self.fc2(h1)
         h2 = self.dropout(h1)
@@ -69,7 +69,7 @@ class SupervisedLearning:
     self.leduc_trainer = leduc_trainer_for_sl
 
     self.leduc_trainer.random_seed_fix(random_seed = self.random_seed)
-    self.save_count = [0 for _ in range(self.NUM_PLAYERS)]
+    self.save_count = 0
 
     self.card_rank  = self.leduc_trainer.card_rank
 
@@ -119,9 +119,9 @@ class SupervisedLearning:
       total_loss.append(loss.item())
 
 
-    if self.leduc_trainer.wandb_save and self.save_count[target_player] % 10 == 0:
+    if self.leduc_trainer.wandb_save and self.save_count % 100 == 0:
       wandb.log({'iteration': iteration_t, 'loss_sl_{}'.format(target_player):  np.mean(total_loss)})
-    self.save_count[target_player] += 1
+    self.save_count += 1
 
 
 
@@ -129,35 +129,33 @@ class SupervisedLearning:
     self.sl_network.eval()
     with torch.no_grad():
       for node_X , _ in update_strategy.items():
-        if self.infoset_action_player_dict[node_X] == target_player :
 
-          inputs_eval = torch.tensor(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
+        inputs_eval = torch.tensor(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
 
-          y = self.softmax(self.sl_network.forward(inputs_eval)).detach().numpy()[0]
-
-
-          possible_action_list = self.leduc_trainer.node_possible_action[node_X]
+        y = self.softmax(self.sl_network.forward(inputs_eval)).detach().numpy()[0]
 
 
-          normalizationSum = 0
-          for action_i, yi in enumerate(y):
-            if action_i not in possible_action_list:
-              y[action_i] = 0
-            else:
-              normalizationSum += yi
+        possible_action_list = self.leduc_trainer.node_possible_action[node_X]
 
-          y /= normalizationSum
-          update_strategy[node_X] = y
+
+        normalizationSum = 0
+        for action_i, yi in enumerate(y):
+          if action_i not in possible_action_list:
+            y[action_i] = 0
+          else:
+            normalizationSum += yi
+
+        y /= normalizationSum
+        update_strategy[node_X] = y
 
 
 
   def SL_train_AVG(self, memory, target_player, strategy, n_count):
     for one_s_a_set in memory:
       for X, y in [one_s_a_set]:
-        if self.infoset_action_player_dict[X] == target_player :
-          action_prob_list = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
-          action_prob_list[self.ACTION_DICT_verse[y]] = 1.0
-          n_count[X] += action_prob_list
+        action_prob_list = np.array([0 for _ in range(self.NUM_ACTIONS)], dtype=float)
+        action_prob_list[self.ACTION_DICT_verse[y]] = 1.0
+        n_count[X] += action_prob_list
 
 
     for node_X , action_prob in n_count.items():

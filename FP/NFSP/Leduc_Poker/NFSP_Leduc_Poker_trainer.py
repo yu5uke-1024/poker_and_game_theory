@@ -57,8 +57,8 @@ class LeducTrainer:
     #self.database_for_plot = {"iteration":[] ,"exploitability_NFSP":[]}
 
 
-    self.M_SL = [[] for _ in range(self.NUM_PLAYERS)]
-    self.M_RL = [deque([], maxlen= self.memory_size_rl) for _ in range(self.NUM_PLAYERS)]
+    self.M_SL = []
+    self.M_RL = deque([], maxlen= self.memory_size_rl)
 
 
     self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
@@ -70,7 +70,7 @@ class LeducTrainer:
 
     self.epsilon_greedy_q_learning_strategy = copy.deepcopy(self.avg_strategy)
 
-    self.game_step_count = [0 for _ in range(self.NUM_PLAYERS)]
+    self.game_step_count = 0
 
 
     self.RL = rl_module
@@ -78,7 +78,6 @@ class LeducTrainer:
     self.GD = gd_module
     self.GD.infoset_action_player_dict = self.infoset_action_player_dict
     self.SL.infoset_action_player_dict = self.infoset_action_player_dict
-
     self.RL.infoset_action_player_dict = self.infoset_action_player_dict
 
 
@@ -151,6 +150,7 @@ class LeducTrainer:
   def train_one_episode(self, history, iteration_t):
  # one episode
     while  not self.whether_terminal_states(history):
+
       if self.whether_chance_node(history):
         history += self.cards[self.NUM_PLAYERS]
 
@@ -166,7 +166,7 @@ class LeducTrainer:
           self.player_sars_list[player]["s_prime"] = s
 
           sars_list = self.make_sars_list(self.player_sars_list[player])
-          self.M_RL[player].append(sars_list)
+          self.M_RL.append(sars_list)
 
           self.player_sars_list[player] = {"s":None, "a":None, "r":None, "s_prime":None}
 
@@ -189,27 +189,26 @@ class LeducTrainer:
         if self.sigma_strategy_bit[player] == 0:
           if self.sl_algo == "mlp":
             sa_bit = self.from_episode_to_bit([(s, a)])
-            self.reservior_add(self.M_SL[player],sa_bit)
+            self.reservior_add(self.M_SL,sa_bit)
           else:
-            self.reservior_add(self.M_SL[player],(s, a))
+            self.reservior_add(self.M_SL,(s, a))
 
 
-        self.game_step_count[player] += 1
+        self.game_step_count += 1
 
-        if self.game_step_count[player] % self.RL.sampling_num == 0:
-
+        if self.game_step_count % self.RL.sampling_num == 0:
 
           # SL update
           if self.sl_algo == "mlp":
-            self.SL.SL_learn(self.M_SL[player], player, self.avg_strategy, iteration_t)
+            self.SL.SL_learn(self.M_SL, player, self.avg_strategy, iteration_t)
           elif self.sl_algo == "cnt":
-            self.SL.SL_train_AVG(self.M_SL[player], player, self.avg_strategy, self.N_count)
-            self.M_SL[player] = []
+            self.SL.SL_train_AVG(self.M_SL, player, self.avg_strategy, self.N_count)
+            self.M_SL = []
 
           # RL update
           if self.rl_algo == "dqn":
             self.RL.rl_algo = self.rl_algo
-            self.RL.RL_learn(self.M_RL[player], player, self.epsilon_greedy_q_learning_strategy, iteration_t)
+            self.RL.RL_learn(self.M_RL, player, self.epsilon_greedy_q_learning_strategy, iteration_t)
 
 
           elif self.rl_algo == "dfs":
@@ -232,13 +231,16 @@ class LeducTrainer:
         self.player_sars_list[target_player_i]["r"] = r
 
         sars_list = self.make_sars_list(self.player_sars_list[target_player_i])
-        self.M_RL[target_player_i].append(sars_list)
+        self.M_RL.append(sars_list)
 
         self.player_sars_list[target_player_i] = {"s":None, "a":None, "r":None, "s_prime":None}
 
 
 
+
+
   def make_sars_list(self, sars_memory):
+    #s_bit, a, r, s_prime, s_prime_bit, done
     sars_list = []
     for idx, x in enumerate(sars_memory.values()):
       if idx == 0:

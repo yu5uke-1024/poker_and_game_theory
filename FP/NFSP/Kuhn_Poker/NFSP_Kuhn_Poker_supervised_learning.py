@@ -72,7 +72,7 @@ class SupervisedLearning:
 
     self.kuhn_trainer = kuhn_trainer_for_sl
     self.device = device
-    self.save_count = [0 for _ in range(self.NUM_PLAYERS)]
+    self.save_count = 0
 
 
     self.card_rank  = self.kuhn_trainer.card_rank
@@ -118,9 +118,9 @@ class SupervisedLearning:
 
 
 
-    if self.kuhn_trainer.wandb_save and self.save_count[target_player] % 10 == 0:
+    if self.kuhn_trainer.wandb_save and self.save_count % 100 == 0:
       wandb.log({'iteration': iteration_t, 'loss_sl_{}'.format(target_player):  np.mean(total_loss)})
-    self.save_count[target_player] += 1
+    self.save_count += 1
 
 
 
@@ -129,13 +129,13 @@ class SupervisedLearning:
     self.sl_network.eval()
     with torch.no_grad():
       for node_X , _ in update_strategy.items():
-        if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
-          inputs_eval = torch.tensor(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
 
-          y = torch.sigmoid(self.sl_network.forward(inputs_eval)).to('cpu').detach().numpy()[0]
+        inputs_eval = torch.tensor(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
+
+        y = torch.sigmoid(self.sl_network.forward(inputs_eval)).to('cpu').detach().numpy()[0]
 
 
-          update_strategy[node_X] = np.array([1.0-y[0], y[0]])
+        update_strategy[node_X] = np.array([1.0-y[0], y[0]])
 
 
 
@@ -162,11 +162,10 @@ class SupervisedLearning:
 
     for one_s_a_set in memory:
       for X, y in [one_s_a_set]:
-        if (len(X)-1) % self.NUM_PLAYERS == target_player :
-          if y == "p":
-            n_count[X] += np.array([1.0, 0.0], dtype=float)
-          else:
-            n_count[X] += np.array([0.0, 1.0], dtype=float)
+        if y == "p":
+          n_count[X] += np.array([1.0, 0.0], dtype=float)
+        else:
+          n_count[X] += np.array([0.0, 1.0], dtype=float)
 
     for node_X , action_prob in n_count.items():
         strategy[node_X] = n_count[node_X] / np.sum(action_prob)

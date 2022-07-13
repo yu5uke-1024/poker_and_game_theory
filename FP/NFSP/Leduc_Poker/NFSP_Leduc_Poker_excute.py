@@ -26,15 +26,15 @@ import NFSP_Leduc_Poker_generate_data
 
 config = dict(
   random_seed = [42, 1000, 10000][0],
-  iterations = 10**3,
+  iterations = 10**7,
   num_players = 2,
-  wandb_save = [True, False][1],
+  wandb_save = [True, False][0],
 
 
   #train
   eta = 0.1,
-  memory_size_rl = 2*(10**3),
-  memory_size_sl = 2*(10**4),
+  memory_size_rl = 2*(10**5),
+  memory_size_sl = 2*(10**6),
 
   #sl
   sl_hidden_units_num= 64,

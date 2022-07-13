@@ -51,7 +51,7 @@ class ReinforcementLearning:
     self.card_rank  = self.kuhn_trainer.card_rank
     self.random_seed = random_seed
     self.device = device
-    self.save_count = [0 for _ in range(self.NUM_PLAYERS)]
+    self.save_count = 0
 
     self.rl_algo = None
 
@@ -68,7 +68,7 @@ class ReinforcementLearning:
     self.optimizer = optim.SGD(self.deep_q_network.parameters(), lr=self.lr)
     self.loss_fn = loss_function
 
-    self.update_count =  [0 for _ in range(self.NUM_PLAYERS)]
+    self.update_count =  0
 
 
   def RL_learn(self, memory, target_player, update_strategy, k):
@@ -120,15 +120,15 @@ class ReinforcementLearning:
 
       total_loss.append(loss.item())
 
-      self.update_count[target_player] += 1
+      self.update_count += 1
 
 
-      if self.update_count[target_player] % self.update_frequency ==  0 :
+      if self.update_count % self.update_frequency ==  0 :
         self.deep_q_network_target.load_state_dict(self.deep_q_network.state_dict())
 
-    if self.kuhn_trainer.wandb_save and self.save_count[target_player] % 10 == 0:
+    if self.kuhn_trainer.wandb_save and self.save_count % 100 == 0:
       wandb.log({'iteration': k, 'loss_rl_{}'.format(target_player):  np.mean(total_loss)})
-    self.save_count[target_player] += 1
+    self.save_count += 1
 
 
 
@@ -137,23 +137,22 @@ class ReinforcementLearning:
     self.deep_q_network.eval()
     with torch.no_grad():
       for node_X , _ in update_strategy.items():
-        if (len(node_X)-1) % self.NUM_PLAYERS == target_player :
-          inputs_eval = torch.tensor(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
-          y = self.deep_q_network.forward(inputs_eval).to('cpu').detach().numpy()
+        inputs_eval = torch.tensor(self.kuhn_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN).to(self.device)
+        y = self.deep_q_network.forward(inputs_eval).to('cpu').detach().numpy()
 
 
-          if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
-            action = np.random.randint(self.num_actions)
-            if action == 0:
-              update_strategy[node_X] = np.array([1, 0], dtype=float)
-            else:
-              update_strategy[node_X] = np.array([0, 1], dtype=float)
-
+        if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
+          action = np.random.randint(self.num_actions)
+          if action == 0:
+            update_strategy[node_X] = np.array([1, 0], dtype=float)
           else:
-            if y[0][0] > y[0][1]:
-              update_strategy[node_X] = np.array([1, 0], dtype=float)
-            else:
-              update_strategy[node_X] = np.array([0, 1], dtype=float)
+            update_strategy[node_X] = np.array([0, 1], dtype=float)
+
+        else:
+          if y[0][0] > y[0][1]:
+            update_strategy[node_X] = np.array([1, 0], dtype=float)
+          else:
+            update_strategy[node_X] = np.array([0, 1], dtype=float)
 
 
 

@@ -25,7 +25,8 @@ class DQN(nn.Module):
         self.fc2 = nn.Linear(self.hidden_units_num, action_num)
 
     def forward(self, x):
-        h1 = F.leaky_relu(self.fc1(x))
+        h1 = F.relu(self.fc1(x))
+        #h1 = F.leaky_relu(self.fc1(x))
         output = self.fc2(h1)
 
         return output
@@ -62,10 +63,10 @@ class ReinforcementLearning:
     self.deep_q_network_target.load_state_dict(self.deep_q_network.state_dict())
 
 
-    self.optimizer = optim.SGD(self.deep_q_network.parameters(), lr=self.lr)
+    self.optimizer = optim.SGD(self.deep_q_network.parameters(), lr=self.lr, weight_decay=5*(10**(-4)))
 
-    self.update_count =  [0 for _ in range(self.NUM_PLAYERS)]
-    self.save_count = [0 for _ in range(self.NUM_PLAYERS)]
+    self.update_count =  0
+    self.save_count = 0
 
 
   def RL_learn(self, memory, target_player, update_strategy, k):
@@ -152,10 +153,10 @@ class ReinforcementLearning:
       total_loss.append(loss.item())
 
 
-      self.update_count[target_player] += 1
+      self.update_count += 1
 
 
-      if self.update_count[target_player] % self.update_frequency ==  0 :
+      if self.update_count % self.update_frequency ==  0 :
         self.deep_q_network_target.load_state_dict(self.deep_q_network.state_dict())
 
 
@@ -163,31 +164,29 @@ class ReinforcementLearning:
     self.deep_q_network.eval()
     with torch.no_grad():
       for node_X , _ in update_strategy.items():
-        if self.infoset_action_player_dict[node_X] == target_player :
 
-          inputs_eval = torch.tensor(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
-          y = self.deep_q_network.forward(inputs_eval).detach().numpy()
+        inputs_eval = torch.tensor(self.leduc_trainer.make_state_bit(node_X)).float().reshape(-1,self.STATE_BIT_LEN)
+        y = self.deep_q_network.forward(inputs_eval).detach().numpy()
 
+        if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
+          action = np.random.choice(self.leduc_trainer.node_possible_action[node_X])
+          update_strategy[node_X] = np.array([0 for _ in range(self.num_actions)], dtype=float)
+          update_strategy[node_X][action] = 1.0
 
-          if np.random.uniform() < self.epsilon:   # 探索(epsilonの確率で)
-            action = np.random.choice(self.leduc_trainer.node_possible_action[node_X])
-            update_strategy[node_X] = np.array([0 for _ in range(self.num_actions)], dtype=float)
-            update_strategy[node_X][action] = 1.0
+        else:
+          action_list = self.leduc_trainer.node_possible_action[node_X]
+          max_idx = action_list[0]
 
-          else:
-            action_list = self.leduc_trainer.node_possible_action[node_X]
-            max_idx = action_list[0]
-
-            for ai in action_list:
-              if y[0][ai] >= y[0][max_idx]:
-                max_idx = ai
-            update_strategy[node_X] = np.array([0 for _ in range(self.num_actions)], dtype=float)
-            update_strategy[node_X][max_idx] = 1.0
+          for ai in action_list:
+            if y[0][ai] >= y[0][max_idx]:
+              max_idx = ai
+          update_strategy[node_X] = np.array([0 for _ in range(self.num_actions)], dtype=float)
+          update_strategy[node_X][max_idx] = 1.0
 
 
-    if self.leduc_trainer.wandb_save and self.save_count[target_player] % 10 == 0:
+    if self.leduc_trainer.wandb_save and self.save_count % 100 == 0:
       wandb.log({'iteration': k, 'loss_rl_{}'.format(target_player):  np.mean(total_loss)})
-    self.save_count[target_player] += 1
+    self.save_count += 1
 
 
 
