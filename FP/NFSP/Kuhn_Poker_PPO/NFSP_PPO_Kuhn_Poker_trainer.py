@@ -24,8 +24,9 @@ from NFSP_PPO_Kuhn_Poker_reinforcement_learning import RL_memory
 
 # _________________________________ Train class _________________________________
 class KuhnTrainer:
-  def __init__(self,random_seed=42, train_iterations=10, num_players=2, wandb_save=False):
+  def __init__(self,random_seed=42, train_iterations=10, num_parallel=1, num_players=2, wandb_save=False):
     self.train_iterations = train_iterations
+    self.num_parallel = num_parallel
     self.NUM_PLAYERS = num_players
     self.NUM_ACTIONS = 2
     self.STATE_BIT_LEN = (self.NUM_PLAYERS + 1) + 2*(self.NUM_PLAYERS *2 - 2)
@@ -65,19 +66,24 @@ class KuhnTrainer:
     self.SL = sl_module
     self.GD = gd_module
 
+    self.M_SL = [[] for _ in range(self.NUM_PLAYERS)]
+    self.M_RL = [RL_memory() for _ in range(self.NUM_PLAYERS)]
+
 
     for iteration_t in tqdm(range(1, int(self.train_iterations)+1)):
-      self.M_SL = [[] for _ in range(self.NUM_PLAYERS)]
-      self.M_RL = [RL_memory() for _ in range(self.NUM_PLAYERS)]
 
-      for target_player in range(self.NUM_PLAYERS):
-        self.sar_list = {"s":None, "a":None, "r":None, "action_prob":None}
-        self.time_step_count = 0
-        while self.time_step_count <= self.time_step:
-          cards = self.card_distribution(self.NUM_PLAYERS)
-          random.shuffle(cards)
-          history = "".join(cards[:self.NUM_PLAYERS])
-          self.train_one_episode(history, target_player)
+
+      for paralell in range(self.num_parallel):
+        self.target_player = paralell % self.NUM_PLAYERS
+
+        # 1 episode
+        cards = self.card_distribution(self.NUM_PLAYERS)
+        random.shuffle(cards)
+        history = "".join(cards[:self.NUM_PLAYERS])
+        self.train_one_episode(history, target_player)
+
+
+
 
 
       """

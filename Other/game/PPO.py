@@ -15,8 +15,8 @@ class PPO:
     def __init__(self):
         self.env = gym.make("CartPole-v0")
         self.episode = 0
-        self.iteration = 2000
-        self.number_parallel = 1
+        self.iteration = 100
+        self.number_parallel = 5
         self.hidden_unit_num = 256
         self.batch_size = 5
         self.epochs = 4
@@ -53,35 +53,35 @@ class PPO:
         for i in tqdm(range(self.iteration)):
 
             # collect trajectory
-            #for _ in range(self.number_parallel):
-            observation = self.env.reset()
-            score = 0
-            done = False
+            for _ in range(self.number_parallel):
+                observation = self.env.reset()
+                score = 0
+                done = False
 
-            # start 1 episode
-            while not done:
+                # start 1 episode
+                while not done:
 
-                action, log_prob, value = self.agent.choose_action(observation)
-                next_observation, reward, done, info = self.env.step(action)
-
-
-                score += reward
-                n_step += 1
-
-                self.agent.save_memory(observation, action, log_prob, value, reward, done)
+                    action, log_prob, value = self.agent.choose_action(observation)
+                    next_observation, reward, done, info = self.env.step(action)
 
 
-                if n_step % self.N ==0:
-                    # 学習して、良い方策へ
-                    self.agent.learn()
-                    learn_iters += 1
+                    score += reward
+                    n_step += 1
+
+                    self.agent.save_memory(observation, action, log_prob, value, reward, done)
 
 
-                observation = next_observation
+                    observation = next_observation
 
-            self.history_score.append(score)
-            self.avg_score = np.mean(self.history_score[-100:])
-            self.hisotry_avg_score.append(self.avg_score)
+                self.history_score.append(score)
+                self.avg_score = np.mean(self.history_score[-100:])
+                self.hisotry_avg_score.append(self.avg_score)
+
+
+            # 学習して、良い方策へ
+            self.agent.learn()
+            learn_iters += 1
+
 
             if i % 10 == 0:
                 print(i, self.avg_score , n_step, learn_iters)
@@ -127,26 +127,33 @@ class Agent:
         self.memory.store(state, action, log_prob, value, reward, done)
 
 
+    def calculate_advantage(self, state_arr, reward_arr, value_arr, done_arr):
+
+        #calulate adavantage (一旦、愚直に前から計算する)
+        advantages = np.zeros(len(state_arr), dtype=np.float32)
+
+        for t in range(len(reward_arr)-1):
+            discount = 1 # lamda * gamma が 足されていってるもの
+            adavantage_t = 0
+            for k in range(t, len(reward_arr)-1):
+                sigma_k = reward_arr[k] + self.gamma * value_arr[k+1] * (1 - done_arr[k]) - value_arr[k]
+                adavantage_t += discount * sigma_k
+                discount *= self.gamma * self.lam
+
+            advantages[t] = adavantage_t
+
+        return advantages
+
+
     def learn(self):
         for _ in range(self.epochs):
             state_arr, action_arr, old_action_prob_arr, value_arr, reward_arr,  done_arr, batch_index = self.memory.get_batch()
 
-            #calulate adavantage (一旦、愚直に前から計算する)
-            advantages = np.zeros(len(state_arr), dtype=np.float32)
-
-            for t in range(len(reward_arr)-1):
-                discount = 1 # lamda * gamma が 足されていってるもの
-                adavantage_t = 0
-                for k in range(t, len(reward_arr)-1):
-                    sigma_k = reward_arr[k] + self.gamma * value_arr[k+1] * (1 - done_arr[k]) - value_arr[k]
-                    adavantage_t += discount * sigma_k
-                    discount *= self.gamma * self.lam
-
-                advantages[t] = adavantage_t
-
+            advantages = self.calculate_advantage(state_arr, reward_arr, value_arr, done_arr)
 
             advantages = torch.tensor(advantages)
             values = torch.tensor(value_arr)
+
 
             #batch 計算
             for batch in batch_index:

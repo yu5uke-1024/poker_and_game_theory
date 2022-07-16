@@ -33,6 +33,7 @@ config = dict(
   random_seed = 42,
   iterations = 10**1,
   num_players = 2,
+  num_parallel = 100,
   wandb_save = [True, False][1],
 
 
@@ -80,6 +81,7 @@ if config["wandb_save"]:
 kuhn_trainer = NFSP_PPO_Kuhn_Poker_trainer.KuhnTrainer(
   random_seed = config["random_seed"],
   train_iterations = config["iterations"],
+  num_parallel= config["num_parallel"],
   num_players= config["num_players"],
   wandb_save = config["wandb_save"]
   )
