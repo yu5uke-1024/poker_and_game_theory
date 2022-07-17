@@ -41,18 +41,12 @@ class KuhnTrainer:
 
 
 # _________________________________ Train main method _________________________________
-  def train(self, eta, memory_size_rl, memory_size_sl, rl_algo, sl_algo, rl_module, sl_module, gd_module):
+  def train(self, eta, rl_algo, sl_algo, rl_module, sl_module, gd_module, SL_memory, RL_memory):
     self.exploitability_list = {}
     self.avg_utility_list = {}
     self.eta = eta
     self.rl_algo = rl_algo
     self.sl_algo = sl_algo
-    self.memory_size_sl = memory_size_sl
-    self.memory_size_rl = memory_size_rl
-
-    self.time_step = 10
-
-
 
 
     self.infoSets_dict_player = [[] for _ in range(self.NUM_PLAYERS)]
@@ -66,21 +60,29 @@ class KuhnTrainer:
     self.SL = sl_module
     self.GD = gd_module
 
-    self.M_SL = [[] for _ in range(self.NUM_PLAYERS)]
-    self.M_RL = [RL_memory() for _ in range(self.NUM_PLAYERS)]
+
+    self.SL_memory = SL_memory
+    self.RL_memory = RL_memory
 
 
     for iteration_t in tqdm(range(1, int(self.train_iterations)+1)):
 
 
       for paralell in range(self.num_parallel):
+
+        self.tmp_memory = {"observation": None, "action": None, "log_prob": None, "value": None, "reward": None, "done": None}
         self.target_player = paralell % self.NUM_PLAYERS
 
         # 1 episode
         cards = self.card_distribution(self.NUM_PLAYERS)
         random.shuffle(cards)
         history = "".join(cards[:self.NUM_PLAYERS])
+
         self.train_one_episode(history, target_player)
+
+
+      #方策を学習
+      print(self.SL_memory.get_size())
 
 
 
@@ -111,17 +113,16 @@ class KuhnTrainer:
           wandb.log({'iteration': iteration_t, 'exploitability': self.exploitability_list[iteration_t], 'avg_utility': self.avg_utility_list[iteration_t], 'optimal_gap':self.optimality_gap})
       """
 
-  def random_seed_fix(self, random_seed):
-      random.seed(random_seed)
-      np.random.seed(random_seed)
-      torch.manual_seed(random_seed)
 
 
 # _________________________________ Train second main method _________________________________
   def train_one_episode(self, history, target_player):
 
+    done = False
+
     # one episode
-    while  not self.whether_terminal_states(history):
+
+    while  not done:
 
       plays = len(history)
       player = plays % self.NUM_PLAYERS
@@ -131,50 +132,47 @@ class KuhnTrainer:
 
       # sample action
       if player == target_player:
-        self.time_step_count += 1
 
-        #Store M_RL
-        if self.sar_list["r"] == 0:
-          self.M_RL[player].states.append(self.sar_list["s"])
-          self.M_RL[player].actions.append(self.sar_list["a"])
-          self.M_RL[player].rewards.append(self.sar_list["r"])
-          self.M_RL[player].logprobs.append(self.sar_list["action_prob"])
+        if self.tmp_memory["reward"] == 0:
+          self.SL_memory.store(self.tmp_memory)
+          self.RL_memory.store(self.tmp_memory)
 
 
-        #sample action
+        #sample actio
         node_X = self.make_state_bit(s)
-        sampling_action, action_prob = self.RL.select_action(torch.tensor(node_X).float())
+        action, log_prob, value = self.RL.select_action(torch.tensor(node_X).float())
 
-        #store M_SL
-        #self.M_SL[player].append([node_X, sampling_action])
-        a = ("p" if sampling_action == 0 else "b")
-        history +=  a
-        r = 0
-        self.M_SL[player].append([s, a])
+        self.tmp_memory["observation"] = node_X
+        self.tmp_memory["action"] = action
+        self.tmp_memory["log_prob"] = log_prob
+        self.tmp_memory["value"] = value
 
-        #save sar list
-        self.sar_list["s"] = s
-        self.sar_list["a"] = a
-        self.sar_list["r"] = r
-        self.sar_list["action_prob"] = action_prob
+        self.tmp_memory["reward"] = 0
+        self.tmp_memory["done"] = 0
+
 
 
       elif player != target_player:
-        sampling_action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.avg_strategy[s])
-        a = ("p" if sampling_action == 0 else "b")
-        history +=  a
-        r = 0
+        action = np.random.choice(list(range(self.NUM_ACTIONS)), p=self.avg_strategy[s])
 
 
+      a = ("p" if action == 0 else "b")
+      history +=  a
+      r = 0
+      done = 0
 
-    if self.whether_terminal_states(history):
-      r = self.Return_payoff_for_terminal_states(history, target_player)
-      self.sar_list["r"] = r
 
-      self.M_RL[target_player].states.append(self.sar_list["s"])
-      self.M_RL[target_player].actions.append(self.sar_list["a"])
-      self.M_RL[target_player].rewards.append(self.sar_list["r"])
-      self.M_RL[target_player].logprobs.append(self.sar_list["action_prob"])
+      if self.whether_terminal_states(history):
+        r = self.Return_payoff_for_terminal_states(history, target_player)
+        done = 1
+
+        self.tmp_memory["reward"] = r
+        self.tmp_memory["done"] = 1
+
+        # store M
+
+        self.SL_memory.store(self.tmp_memory)
+        self.RL_memory.store(self.tmp_memory)
 
 
 
@@ -509,6 +507,10 @@ class KuhnTrainer:
     return X_bit
 
 
+  def random_seed_fix(self, random_seed):
+      random.seed(random_seed)
+      np.random.seed(random_seed)
+      torch.manual_seed(random_seed)
 
 
 

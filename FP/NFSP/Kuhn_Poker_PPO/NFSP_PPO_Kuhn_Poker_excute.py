@@ -33,14 +33,13 @@ config = dict(
   random_seed = 42,
   iterations = 10**1,
   num_players = 2,
-  num_parallel = 100,
+  num_parallel = 1,
   wandb_save = [True, False][1],
 
 
   #train
   eta = 0.1,
-  memory_size_rl = 10**4,
-  memory_size_sl = 10**5,
+  batch_size = 5,
 
   #sl
   sl_hidden_units_num= 64,
@@ -106,7 +105,13 @@ kuhn_SL = NFSP_PPO_Kuhn_Poker_supervised_learning.SupervisedLearning(
   device = config["device"]
   )
 
+kuhn_SL_memory = NFSP_PPO_Kuhn_Poker_supervised_learning.PPO_SL_memory(
+  batch_size= config["batch_size"]
+)
 
+kuhn_RL_memory = NFSP_PPO_Kuhn_Poker_reinforcement_learning.PPO_RL_memory(
+  batch_size= config["batch_size"]
+)
 
 
 kuhn_GD = NFSP_PPO_Kuhn_Poker_generate_data.GenerateData(
@@ -117,16 +122,15 @@ kuhn_GD = NFSP_PPO_Kuhn_Poker_generate_data.GenerateData(
 
 
 
-
 kuhn_trainer.train(
   eta = config["eta"],
-  memory_size_rl = config["memory_size_rl"],
-  memory_size_sl = config["memory_size_sl"],
   rl_algo = config["rl_algo"],
   sl_algo = config["sl_algo"],
   rl_module= kuhn_RL,
   sl_module= kuhn_SL,
-  gd_module= kuhn_GD
+  gd_module= kuhn_GD,
+  SL_memory = kuhn_SL_memory,
+  RL_memory = kuhn_RL_memory
   )
 
 """

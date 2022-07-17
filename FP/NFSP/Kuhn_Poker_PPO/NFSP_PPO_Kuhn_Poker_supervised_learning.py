@@ -173,4 +173,53 @@ class SupervisedLearning:
     return strategy
 
 
+class PPO_SL_memory:
+    def __init__(self, batch_size):
+        self.batch_size = batch_size
+
+        self.states = []
+        self.actions = []
+        self.log_probs = []
+        self.values = []
+        self.rewards = []
+        self.dones = []
+
+    def store(self, memory):
+        self.states.append(memory["observation"])
+        self.actions.append(memory["action"])
+        self.log_probs.append(memory["log_prob"])
+        self.values.append(memory["value"])
+        self.rewards.append(memory["reward"])
+        self.dones.append(memory["done"])
+
+    def delete(self):
+        self.states = []
+        self.actions = []
+        self.log_probs = []
+        self.values = []
+        self.rewards = []
+        self.dones = []
+
+
+    def get_size(self):
+        return len(self.states)
+
+
+    def get_batch(self):
+        #dataをbatch_sizeに切り分ける そのindexを作る
+        size = self.get_size()
+        batch_start_index = np.arange(0, size, self.batch_size)
+        state_index = np.arange(size, dtype=np.int64)
+        np.random.shuffle(state_index)
+        batch_index = [state_index[i:i+self.batch_size] for i in batch_start_index]
+
+
+        #npだと array[batch] で 取得可能
+        return np.array(self.states), np.array(self.actions), np.array(self.log_probs), \
+            np.array(self.values), np.array(self.rewards), np.array(self.dones), batch_index
+
+
+
+
+
 doctest.testmod()
